@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "flags": [
+    {
+      "token": "help",
+      "abbr": "h",
+      "hint": "show command line help",
+      "desc": "show command line help, including examples where available"
+    },
+    {
+      "token": "verbose",
+      "abbr": "v",
+      "hint": "show more info when available",
+      "desc": "show additional information, like examples where available"
+    },
+    {
+      "token": "debug",
+      "abbr": "d",
+      "hint": "show debug information",
+      "desc": "print extended debug information to the stderr"
+    }
+  ],
+  "commands": [
+    {
+      "token": "fetch",
+      "abbr": "f",
+      "hint": "fetch data from remote server",
+      "desc": "fetch data from remove server and store locally",
+      "arguments": [
+        "type",
+        "media"
+      ],
+      "examples": [{
+        "arguments": [""],
+        "value": [""],
+        "description": ""
+      }]
+    }
+  ],
+  "arguments": [
+    {
+      "token": "type",
+      "abbreviation": "t",
+      "hint": "data type",
+      "default": true,
+      "multiple": true,
+      "required": true,
+      "values": [
+        "products",
+        "accountProducts",
+        "productPages",
+        "accountProductPages",
+        "gameDetails"
+      ]
+    },
+    {
+      "token": "media",
+      "abbreviation": "m",
+      "hint": "media type",
+      "multiple": true,
+      "required": true,
+      "values": [
+        "game",
+        "movie"
+      ]
+    }
+  ],
+  "values": [
+    {
+      "token": "productPages",
+      "hidden": true
+    },
+    {
+      "token": "accountProductPages",
+      "hidden": true
+    }
+  ]
+}
