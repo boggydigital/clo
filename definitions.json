@@ -22,19 +22,26 @@
   ],
   "commands": [
     {
-      "token": "fetch",
-      "abbr": "f",
-      "hint": "fetch data from remote server",
-      "desc": "fetch data from remove server and store locally",
+      "token": "download",
+      "abbr": "dl",
+      "hint": "download files and data",
+      "desc": "download files and data from remote server and store locally",
       "arguments": [
         "type",
-        "media"
-      ],
-      "examples": [{
-        "arguments": [""],
-        "value": [""],
-        "description": ""
-      }]
+        "media",
+        "id"
+      ]
+    },
+    {
+      "token": "validate",
+      "abbr": "vl",
+      "hint": "validate local files and data",
+      "desc": "validate local files and data using checksums",
+      "arguments": [
+        "type",
+        "media",
+        "id"
+      ]
     }
   ],
   "arguments": [
@@ -48,9 +55,10 @@
       "values": [
         "products",
         "accountProducts",
-        "productPages",
-        "accountProductPages",
-        "gameDetails"
+        "gameDetails",
+        "productFiles",
+        "images",
+        "screenshots"
       ]
     },
     {
@@ -58,21 +66,17 @@
       "abbreviation": "m",
       "hint": "media type",
       "multiple": true,
-      "required": true,
+      "required": false,
       "values": [
         "game",
         "movie"
       ]
-    }
-  ],
-  "values": [
-    {
-      "token": "productPages",
-      "hidden": true
     },
     {
-      "token": "accountProductPages",
-      "hidden": true
+      "token": "id",
+      "hint": "product id",
+      "multiple": true,
+      "required": false
     }
   ]
 }
