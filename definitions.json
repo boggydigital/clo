@@ -47,7 +47,7 @@
   "arguments": [
     {
       "token": "type",
-      "abbreviation": "t",
+      "abbr": "t",
       "hint": "data type",
       "default": true,
       "multiple": true,
@@ -63,7 +63,7 @@
     },
     {
       "token": "media",
-      "abbreviation": "m",
+      "abbr": "m",
       "hint": "media type",
       "multiple": true,
       "required": false,
