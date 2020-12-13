@@ -65,6 +65,7 @@
       "token": "media",
       "abbr": "m",
       "hint": "media type",
+      "default": false,
       "multiple": true,
       "required": false,
       "values": [

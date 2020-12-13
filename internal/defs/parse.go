@@ -11,8 +11,8 @@ const (
 	commandAbbr
 	argument
 	argumentAbbr
-	defaultValue
-	fixedValue
+	valueDefault
+	valueFixed
 	value
 	flag
 	flagAbbr
@@ -28,10 +28,10 @@ func tokenStr(tokenType int) string {
 		return "argument"
 	case argumentAbbr:
 		return "argumentAbbr"
-	case defaultValue:
-		return "defaultValue"
-	case fixedValue:
-		return "fixedValue"
+	case valueDefault:
+		return "valueDefault"
+	case valueFixed:
+		return "valueFixed"
 	case value:
 		return "value"
 	case flag:
@@ -47,17 +47,17 @@ func tokenStr(tokenType int) string {
 func next(token int) []int {
 	switch token {
 	case command:
-		return []int{argumentAbbr, argument, defaultValue, flagAbbr, flag}
+		return []int{argumentAbbr, argument, valueDefault, flagAbbr, flag}
 	case commandAbbr:
-		return []int{argumentAbbr, argument, defaultValue, flagAbbr, flag}
-	case defaultValue:
-		return []int{defaultValue, argumentAbbr, argument, flagAbbr, flag}
+		return []int{argumentAbbr, argument, valueDefault, flagAbbr, flag}
+	case valueDefault:
+		return []int{valueDefault, argumentAbbr, argument, flagAbbr, flag}
 	case argument:
-		return []int{fixedValue, argumentAbbr, argument, flagAbbr, flag, value}
+		return []int{valueFixed, argumentAbbr, argument, flagAbbr, flag, value}
 	case argumentAbbr:
-		return []int{fixedValue, argumentAbbr, argument, flagAbbr, flag, value}
-	case fixedValue:
-		return []int{fixedValue, argumentAbbr, argument, flagAbbr, flag}
+		return []int{valueFixed, argumentAbbr, argument, flagAbbr, flag, value}
+	case valueFixed:
+		return []int{valueFixed, argumentAbbr, argument, flagAbbr, flag}
 	case value:
 		return []int{argumentAbbr, argument, flagAbbr, flag, value}
 	case flag:
@@ -74,30 +74,70 @@ type context struct {
 	Argument *ArgumentDefinition
 }
 
-func contains(item string, slice []string) bool {
-	if slice == nil {
-		return false
+func matchesArgument(token string, tokenType int, cmd *CommandDefinition, def *Definitions) (bool, error) {
+	if !hasPrefix(token, tokenType) {
+		return false, nil
 	}
-	for _, i := range slice {
-		if i == item {
-			return true
-		}
+	var ad *ArgumentDefinition
+	switch tokenType {
+	case argument:
+		ad = def.ArgByToken(trimPrefix(token, tokenType))
+	case argumentAbbr:
+		ad = def.ArgByAbbr(trimPrefix(token, tokenType))
+	default:
+		return false, errors.New(
+			fmt.Sprintf("type '%v' cannot be used for argument matches", tokenStr(tokenType)))
 	}
-	return false
+
+	if ad == nil {
+		// TODO: test if this need to return error
+		return false, nil
+	}
+	if cmd.ArgSupported(ad.Token) {
+		return true, nil
+	}
+	return false, errors.New(
+		fmt.Sprintf("argument '%v' is not supported by command '%v'", ad.Token, cmd.Token))
+}
+
+func matchesFlag(token string, tokenType int, def *Definitions) (bool, error) {
+	if !hasPrefix(token, tokenType) {
+		return false, nil
+	}
+	switch tokenType {
+	case flag:
+		return def.FlagByToken(trimPrefix(token, tokenType)) != nil, nil
+	case flagAbbr:
+		return def.FlagByAbbr(trimPrefix(token, tokenType)) != nil, nil
+	default:
+		return false, errors.New(
+			fmt.Sprintf("type '%v' cannot be used for flag matches", tokenStr(tokenType)))
+	}
 }
 
 func matchesValue(token string, tokenType int, arg *ArgumentDefinition) (bool, error) {
 	if arg == nil {
 		return false, errors.New("can't confirm a match for a value that is missing an argument context")
 	}
+
+	if tokenType == valueDefault {
+		if !arg.Default {
+			return false, nil
+		}
+		tokenType = value
+		if len(arg.Values) > 0 {
+			tokenType = valueFixed
+		}
+	}
+
 	switch tokenType {
-	case fixedValue:
-		if contains(token, arg.Values) {
+	case valueFixed:
+		if arg.ValueSupported(token) {
 			return true, nil
 		} else {
 			if len(arg.Values) > 0 {
 				// check for sequence break (another argument) before verifying a fixed value
-				if hasDDashPrefix(token) || hasSDashPrefix(token) {
+				if hasAnyPrefix(token) {
 					return false, nil
 				}
 				return false, errors.New(fmt.Sprintf("unsupported value '%v' for an argument '%v'", token, arg.Token))
@@ -122,45 +162,21 @@ func matches(token string, tokenType int, ctx *context, def *Definitions) (bool,
 	case commandAbbr:
 		return def.CommandByAbbr(token) != nil, nil
 	case flag:
-		if !hasDDashPrefix(token) {
-			return false, nil
-		}
-		return def.FlagByToken(trimDDash(token)) != nil, nil
+		fallthrough
 	case flagAbbr:
-		if !hasSDashPrefix(token) {
-			return false, nil
-		}
-		if def.FlagByAbbr(trimSDash(token)) != nil {
-			return true, nil
-		}
-		return false, nil
+		return matchesFlag(token, tokenType, def)
 	case argument:
-		if !hasDDashPrefix(token) {
-			return false, nil
-		}
-		ad := def.ArgByToken(trimDDash(token))
-		if ad == nil {
-			return false, nil
-		}
-		if contains(ad.Token, ctx.Command.Arguments) {
-			return true, nil
-		}
-		return false, errors.New(
-			fmt.Sprintf("argument '%v' is not supported by command '%v'", ad.Token, ctx.Command.Token))
+		fallthrough
 	case argumentAbbr:
-		if !hasSDashPrefix(token) {
+		return matchesArgument(token, tokenType, ctx.Command, def)
+	case valueDefault:
+		if ctx.Command == nil ||
+			ctx.Argument != nil {
 			return false, nil
 		}
-		ad := def.ArgByAbbr(trimSDash(token))
-		if ad == nil {
-			return false, nil
-		}
-		if contains(ad.Token, ctx.Command.Arguments) {
-			return true, nil
-		}
-		return false, errors.New(
-			fmt.Sprintf("argument '%v' is not supported by command '%v'", ad.Token, ctx.Command.Token))
-	case fixedValue:
+		ctx.Argument = def.DefaultArg(ctx.Command)
+		fallthrough
+	case valueFixed:
 		fallthrough
 	case value:
 		return matchesValue(token, tokenType, ctx.Argument)
@@ -170,21 +186,59 @@ func matches(token string, tokenType int, ctx *context, def *Definitions) (bool,
 	}
 }
 
-func hasDDashPrefix(token string) bool {
-	return strings.HasPrefix(token, "--")
+func hasAnyPrefix(token string) bool {
+	return strings.HasPrefix(token, "-") ||
+		strings.HasPrefix(token, "--")
 }
 
-func hasSDashPrefix(token string) bool {
-	return strings.HasPrefix(token, "-") &&
-		!strings.HasPrefix(token, "--")
+func hasPrefix(token string, tokenType int) bool {
+	prefix := ""
+	switch tokenType {
+	case command:
+		fallthrough
+	case commandAbbr:
+		fallthrough
+	case value:
+		fallthrough
+	case valueFixed:
+		fallthrough
+	case valueDefault:
+		return false
+	case flagAbbr:
+		fallthrough
+	case argumentAbbr:
+		prefix = "-"
+	case flag:
+		fallthrough
+	case argument:
+		prefix = "--"
+	}
+	return strings.HasPrefix(token, prefix)
 }
 
-func trimDDash(token string) string {
-	return strings.TrimPrefix(token, "--")
-}
-
-func trimSDash(token string) string {
-	return strings.TrimPrefix(token, "-")
+func trimPrefix(token string, tokenType int) string {
+	prefix := ""
+	switch tokenType {
+	case command:
+		fallthrough
+	case commandAbbr:
+		fallthrough
+	case value:
+		fallthrough
+	case valueFixed:
+		fallthrough
+	case valueDefault:
+		return token
+	case flagAbbr:
+		fallthrough
+	case argumentAbbr:
+		prefix = "-"
+	case flag:
+		fallthrough
+	case argument:
+		prefix = "--"
+	}
+	return strings.TrimPrefix(token, prefix)
 }
 
 func updateRequest(req *Request, expandedToken string, tokenType int, ctx *context) error {
@@ -199,16 +253,21 @@ func updateRequest(req *Request, expandedToken string, tokenType int, ctx *conte
 		req.Command = expandedToken
 		break
 	case flagAbbr:
-		req.Flags = append(req.Flags, trimSDash(expandedToken))
+		req.Flags = append(req.Flags, trimPrefix(expandedToken, tokenType))
 	case flag:
-		req.Flags = append(req.Flags, trimDDash(expandedToken))
+		req.Flags = append(req.Flags, trimPrefix(expandedToken, tokenType))
 	case argument:
-		req.Arguments[trimDDash(expandedToken)] = []string{}
+		fallthrough
 	case argumentAbbr:
-		req.Arguments[trimSDash(expandedToken)] = []string{}
+		arg := trimPrefix(expandedToken, tokenType)
+		if req.Arguments[arg] == nil {
+			req.Arguments[arg] = []string{}
+		}
+	case valueDefault:
+		fallthrough
 	case value:
 		fallthrough
-	case fixedValue:
+	case valueFixed:
 		arg := ctx.Argument.Token
 		req.Arguments[arg] = append(req.Arguments[arg], expandedToken)
 	default:
@@ -218,16 +277,16 @@ func updateRequest(req *Request, expandedToken string, tokenType int, ctx *conte
 	return nil
 }
 
-func updateContext(ctx *context, token string, tokenType int, def *Definitions) {
+func setContext(token string, tokenType int, ctx *context, def *Definitions) {
 	switch tokenType {
 	case command:
 		ctx.Command = def.CommandByToken(token)
 	case commandAbbr:
 		ctx.Command = def.CommandByAbbr(token)
 	case argument:
-		ctx.Argument = def.ArgByToken(trimDDash(token))
+		ctx.Argument = def.ArgByToken(trimPrefix(token, tokenType))
 	case argumentAbbr:
-		ctx.Argument = def.ArgByAbbr(trimSDash(token))
+		ctx.Argument = def.ArgByAbbr(trimPrefix(token, tokenType))
 	}
 }
 
@@ -239,9 +298,9 @@ func expandAbbr(token string, tokenType int, def *Definitions) (string, error) {
 		fallthrough
 	case flag:
 		fallthrough
-	case defaultValue:
+	case valueDefault:
 		fallthrough
-	case fixedValue:
+	case valueFixed:
 		fallthrough
 	case value:
 		return token, nil
@@ -252,13 +311,13 @@ func expandAbbr(token string, tokenType int, def *Definitions) (string, error) {
 		}
 		return cd.Token, nil
 	case argumentAbbr:
-		ad := def.ArgByAbbr(trimSDash(token))
+		ad := def.ArgByAbbr(trimPrefix(token, tokenType))
 		if ad == nil {
 			return "", errors.New(fmt.Sprintf("unknown argument abbreviation: '%v'", token))
 		}
 		return ad.Token, nil
 	case flagAbbr:
-		fd := def.FlagByAbbr(trimSDash(token))
+		fd := def.FlagByAbbr(trimPrefix(token, tokenType))
 		if fd == nil {
 			return "", errors.New(fmt.Sprintf("unknown flag abbreviation: '%v'", token))
 		}
@@ -300,30 +359,30 @@ func (def *Definitions) Parse(args []string) (*Request, error) {
 			continue
 		}
 		arg = strings.ToLower(arg)
-		//fmt.Println("arg:", arg)
+		fmt.Println("----- arg:", arg)
 		matched := false
 		for _, tt := range expected {
-			//fmt.Println("tt:", tokenStr(tt))
+			fmt.Println("tt:", tokenStr(tt))
 			match, err := matches(arg, tt, &ctx, def)
 			if err != nil {
 				return &req, err
 			}
 			if match {
 				matched = true
-				//fmt.Println("match")
-				expandedToken, err := expandAbbr(arg, tt, def)
+				fmt.Println("match")
+				expandedArg, err := expandAbbr(arg, tt, def)
 				if err != nil {
 					return nil, err
 				}
-				err = updateRequest(&req, expandedToken, tt, &ctx)
+				err = updateRequest(&req, expandedArg, tt, &ctx)
 				if err != nil {
 					return nil, err
 				}
-				updateContext(&ctx, arg, tt, def)
+				setContext(arg, tt, &ctx, def)
 				expected = next(tt)
 				break
 			}
-			//fmt.Println("no match")
+			fmt.Println("no match")
 		}
 		if !matched {
 			return nil, errors.New(fmt.Sprintf("unknown argument: '%v'", arg))

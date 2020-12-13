@@ -14,6 +14,15 @@ type CommandDefinition struct {
 	Examples  []ExampleDefinition `json:"examples,omitempty"`
 }
 
+func (cmd *CommandDefinition) ArgSupported(arg string) bool {
+	for _, a := range cmd.Arguments {
+		if a == arg {
+			return true
+		}
+	}
+	return false
+}
+
 func (ex *ExampleDefinition) Print() {
 	fmt.Printf("Arguments:%v\nValues:%v\nDesc:%v\n",
 		ex.Arguments, ex.Values, ex.Desc)
