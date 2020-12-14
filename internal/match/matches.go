@@ -70,7 +70,7 @@ func matchesFlag(token string, tokenType int, def *defs.Definitions) (bool, erro
 func matchesDefaultValue(token string, tokenType int, ctx *parsectx.Context, def *defs.Definitions) (bool, error) {
 
 	if ctx.Command == nil ||
-		ctx.Argument != nil {
+		(ctx.Argument != nil && !ctx.Argument.Default) {
 		return false, nil
 	}
 	defArg := def.DefaultArg(ctx.Command)
