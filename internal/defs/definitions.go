@@ -129,3 +129,27 @@ func (def *Definitions) DefaultArg(cmd *CommandDefinition) *ArgumentDefinition {
 	}
 	return nil
 }
+
+func (def *Definitions) RequiredArgs(cmd string) []string {
+	required := make([]string, 0)
+
+	command := def.CommandByToken(cmd)
+	if command == nil {
+		return required
+	}
+
+	for _, at := range command.Arguments {
+		if at == "" {
+			continue
+		}
+		arg := def.ArgByToken(at)
+		if arg == nil {
+			continue
+		}
+		if arg.Required {
+			required = append(required, arg.Token)
+		}
+	}
+
+	return required
+}
