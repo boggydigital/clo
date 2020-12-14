@@ -11,10 +11,8 @@ import (
 
 func main() {
 
-	// TODO: bug: while the arg is lower case - the original definition is used as is
-
 	filename := "definitions.json"
-	args := []string{"dl", "products", "images", "--id", "1", "2", "3", "--media", "game", "movie", "--help", "-v"}
+	args := []string{"dl", "products", "images", "accountProducts", "--id", "1", "2", "3", "--media", "game", "movie", "--help", "-v"}
 
 	bytes, err := ioutil.ReadFile(filename)
 	if err != nil {

@@ -10,7 +10,6 @@ import (
 	"github.com/boggydigital/clove/internal/strutil"
 	"github.com/boggydigital/clove/internal/tokens"
 	"github.com/boggydigital/clove/internal/verify"
-	"strings"
 )
 
 // Parse converts args to a structured Request or returns an error if there are unexpected values,
@@ -31,7 +30,7 @@ func Parse(args []string, def *defs.Definitions) (*request.Request, error) {
 		if arg == "" {
 			continue
 		}
-		arg = strings.ToLower(arg)
+		//arg = strings.ToLower(arg)
 		matched := false
 		for _, tt := range expected {
 			success, err := match.Matches(arg, tt, &ctx, def)
