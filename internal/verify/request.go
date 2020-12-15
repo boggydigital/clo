@@ -3,11 +3,11 @@ package verify
 import (
 	"errors"
 	"fmt"
+	"github.com/boggydigital/clove/internal/clireq"
 	"github.com/boggydigital/clove/internal/defs"
-	"github.com/boggydigital/clove/internal/request"
 )
 
-func CommandHasRequiredArgs(req *request.Request, def *defs.Definitions) error {
+func commandHasRequiredArgs(req *clireq.Request, def *defs.Definitions) error {
 	if def == nil {
 		return errors.New("cannot verify required argument using nil definitions")
 	}
@@ -32,7 +32,7 @@ func CommandHasRequiredArgs(req *request.Request, def *defs.Definitions) error {
 	return nil
 }
 
-func ArgumentsMultipleValues(req *request.Request, def *defs.Definitions) error {
+func argumentsMultipleValues(req *clireq.Request, def *defs.Definitions) error {
 	if def == nil {
 		return errors.New("cannot verify required argument using nil definitions")
 	}
@@ -57,12 +57,12 @@ func ArgumentsMultipleValues(req *request.Request, def *defs.Definitions) error 
 	return nil
 }
 
-func Constraints(req *request.Request, def *defs.Definitions) error {
-	err := CommandHasRequiredArgs(req, def)
+func Request(req *clireq.Request, def *defs.Definitions) error {
+	err := commandHasRequiredArgs(req, def)
 	if err != nil {
 		return err
 	}
-	err = ArgumentsMultipleValues(req, def)
+	err = argumentsMultipleValues(req, def)
 	if err != nil {
 		return err
 	}

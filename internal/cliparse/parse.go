@@ -1,12 +1,12 @@
-package parse
+package cliparse
 
 import (
 	"errors"
 	"fmt"
+	"github.com/boggydigital/clove/internal/clireq"
 	"github.com/boggydigital/clove/internal/defs"
 	"github.com/boggydigital/clove/internal/match"
 	"github.com/boggydigital/clove/internal/parsectx"
-	"github.com/boggydigital/clove/internal/request"
 	"github.com/boggydigital/clove/internal/strutil"
 	"github.com/boggydigital/clove/internal/tokens"
 	"github.com/boggydigital/clove/internal/verify"
@@ -15,9 +15,9 @@ import (
 // Parse converts args to a structured Request or returns an error if there are unexpected values,
 // order or if any of the defined constraints are not met: fixed values, required,
 // multiple values, etc.
-func Parse(args []string, def *defs.Definitions) (*request.Request, error) {
+func Parse(args []string, def *defs.Definitions) (*clireq.Request, error) {
 
-	var req = request.Request{
+	var req = clireq.Request{
 		Flags:     []string{},
 		Command:   "",
 		Arguments: make(map[string][]string),
@@ -43,7 +43,7 @@ func Parse(args []string, def *defs.Definitions) (*request.Request, error) {
 				if err != nil {
 					return nil, err
 				}
-				err = request.Update(&req, expandedArg, tt, &ctx)
+				err = clireq.Update(&req, expandedArg, tt, &ctx)
 				if err != nil {
 					return nil, err
 				}
@@ -57,7 +57,7 @@ func Parse(args []string, def *defs.Definitions) (*request.Request, error) {
 		}
 	}
 
-	err := verify.Constraints(&req, def)
+	err := verify.Request(&req, def)
 	if err != nil {
 		return &req, err
 	}
