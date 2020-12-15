@@ -9,6 +9,8 @@ import (
 
 func main() {
 
+	//cmd.Run(os.Args[1:])
+
 	args := os.Args[1:]
 	if len(args) == 0 {
 		args = []string{"dl", "products", "images", "accountProducts", "--id", "1", "2", "3", "--media", "game", "movie", "--help", "-v"}

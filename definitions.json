@@ -12,72 +12,37 @@
       "abbr": "v",
       "hint": "show more info when available",
       "desc": "show additional information, like examples where available"
-    },
-    {
-      "token": "debug",
-      "abbr": "d",
-      "hint": "show debug information",
-      "desc": "print extended debug information to the stderr"
     }
   ],
   "commands": [
     {
-      "token": "download",
-      "abbr": "dl",
-      "hint": "download files and data",
-      "desc": "download files and data from remote server and store locally",
-      "arguments": [
-        "type",
-        "media",
-        "id"
-      ]
+      "token": "verify",
+      "abbr": "vrf",
+      "hint": "verify provided file",
+      "desc": "verify that provided file meets expected constraints",
+      "arguments": ["path"]
     },
     {
-      "token": "validate",
-      "abbr": "vl",
-      "hint": "validate local files and data",
-      "desc": "validate local files and data using checksums",
-      "arguments": [
-        "type",
-        "media",
-        "id"
-      ]
+      "token": "embed",
+      "abbr": "em",
+      "hint": "generate code equal to the definition",
+      "desc": "generate code equal to the definition, that can be embedded into the project",
+      "arguments": ["path"]
+    },
+    {
+      "token": "boilerplate",
+      "abbr": "bp",
+      "hint": "generate common code to consume commands",
+      "desc": "generate common code to consume commands and provide entry points to handle arguments"
     }
   ],
   "arguments": [
     {
-      "token": "type",
-      "abbr": "t",
-      "hint": "data type",
+      "token": "path",
+      "abbr": "p",
+      "hint": "path to the file",
       "default": true,
-      "multiple": true,
-      "required": true,
-      "values": [
-        "products",
-        "accountProducts",
-        "gameDetails",
-        "productFiles",
-        "images",
-        "screenshots"
-      ]
-    },
-    {
-      "token": "media",
-      "abbr": "m",
-      "hint": "media type",
-      "default": false,
-      "multiple": true,
-      "required": false,
-      "values": [
-        "game",
-        "movie"
-      ]
-    },
-    {
-      "token": "id",
-      "hint": "product id",
-      "multiple": true,
-      "required": false
-    }
-  ]
+      "multiple": false,
+      "required": true
+    }]
 }
