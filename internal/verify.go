@@ -1,13 +1,11 @@
-package verify
+package internal
 
 import (
 	"errors"
 	"fmt"
-	"github.com/boggydigital/clove/internal/clireq"
-	"github.com/boggydigital/clove/internal/defs"
 )
 
-func commandHasRequiredArgs(req *clireq.Request, def *defs.Definitions) error {
+func commandHasRequiredArgs(req *Request, def *Definitions) error {
 	if def == nil {
 		return errors.New("cannot verify required argument using nil definitions")
 	}
@@ -25,14 +23,13 @@ func commandHasRequiredArgs(req *clireq.Request, def *defs.Definitions) error {
 			}
 		}
 		if !matched {
-			return errors.New(
-				fmt.Sprintf("required argument '%v' is missing for the command '%v'", ra, req.Command))
+			return fmt.Errorf("required argument '%v' is missing for the command '%v'", ra, req.Command)
 		}
 	}
 	return nil
 }
 
-func argumentsMultipleValues(req *clireq.Request, def *defs.Definitions) error {
+func argumentsMultipleValues(req *Request, def *Definitions) error {
 	if def == nil {
 		return errors.New("cannot verify required argument using nil definitions")
 	}
@@ -49,15 +46,14 @@ func argumentsMultipleValues(req *clireq.Request, def *defs.Definitions) error {
 			continue
 		}
 		if !arg.Multiple && len(avs) > 1 {
-			return errors.New(
-				fmt.Sprintf("argument '%v' has multiple values, supports no more than one", at))
+			return fmt.Errorf("argument '%v' has multiple values, supports no more than one", at)
 		}
 	}
 
 	return nil
 }
 
-func Request(req *clireq.Request, def *defs.Definitions) error {
+func (req *Request) verify(def *Definitions) error {
 	err := commandHasRequiredArgs(req, def)
 	if err != nil {
 		return err

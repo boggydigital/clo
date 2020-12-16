@@ -10,21 +10,26 @@ func main() {
 	args := os.Args[1:]
 	if len(args) == 0 {
 		// TODO: Results in error: argument 'path' has multiple values, supports no more than one
-		args = []string{"verify", "-path", "test.json"}
+		args = []string{"verify", "--path", "test.json"}
 	}
 
-	dfs, err := clove.LoadDefs("./definitions.json")
+	req, err := clove.Parse(args)
 	if err != nil {
 		fmt.Println("error:", err.Error())
 		os.Exit(1)
 	}
 
-	req, err := clove.Parse(args, dfs)
-	if err != nil {
-		fmt.Println("error:", err.Error())
-		os.Exit(1)
+	if len(req.Flags) > 0 {
+		fmt.Println("flags:")
+		for _, f := range req.Flags {
+			fmt.Println("-", f)
+		}
 	}
-
-	fmt.Println("----------")
-	req.Print()
+	fmt.Println("command:", req.Command)
+	if len(req.Arguments) > 0 {
+		fmt.Println("arguments:")
+		for a, v := range req.Arguments {
+			fmt.Println("-", a, v)
+		}
+	}
 }

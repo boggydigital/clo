@@ -1,15 +1,13 @@
-package env
+package internal
 
 import (
 	"fmt"
-	"github.com/boggydigital/clove/internal/clireq"
-	"github.com/boggydigital/clove/internal/defs"
 	"os"
 	"strings"
 )
 
-// EnvArgs reads arguments values from the environmental variables
-func EnvArgs(req *clireq.Request, def *defs.Definitions) error {
+// readEnvArgs reads arguments values from the environmental variables
+func (req *Request) readEnvArgs(def *Definitions) error {
 	if req == nil {
 		return fmt.Errorf("cannot fill args from env for a nil request")
 	}

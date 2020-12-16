@@ -1,4 +1,4 @@
-package defs
+package internal
 
 type ValueDefinition struct {
 	CommonDefinition

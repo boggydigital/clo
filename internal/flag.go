@@ -1,4 +1,4 @@
-package defs
+package internal
 
 type FlagDefinition struct {
 	CommonDefinition

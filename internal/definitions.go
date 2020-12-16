@@ -1,4 +1,4 @@
-package defs
+package internal
 
 import (
 	"fmt"
@@ -55,14 +55,6 @@ func (def *Definitions) FlagByAbbr(abbr string) *FlagDefinition {
 	return nil
 }
 
-//func (def *Definitions) FlagByToA(tokenOrAbbr string) *FlagDefinition{
-//	fd := def.FlagByToken(tokenOrAbbr)
-//	if fd == nil {
-//		return def.FlagByAbbr(tokenOrAbbr)
-//	}
-//	return fd
-//}
-
 func (def *Definitions) CommandByToken(token string) *CommandDefinition {
 	for _, c := range def.Commands {
 		if c.Token == token {
@@ -81,14 +73,6 @@ func (def *Definitions) CommandByAbbr(abbr string) *CommandDefinition {
 	return nil
 }
 
-//func (def *Definitions) CommandByToA(tokenOrAbbr string) *CommandDefinition {
-//	cd := def.CommandByToken(tokenOrAbbr)
-//	if cd == nil {
-//		return def.CommandByAbbr(tokenOrAbbr)
-//	}
-//	return cd
-//}
-
 func (def *Definitions) ArgByToken(token string) *ArgumentDefinition {
 	for _, a := range def.Arguments {
 		if a.Token == token {
@@ -106,14 +90,6 @@ func (def *Definitions) ArgByAbbr(abbr string) *ArgumentDefinition {
 	}
 	return nil
 }
-
-//func (def *Definitions) ArgByToA(tokenOrAbbr string) *ArgumentDefinition {
-//	ad := def.ArgByToken(tokenOrAbbr)
-//	if ad == nil {
-//		return def.ArgByAbbr(tokenOrAbbr)
-//	}
-//	return ad
-//}
 
 func (def *Definitions) DefaultArg(cmd *CommandDefinition) *ArgumentDefinition {
 	if cmd == nil {
