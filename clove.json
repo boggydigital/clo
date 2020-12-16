@@ -1,5 +1,6 @@
 {
   "version": 1,
+  "env-prefix": "CLV",
   "flags": [
     {
       "token": "help",
@@ -17,23 +18,10 @@
   "commands": [
     {
       "token": "verify",
-      "abbr": "vrf",
+      "abbr": "vf",
       "hint": "verify provided file",
       "desc": "verify that provided file meets expected constraints",
       "arguments": ["path"]
-    },
-    {
-      "token": "embed",
-      "abbr": "em",
-      "hint": "generate code equal to the definition",
-      "desc": "generate code equal to the definition, that can be embedded into the project",
-      "arguments": ["path"]
-    },
-    {
-      "token": "boilerplate",
-      "abbr": "bp",
-      "hint": "generate common code to consume commands",
-      "desc": "generate common code to consume commands and provide entry points to handle arguments"
     }
   ],
   "arguments": [

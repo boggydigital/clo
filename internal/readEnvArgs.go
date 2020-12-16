@@ -33,9 +33,9 @@ func (req *Request) readEnvArgs(def *Definitions) error {
 		envVal := os.Getenv(envKey)
 
 		// only add value from environmental variable if it's the only value
-		if (req.Arguments[arg.Token] == nil ||
-			len(req.Arguments[arg.Token]) == 0) &&
-			envVal != "" {
+		if envVal != "" &&
+			(req.Arguments[arg.Token] == nil ||
+				len(req.Arguments[arg.Token]) == 0) {
 			req.Arguments[arg.Token] = append(req.Arguments[arg.Token], envVal)
 		}
 	}
