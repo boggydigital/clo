@@ -9,7 +9,7 @@ import (
 func main() {
 	args := os.Args[1:]
 	if len(args) == 0 {
-		args = []string{"verify", "--p", "test.json"}
+		args = []string{"embed"}
 	}
 
 	req, err := clove.Parse(args)

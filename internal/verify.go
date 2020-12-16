@@ -16,8 +16,11 @@ func commandHasRequiredArgs(req *Request, def *Definitions) error {
 	requiredArgs := def.RequiredArgs(req.Command)
 	for _, ra := range requiredArgs {
 		matched := false
-		for at, _ := range req.Arguments {
+		for at, avs := range req.Arguments {
 			if ra == at {
+				if len(avs) == 0 {
+					return fmt.Errorf("required argument '%v' is missing values", ra)
+				}
 				matched = true
 				break
 			}

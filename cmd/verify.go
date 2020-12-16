@@ -1,5 +1,5 @@
 package cmd
 
-func Parse() {
+func Verify() {
 
 }
