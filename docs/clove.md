@@ -12,6 +12,11 @@ App that uses clove would support the following calling convention:
 
 Clove operates on an array of strings (args) that excludes application executable name.
 
+Global properties:
+
+- Version - version of the definitions file format (1 is the latest right now)
+- Env-Prefix - Add this prefix to all environment variables tokens.
+
 All entries have the same base schema and potentially extensions defined in the relevant section:
 
 - Token - a single word that is mapped to this flag (`verbose`).
@@ -52,6 +57,7 @@ Arguments are parameters that commands might need for operation. Examples: `<url
 
 All arguments are considered to be binary (presence of the argument is `true` and absence is `false`), unless they have Values specified or 
 
+- Env - read the value from environment variable if not specified in the command-line (CLI values are more specific and would take priority). Env key is a combination of ENV-PREFIX(when present)_COMMAND_ARGUMENT. For `env-prefix="CLV"`, `command="verify"` and `argument="path"` environment variable would be `CLV_VERIFY_PATH`.
 - Default - denotes a default argument that doesn't require a token. Default argument values are the first arguments for a command. That doesn't mean that the first argument specified automatically becomes default! Default argument can be specified in any position in the arguments list and there can only be one default argument for a command.
 - Multiple - specifies whether argument can be used multiple times. Unless this is explicitly set to `true`, argument (and it's value if applicable) is only expected once. If set to `true`, this argument can be present several times, or if argument supports values (fixed or variable) - argument token can be specified once and multiple values can be provided (fixed or variable).
 - Required - denotes a required argument that always must be present for a command.

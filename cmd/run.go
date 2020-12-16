@@ -1,5 +1,5 @@
 package cmd
 
-func Run(args []string) {
+func Parse() {
 
 }

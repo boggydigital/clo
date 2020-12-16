@@ -4,6 +4,7 @@ import "fmt"
 
 type ArgumentDefinition struct {
 	CommonDefinition
+	Env      bool     `json:"env,omitempty"`
 	Default  bool     `json:"default,omitempty"`
 	Multiple bool     `json:"multiple,omitempty"`
 	Required bool     `json:"required,omitempty"`

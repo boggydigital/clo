@@ -65,18 +65,6 @@ func TrimPrefix(token string, tokenType int) string {
 
 func ExpandAbbr(token string, tokenType int, def *defs.Definitions) (string, error) {
 	switch tokenType {
-	case tokens.Command:
-		fallthrough
-	case tokens.Argument:
-		fallthrough
-	case tokens.Flag:
-		fallthrough
-	case tokens.ValueDefault:
-		fallthrough
-	case tokens.ValueFixed:
-		fallthrough
-	case tokens.Value:
-		return token, nil
 	case tokens.CommandAbbr:
 		cd := def.CommandByAbbr(token)
 		if cd == nil {
@@ -96,7 +84,6 @@ func ExpandAbbr(token string, tokenType int, def *defs.Definitions) (string, err
 		}
 		return fd.Token, nil
 	default:
-		return "", errors.New(
-			fmt.Sprintf("cannot expand token '%v' of unknown type '%v'", token, tokens.String(tokenType)))
+		return token, nil
 	}
 }

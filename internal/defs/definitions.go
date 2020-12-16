@@ -6,6 +6,7 @@ import (
 
 type Definitions struct {
 	Version   int                  `json:"version"`
+	EnvPrefix string               `json:"env-prefix"`
 	Flags     []FlagDefinition     `json:"flags,omitempty"`
 	Commands  []CommandDefinition  `json:"commands,omitempty"`
 	Arguments []ArgumentDefinition `json:"arguments,omitempty"`

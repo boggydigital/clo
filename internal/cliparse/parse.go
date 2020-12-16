@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/boggydigital/clove/internal/clireq"
 	"github.com/boggydigital/clove/internal/defs"
+	"github.com/boggydigital/clove/internal/env"
 	"github.com/boggydigital/clove/internal/match"
 	"github.com/boggydigital/clove/internal/parsectx"
 	"github.com/boggydigital/clove/internal/strutil"
@@ -57,7 +58,12 @@ func Parse(args []string, def *defs.Definitions) (*clireq.Request, error) {
 		}
 	}
 
-	err := verify.Request(&req, def)
+	err := env.EnvArgs(&req, def)
+	if err != nil {
+		return &req, err
+	}
+
+	err = verify.Request(&req, def)
 	if err != nil {
 		return &req, err
 	}

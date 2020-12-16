@@ -41,6 +41,7 @@
       "token": "path",
       "abbr": "p",
       "hint": "path to the file",
+      "env": true,
       "default": true,
       "multiple": false,
       "required": true

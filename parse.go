@@ -1,4 +1,4 @@
-package cliargs
+package clove
 
 import (
 	"github.com/boggydigital/clove/internal/cliparse"
