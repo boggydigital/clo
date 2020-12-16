@@ -23,13 +23,13 @@ func (req *Request) update(expandedToken string, tokenType int, ctx *parseCtx) e
 		req.Command = expandedToken
 		break
 	case flagAbbr:
-		req.Flags = append(req.Flags, trimPrefix(expandedToken, tokenType))
+		req.Flags = append(req.Flags, trimPrefix(expandedToken))
 	case flag:
-		req.Flags = append(req.Flags, trimPrefix(expandedToken, tokenType))
+		req.Flags = append(req.Flags, trimPrefix(expandedToken))
 	case argument:
 		fallthrough
 	case argumentAbbr:
-		arg := trimPrefix(expandedToken, tokenType)
+		arg := trimPrefix(expandedToken)
 		if req.Arguments[arg] == nil {
 			req.Arguments[arg] = []string{}
 		}

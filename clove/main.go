@@ -9,8 +9,7 @@ import (
 func main() {
 	args := os.Args[1:]
 	if len(args) == 0 {
-		// TODO: Results in error: argument 'path' has multiple values, supports no more than one
-		args = []string{"verify", "--path", "test.json"}
+		args = []string{"verify", "--p", "test.json"}
 	}
 
 	req, err := clove.Parse(args)

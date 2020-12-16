@@ -88,13 +88,13 @@ func expandAbbr(token string, tokenType int, def *Definitions) (string, error) {
 		}
 		return cd.Token, nil
 	case argumentAbbr:
-		ad := def.ArgByAbbr(trimPrefix(token, tokenType))
+		ad := def.ArgByAbbr(trimPrefix(token))
 		if ad == nil {
 			return "", fmt.Errorf("unknown argument abbreviation: '%v'", token)
 		}
 		return ad.Token, nil
 	case flagAbbr:
-		fd := def.FlagByAbbr(trimPrefix(token, tokenType))
+		fd := def.FlagByAbbr(trimPrefix(token))
 		if fd == nil {
 			return "", fmt.Errorf("unknown flag abbreviation: '%v'", token)
 		}

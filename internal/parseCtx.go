@@ -15,8 +15,8 @@ func (ctx *parseCtx) update(token string, tokenType int, def *Definitions) {
 	case commandAbbr:
 		ctx.Command = def.CommandByAbbr(token)
 	case argument:
-		ctx.Argument = def.ArgByToken(trimPrefix(token, tokenType))
+		ctx.Argument = def.ArgByToken(trimPrefix(token))
 	case argumentAbbr:
-		ctx.Argument = def.ArgByAbbr(trimPrefix(token, tokenType))
+		ctx.Argument = def.ArgByAbbr(trimPrefix(token))
 	}
 }

@@ -10,7 +10,7 @@ import (
 func matchArgument(token string, tokenType int, cmdCtx *CommandDefinition, def *Definitions) (bool, error) {
 	// argument is expected to be prefixed with a single or double dash, if it's not -
 	// there is no reason to perform further match checks
-	if !hasExpectedPrefix(token, tokenType) {
+	if !hasPrefix(token) {
 		return false, nil
 	}
 
@@ -19,9 +19,9 @@ func matchArgument(token string, tokenType int, cmdCtx *CommandDefinition, def *
 	var ad *ArgumentDefinition
 	switch tokenType {
 	case argument:
-		ad = def.ArgByToken(trimPrefix(token, tokenType))
+		ad = def.ArgByToken(trimPrefix(token))
 	case argumentAbbr:
-		ad = def.ArgByAbbr(trimPrefix(token, tokenType))
+		ad = def.ArgByAbbr(trimPrefix(token))
 	default:
 		return false, fmt.Errorf("type '%v' cannot be used for argument matches", tokenString(tokenType))
 	}
@@ -45,16 +45,16 @@ func matchArgument(token string, tokenType int, cmdCtx *CommandDefinition, def *
 func matchFlag(token string, tokenType int, def *Definitions) (bool, error) {
 	// flag is expected to be prefixed with a single or double dash, if it's not -
 	// there is no reason to perform further match checks
-	if !hasExpectedPrefix(token, tokenType) {
+	if !hasPrefix(token) {
 		return false, nil
 	}
 
 	// check if flag matches a token or abbreviation
 	switch tokenType {
 	case flag:
-		return def.FlagByToken(trimPrefix(token, tokenType)) != nil, nil
+		return def.FlagByToken(trimPrefix(token)) != nil, nil
 	case flagAbbr:
-		return def.FlagByAbbr(trimPrefix(token, tokenType)) != nil, nil
+		return def.FlagByAbbr(trimPrefix(token)) != nil, nil
 	default:
 		return false, fmt.Errorf("type '%v' cannot be used for flag matches", tokenString(tokenType))
 	}
@@ -82,6 +82,10 @@ func matchValue(token string, tokenType int, arg *ArgumentDefinition) (bool, err
 		return false, errors.New("can't confirm a match for a value that is missing an argument context")
 	}
 
+	if hasPrefix(token) {
+		return false, nil
+	}
+
 	if tokenType == valueDefault {
 		if !arg.Default {
 			return false, nil
@@ -99,7 +103,7 @@ func matchValue(token string, tokenType int, arg *ArgumentDefinition) (bool, err
 		} else {
 			if len(arg.Values) > 0 {
 				// check for sequence break (another argument) before verifying a fixed value
-				if hasAnyPrefix(token) {
+				if hasPrefix(token) {
 					return false, nil
 				}
 				return false, fmt.Errorf("unsupported value '%v' for an argument '%v'", token, arg.Token)

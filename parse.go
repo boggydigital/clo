@@ -11,6 +11,9 @@ type Request struct {
 }
 
 func requestFromInternal(request *internal.Request) *Request {
+	if request == nil {
+		return nil
+	}
 	var req Request
 	req.Request = *request
 	return &req
