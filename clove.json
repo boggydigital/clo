@@ -1,6 +1,8 @@
 {
   "version": 1,
   "env-prefix": "CLV",
+  "hint": "declarative CLI parameters",
+  "desc": "declarative CLI commands, arguments and flags that can be verified to avoid common errors",
   "flags": [
     {
       "token": "help",
@@ -19,9 +21,16 @@
     {
       "token": "verify",
       "abbr": "vf",
-      "hint": "verify provided file",
-      "desc": "verify that provided file meets expected constraints",
-      "arguments": ["path"]
+      "hint": "verify provided file for common errors",
+      "desc": "verify that provided file meets expected constraints and avoids common errors",
+      "arguments": ["path"],
+      "examples": [
+        {
+          "arguments": ["path"],
+          "values": ["./clove.json"],
+          "desc": "verify ./clove.json file for common errors and display a result"
+        }
+      ]
     }
   ],
   "arguments": [

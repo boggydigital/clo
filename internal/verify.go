@@ -280,5 +280,10 @@ func (def *Definitions) Verify(v bool) []error {
 	errors = appendError(errors, differentArgsCmd(def, v))
 	errors = appendError(errors, differentArgValues(def, v))
 
+	// examples
+	// TODO: verify examples:
+	// - have arguments that are not empty
+	// - values match non-flag arguments
+
 	return errors
 }

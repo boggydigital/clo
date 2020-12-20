@@ -9,6 +9,8 @@ import (
 // multiple values, etc.
 func (def *Definitions) Parse(args []string) (*Request, error) {
 
+	// TODO: consider adding built-in help command if one has not been provided
+
 	var req = Request{
 		Flags:     []string{},
 		Command:   "",

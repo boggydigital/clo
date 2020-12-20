@@ -1,6 +1,7 @@
-# Clove (Command line ♥️)
+Clove (Command line ♥️)
+=======================
 
-Clove is a Golang module to build declarative description of a CLI application flags, commands and arguments, that can use variable values or fixed set of values. Clove than parses user provided application CLI parameters and returns a structured `Request`. Clove takes care of basic commands like `help` and `version` and makes sure the definitions you provide are not conflicting with each other (e.g. no two commands have the same abbreviation).
+Clove is a Golang module to build declarative description of a CLI application flags, commands and arguments. Clove parses user provided application CLI parameters and returns a structured `Request`. Clove takes care of basic commands like `help` and `version` and makes sure the definitions you provide are not conflicting with each other (e.g. no two commands have the same abbreviation).
 
 # Using clove in your app
 
@@ -29,6 +30,8 @@ Clove definitions file has additional properties that can be specified:
 
 - `version` - (number) version of the definitions file format (1 is the latest right now)
 - `env-prefix` - (string, optional) this prefix will be added to environment variables keys.
+- `hint` - short application description
+- `desc` - verbose application description
 
 ## Working with commands
 
@@ -37,10 +40,10 @@ Top level commands that allow users to control the application. Examples: `verif
 ### Commands schema extensions
 
 - `arguments` - (optional) all argument tokens that apply to this command.
-- `example`: (optional)
-    - `argument` - argument used in this example (should be one of the tokens in the Arguments).
-    - `value` - (optional) argument value we're using in the example.
-    - `description`
+- `examples`: (optional)
+    - `arguments` - arguments used in this example (should be one of the tokens in the Arguments).
+    - `values` - (optional) argument values we're using in the example. Number of values should match number of non-flag arguments and match fixed values constraint.
+    - `description` - (optional) description of this example
 
 ## Working with arguments
 
