@@ -118,3 +118,24 @@ func (req *Request) verify(def *Definitions) error {
 	}
 	return nil
 }
+
+func (req *Request) GetFlag(key string) bool {
+	for _, f := range req.Flags {
+		if f == key {
+			return true
+		}
+	}
+	return false
+}
+
+func (req *Request) GetValue(key string) string {
+	vs := req.Arguments[key]
+	if len(vs) > 0 {
+		return vs[0]
+	}
+	return ""
+}
+
+func (req *Request) GetValues(key string) []string {
+	return req.Arguments[key]
+}

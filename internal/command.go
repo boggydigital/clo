@@ -1,7 +1,5 @@
 package internal
 
-import "fmt"
-
 type ExampleDefinition struct {
 	Arguments []string `json:"arguments"`
 	Values    []string `json:"values"`
@@ -21,17 +19,4 @@ func (cmd *CommandDefinition) ArgSupported(arg string) bool {
 		}
 	}
 	return false
-}
-
-func (ex *ExampleDefinition) Print() {
-	fmt.Printf("Arguments:%v\nValues:%v\nDesc:%v\n",
-		ex.Arguments, ex.Values, ex.Desc)
-}
-
-func (cmd *CommandDefinition) Print() {
-	cmd.CommonDefinition.Print()
-	fmt.Printf("Arguments:%v\n", cmd.Arguments)
-	for _, ex := range cmd.Examples {
-		ex.Print()
-	}
 }

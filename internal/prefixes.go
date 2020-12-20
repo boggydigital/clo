@@ -5,16 +5,17 @@ import (
 )
 
 func hasPrefix(token string) bool {
-	return strings.HasPrefix(token, "-") ||
-		strings.HasPrefix(token, "--")
+	// not testing for strings.HasPrefix(token, "--"), since it'll match this case as well
+	return strings.HasPrefix(token, "-")
+
 }
 
 func trimPrefix(token string) string {
+	pfx := ""
 	if strings.HasPrefix(token, "--") {
-		return strings.TrimPrefix(token, "--")
+		pfx = "--"
 	} else if strings.HasPrefix(token, "-") {
-		return strings.TrimPrefix(token, "-")
-	} else {
-		return token
+		pfx = "-"
 	}
+	return strings.TrimPrefix(token, pfx)
 }

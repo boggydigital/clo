@@ -1,7 +1,5 @@
 package internal
 
-import "fmt"
-
 type ArgumentDefinition struct {
 	CommonDefinition
 	Env      bool     `json:"env,omitempty"`
@@ -18,10 +16,4 @@ func (arg *ArgumentDefinition) ValueSupported(val string) bool {
 		}
 	}
 	return false
-}
-
-func (arg *ArgumentDefinition) Print() {
-	arg.CommonDefinition.Print()
-	fmt.Printf("Default:%v\nMultiple:%v\nRequired:%v\nValues:%v\n",
-		arg.Default, arg.Multiple, arg.Required, arg.Values)
 }

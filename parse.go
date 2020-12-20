@@ -34,6 +34,22 @@ func embeddedDefs() *Definitions {
 	return nil
 }
 
+func load(path string) (*Definitions, error) {
+	var dfs *Definitions
+
+	bytes, err := ioutil.ReadFile(path)
+	if err != nil {
+		return dfs, err
+	}
+
+	err = json.Unmarshal(bytes, &dfs)
+	if err != nil {
+		return dfs, err
+	}
+
+	return dfs, nil
+}
+
 func LoadDefs(path string) (*Definitions, error) {
 
 	dfs := embeddedDefs()
@@ -41,22 +57,17 @@ func LoadDefs(path string) (*Definitions, error) {
 		return dfs, nil
 	}
 
-	defFilename := "clove.json"
+	if path != "" {
+		return load(path)
+	}
 
+	defFilename := "clove.json"
 	for _, p := range lookupPaths() {
 		path := filepath.Join(p, defFilename)
 
-		bytes, err := ioutil.ReadFile(path)
-		if err != nil {
+		if dfs, err := load(path); dfs != nil && err == nil {
 			return dfs, err
 		}
-
-		err = json.Unmarshal(bytes, &dfs)
-		if err != nil {
-			return dfs, err
-		}
-
-		return dfs, nil
 	}
 
 	return nil, nil

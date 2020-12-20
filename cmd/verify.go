@@ -5,24 +5,23 @@ import (
 	"github.com/boggydigital/clove"
 )
 
-func Verify(args map[string][]string, flags []string) error {
+func Verify(filepath string, verbose bool) error {
 
-	file := args["path"][0]
-	defs, err := clove.LoadDefs(file)
+	defs, err := clove.LoadDefs(filepath)
 	if err != nil {
 		return err
 	}
 
 	errors := defs.Verify()
 	if len(errors) > 0 {
-		fmt.Printf("Following errors were found in %s:\n", file)
+		fmt.Printf("Following errors were found in %s:\n", filepath)
 		for _, err := range errors {
 			fmt.Println("-", err.Error())
 		}
 	}
 
 	if len(errors) == 0 {
-		fmt.Printf("%s has been verified, no errors found\n", file)
+		fmt.Printf("%s has been verified, no errors found\n", filepath)
 	}
 
 	return nil

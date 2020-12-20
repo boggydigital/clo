@@ -1,5 +1,5 @@
 package cmd
 
-func Help() {
-
+func Help(cmd string, verbose bool) error {
+	return nil
 }
