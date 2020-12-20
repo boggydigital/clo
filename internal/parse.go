@@ -11,7 +11,11 @@ func (def *Definitions) Parse(args []string) (*Request, error) {
 
 	// TODO: consider adding built-in help command if one has not been provided
 
-	var req = Request{
+	if err := def.expandRefValues(); err != nil {
+		return nil, err
+	}
+
+	var req = &Request{
 		Flags:     []string{},
 		Command:   "",
 		Arguments: make(map[string][]string),
@@ -28,7 +32,7 @@ func (def *Definitions) Parse(args []string) (*Request, error) {
 		for _, tt := range expected {
 			success, err := match(arg, tt, &ctx, def)
 			if err != nil {
-				return &req, err
+				return req, err
 			}
 			if success {
 				matched = true
@@ -52,15 +56,13 @@ func (def *Definitions) Parse(args []string) (*Request, error) {
 
 	// read arguments that are specified as supporting env
 	// if the value has not been provided as a CLI flag
-	err := req.readEnvArgs(def)
-	if err != nil {
-		return &req, err
+	if err := req.readEnvArgs(def); err != nil {
+		return req, err
 	}
 
-	err = req.verify(def)
-	if err != nil {
-		return &req, err
+	if err := req.verify(def); err != nil {
+		return req, err
 	}
 
-	return &req, nil
+	return req, nil
 }

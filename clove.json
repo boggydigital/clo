@@ -38,7 +38,7 @@
       "hint": "display help",
       "desc": "display help for the app or a specific command",
       "arguments": [
-        "commands"
+        "command"
       ]
     }
   ],
@@ -53,15 +53,13 @@
       "required": true
     },
     {
-      "token": "commands",
+      "token": "command",
       "abbr": "c",
       "hint": "app command",
       "default": true,
       "multiple": false,
-      "required": true,
-      "values": [
-        "internal:commands"
-      ]
+      "required": false,
+      "values": ["from:commands"]
     }
   ]
 }
