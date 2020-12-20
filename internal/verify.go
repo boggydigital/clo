@@ -221,17 +221,23 @@ func differentArgsCmd(def *Definitions, v bool) error {
 	return nil
 }
 
-// TODO: This needs to change from no more than one in all definitions to no more than one per command
-func singleDefaultArg(def *Definitions, v bool) error {
+func singleDefaultArgPerCmd(def *Definitions, v bool) error {
 	msg := "no more than one default argument"
-	d := ""
-	for _, a := range def.Arguments {
-		if a.Default {
+	for _, cmd := range def.Commands {
+		d := ""
+		for _, at := range cmd.Arguments {
+			arg := def.ArgByToken(at)
+			if arg == nil {
+				continue
+			}
+			if !arg.Default {
+				continue
+			}
 			if d != "" {
 				vFail(msg, v)
-				return fmt.Errorf("argument '%s' redefines default from '%s'", a.Token, d)
+				return fmt.Errorf("'%s' has more than one default argument: '%s' and '%s'", cmd.Token, arg.Token, d)
 			}
-			d = a.Token
+			d = arg.Token
 		}
 	}
 	vPass(msg, v)
@@ -276,7 +282,7 @@ func (def *Definitions) Verify(v bool) []error {
 	// arguments
 	errors = appendError(errors, commandsValidArgs(def, v))
 	errors = appendError(errors, allUsedArgs(def, v))
-	errors = appendError(errors, singleDefaultArg(def, v))
+	errors = appendError(errors, singleDefaultArgPerCmd(def, v))
 	errors = appendError(errors, differentArgsCmd(def, v))
 	errors = appendError(errors, differentArgValues(def, v))
 
