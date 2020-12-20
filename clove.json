@@ -5,12 +5,6 @@
   "desc": "declarative CLI commands, arguments and flags that can be verified to avoid common errors",
   "flags": [
     {
-      "token": "help",
-      "abbr": "h",
-      "hint": "show command line help",
-      "desc": "show command line help, including examples where available"
-    },
-    {
       "token": "verbose",
       "abbr": "v",
       "hint": "show more info when available",
@@ -23,13 +17,28 @@
       "abbr": "vf",
       "hint": "verify provided file for common errors",
       "desc": "verify that provided file meets expected constraints and avoids common errors",
-      "arguments": ["path"],
+      "arguments": [
+        "path"
+      ],
       "examples": [
         {
-          "arguments": ["path"],
-          "values": ["./clove.json"],
+          "arguments": [
+            "path"
+          ],
+          "values": [
+            "./clove.json"
+          ],
           "desc": "verify ./clove.json file for common errors and display a result"
         }
+      ]
+    },
+    {
+      "token": "help",
+      "abbr": "h",
+      "hint": "display help",
+      "desc": "display help for the app or a specific command",
+      "arguments": [
+        "commands"
       ]
     }
   ],
@@ -42,5 +51,17 @@
       "default": true,
       "multiple": false,
       "required": true
-    }]
+    },
+    {
+      "token": "commands",
+      "abbr": "c",
+      "hint": "app command",
+      "default": true,
+      "multiple": false,
+      "required": true,
+      "values": [
+        "internal:commands"
+      ]
+    }
+  ]
 }

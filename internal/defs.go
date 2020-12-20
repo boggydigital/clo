@@ -2,7 +2,9 @@ package internal
 
 type Definitions struct {
 	Version   int                  `json:"version"`
-	EnvPrefix string               `json:"env-prefix"`
+	EnvPrefix string               `json:"env-prefix,omitempty"`
+	Hint      string               `json:"hint,omitempty"`
+	Desc      string               `json:"desc,omitempty"`
 	Flags     []FlagDefinition     `json:"flags,omitempty"`
 	Commands  []CommandDefinition  `json:"commands,omitempty"`
 	Arguments []ArgumentDefinition `json:"arguments,omitempty"`
