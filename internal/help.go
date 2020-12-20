@@ -1,5 +1,5 @@
 package internal
 
-func help(cmd string) {
+func help(cmd string, verbose bool) {
 
 }

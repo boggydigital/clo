@@ -2,9 +2,9 @@ package clove
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/boggydigital/clove/internal"
 	"io/ioutil"
-	"path/filepath"
 )
 
 type Request struct {
@@ -15,72 +15,44 @@ type Definitions struct {
 	internal.Definitions
 }
 
-func requestFromInternal(request *internal.Request) *Request {
-	if request == nil {
-		return nil
+func loadEmbedDefs() (*Definitions, error) {
+	return LoadExtDefs("./clove.json")
+}
+
+func LoadExtDefs(path string) (*Definitions, error) {
+	if path == "" {
+		return nil, fmt.Errorf("cannot load definition with no path specified")
 	}
-	var req Request
-	req.Request = *request
-	return &req
-}
 
-func lookupPaths() []string {
-	return []string{
-		".",
-	}
-}
-
-func embeddedDefs() *Definitions {
-	return nil
-}
-
-func load(path string) (*Definitions, error) {
 	var dfs *Definitions
 
 	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
 		return dfs, err
 	}
-
 	err = json.Unmarshal(bytes, &dfs)
-	if err != nil {
-		return dfs, err
-	}
 
-	return dfs, nil
-}
-
-func LoadDefs(path string) (*Definitions, error) {
-
-	dfs := embeddedDefs()
-	if dfs != nil {
-		return dfs, nil
-	}
-
-	if path != "" {
-		return load(path)
-	}
-
-	defFilename := "clove.json"
-	for _, p := range lookupPaths() {
-		path := filepath.Join(p, defFilename)
-
-		if dfs, err := load(path); dfs != nil && err == nil {
-			return dfs, err
-		}
-	}
-
-	return nil, nil
+	return dfs, err
 }
 
 func Parse(args []string) (*Request, error) {
 
-	def, err := LoadDefs("")
+	if len(args) == 0 {
+		// TODO: display help instead
+		return nil, fmt.Errorf("no arguments specified")
+	}
+
+	// TODO: Parse should use embedded clove.json
+	// in golang 1.16: https://github.com/golang/go/issues/41191
+	def, err := loadEmbedDefs()
 	if err != nil {
 		return nil, err
 	}
 
 	req, err := def.Parse(args)
+	if req == nil || err != nil {
+		return nil, err
+	}
 
-	return requestFromInternal(req), err
+	return &Request{Request: *req}, err
 }
