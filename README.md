@@ -85,7 +85,7 @@ Clove provides a built-in 'help' command, unless one already exists, provided by
 - 'help' command will attempt to add 'help:command' argument if doesn't exist already
 - 'help:command' argument uses special 'from:commands' value that will be expanded with all commands declared in clove.json (technically, you can use that value and if it's the only value, it'll be expanded)
 
-Please see [Handling built-in commands](#Handling-built-in-commands) to understand what needs to be done to support 'help' command. 
+Please see [Handling built-in commands](#handling-built-in-commands) to understand what needs to be done to support 'help' command. 
  
 ## Working with arguments
 
