@@ -7,6 +7,36 @@ Clove is a Golang module to build declarative description of a CLI application f
 
 TBD
 
+## Handling built-in commands
+
+In order to allow clove to handle built-in commands you don't need to do match. In your `Dispatch` handler you need to send `nil` and unknown commands to `clove.Dispatch`. Example:
+
+```
+package cmd
+
+import (
+	"github.com/boggydigital/clove"
+)
+
+func Dispatch(request *clove.Request) error {
+	
+	// allow clove to handle nil requests
+	if request == nil {
+		return clove.Dispatch(nil)
+	}
+
+    switch request.Command {
+    // case "yourCommand":
+    // dispatch yourCommand here
+    // ...
+	default:
+	    // allow clove to handle unknown commands
+		return clove.Dispatch(request)
+	}
+  }
+}
+```
+
 ## CLI args order expectations
 
 App that uses clove would support the following calling convention:
@@ -45,6 +75,18 @@ Top level commands that allow users to control the application. Examples: `verif
     - `values` - (optional) argument values we're using in the example. Number of values should match number of non-flag arguments and match fixed values constraint.
     - `description` - (optional) description of this example
 
+### Built-in 'help' command
+
+Clove provides a built-in 'help' command, unless one already exists, provided by you. Built-in 'help' commands uses certain conventions to avoid conflicts with user arguments and to support any commands you might have created. Here is what you need to know:
+
+- 'help' command is added right before parsing CLI args
+- 'help' command is only added if there is not command with a token 'help' already
+- 'help' command will attempt to add 'h' abbreviation if it's not used by any other command
+- 'help' command will attempt to add 'help:command' argument if doesn't exist already
+- 'help:command' argument uses special 'from:commands' value that will be expanded with all commands declared in clove.json (technically, you can use that value and if it's the only value, it'll be expanded)
+
+Please see [Handling built-in commands](#Handling-built-in-commands) to understand what needs to be done to support 'help' command. 
+ 
 ## Working with arguments
 
 Arguments are parameters that commands might need for operation. Examples: `path` for `verify` command. Argument value is separated from argument token with a space.
@@ -70,7 +112,7 @@ When fixed values are defined for arguments, you can also specify the common sch
 
 ## Working with flags
 
-Flags allow to create application level hints or controls that apply to most or all commands, generically. All flags are optional. Examples: `verbose`.
+Flags allow creating application level hints or controls that apply to most or all commands, generically. All flags are optional. Examples: `verbose`.
 
 # Clove app
 
