@@ -38,8 +38,7 @@ func LoadExtDefs(path string) (*Definitions, error) {
 func Parse(args []string) (*Request, error) {
 
 	if len(args) == 0 {
-		// TODO: display help instead
-		return nil, fmt.Errorf("no arguments specified")
+		return nil, nil
 	}
 
 	// TODO: Parse should use embedded clove.json
