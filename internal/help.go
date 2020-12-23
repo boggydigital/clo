@@ -2,7 +2,11 @@ package internal
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 )
+
+const tlMax = 10
 
 func (def *Definitions) addHelpCmd() error {
 	if def == nil {
@@ -64,11 +68,122 @@ func (def *Definitions) addHelpCmd() error {
 	return nil
 }
 
-func help(cmd string, verbose bool) error {
-	if cmd == "" {
-		fmt.Println("help for the app")
-	} else {
-		fmt.Printf("help for command '%s'\n", cmd)
+func printHelp(cmd string, verbose bool) error {
+	defs, err := LoadEmbedded()
+	if err != nil {
+		return err
 	}
+	if cmd == "" {
+		return printAppHelp(defs, verbose)
+	} else {
+		return printCmdHelp(cmd, defs, verbose)
+	}
+}
+
+func printAppHelp(defs *Definitions, verbose bool) error {
+	appDesc := defs.Hint
+	if verbose && defs.Desc != "" {
+		appDesc = defs.Desc
+	}
+	fmt.Printf("%s - %s\n", defs.App, appDesc)
+	fmt.Println()
+	fmt.Printf("Usage: %s command [<arguments [<values>]>] [<flags>]\n",
+		defs.App)
+	fmt.Println()
+	fmt.Println("Commands:")
+	for _, cmd := range defs.Commands {
+		cmdDesc := cmd.Hint
+		if verbose && cmd.Desc != "" {
+			cmdDesc = cmd.Desc
+		}
+		fmt.Printf("  %-"+strconv.Itoa(tlMax)+"s %s\n",
+			cmd.Token,
+			cmdDesc)
+	}
+	fmt.Println()
+	if len(defs.Flags) > 0 {
+		fmt.Println("Flags:")
+		for _, flg := range defs.Flags {
+			flgDesc := flg.Hint
+			if verbose && flg.Desc != "" {
+				flgDesc = flg.Desc
+			}
+			fmt.Printf("  %-"+strconv.Itoa(tlMax)+"s %s\n",
+				flg.Token,
+				flgDesc)
+		}
+		fmt.Println()
+	}
+	fmt.Printf("Run '%s help [command]' for more information on a command.\n",
+		defs.App)
+
+	return nil
+}
+
+func printCmdHelp(cmd string, defs *Definitions, verbose bool) error {
+	cmdUsage := fmt.Sprintf("Usage: %s %s ", defs.App, cmd)
+	cd := defs.CommandByToken(cmd)
+	if cd == nil {
+		return fmt.Errorf("command token '%s' is not defined", cmd)
+	}
+	if len(cd.Arguments) > 0 {
+		cmdUsage += "[<arguments>]"
+	}
+	fmt.Println(cmdUsage)
+	fmt.Println()
+	fmt.Println("Arguments:")
+	for _, arg := range cd.Arguments {
+		ad := defs.ArgByToken(arg)
+		if ad == nil {
+			fmt.Printf(" %s: invalid argument token\n", arg)
+			continue
+		}
+		argDesc := ad.Hint
+		if verbose && ad.Desc != "" {
+			argDesc = ad.Desc
+		}
+		fmt.Printf("  %-"+strconv.Itoa(tlMax)+"s %s ", arg, argDesc)
+		if ad.Default {
+			fmt.Print("[Def]")
+		}
+		if ad.Required {
+			fmt.Print("[Req]")
+		}
+		if ad.Multiple {
+			fmt.Print("[Mult]")
+		}
+		if ad.Env {
+			envToken := fmt.Sprintf("%s_%s", strings.ToUpper(cmd), strings.ToUpper(arg))
+			if defs.EnvPrefix != "" {
+				envToken = fmt.Sprintf("%s_%s", strings.ToUpper(defs.EnvPrefix), envToken)
+			}
+			fmt.Printf("[Env:%s]", envToken)
+		}
+		fmt.Println()
+
+		if len(ad.Values) > 0 {
+			fmt.Printf("  %-"+strconv.Itoa(tlMax)+"s '%s' supports the following values only: ", "", arg)
+			for i, av := range ad.Values {
+				if i == len(ad.Values)-1 {
+					fmt.Println(av)
+				} else {
+					fmt.Print(av, ", ")
+				}
+			}
+		}
+
+	}
+	fmt.Println()
+	if verbose {
+		fmt.Println("Arguments [attributes] explanation:")
+		fmt.Printf("  %-"+strconv.Itoa(tlMax)+"s %s\n", "Def", "default argument - value(s) can be provided right after a command without an argument token")
+		fmt.Printf("  %-"+strconv.Itoa(tlMax)+"s %s\n", "Mult", "supports multiple values, that can be provided in sequence or each with argument token")
+		fmt.Printf("  %-"+strconv.Itoa(tlMax)+"s %s\n", "Req", "required argument - app will not run without a value")
+		fmt.Printf("  %-"+strconv.Itoa(tlMax)+"s %s\n", "Env", "value can be provided with an environment variable")
+	}
+	// usage:
+	// arguments:
+	// examples:
+	// flags:
 	return nil
 }

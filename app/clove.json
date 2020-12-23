@@ -1,6 +1,7 @@
 {
   "version": 1,
   "env-prefix": "CLV",
+  "app": "clove",
   "hint": "declarative CLI parameters",
   "desc": "declarative CLI commands, arguments and flags that can be verified to avoid common errors",
   "flags": [
@@ -8,7 +9,7 @@
       "token": "verbose",
       "abbr": "v",
       "hint": "show more info when available",
-      "desc": "show additional information, like examples where available"
+      "desc": "show additional information, like examples, where available"
     }
   ],
   "commands": [
@@ -38,10 +39,12 @@
       "token": "path",
       "abbr": "p",
       "hint": "path to the file",
+      "desc": "absolute or relative path to the file that will be verified",
       "env": true,
       "default": true,
       "multiple": false,
-      "required": true
+      "required": true,
+      "values": ["temp", "seattle", "kraken"]
     }
   ]
 }

@@ -7,7 +7,7 @@ import (
 
 func Verify(filepath string, verbose bool) error {
 
-	defs, err := clove.LoadExtDefs(filepath)
+	defs, err := clove.LoadDefinitions(filepath)
 	if err != nil {
 		return err
 	}

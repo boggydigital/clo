@@ -9,15 +9,6 @@ import (
 // multiple values, etc.
 func (def *Definitions) Parse(args []string) (*Request, error) {
 
-	if err := def.addHelpCmd(); err != nil {
-		// adding help is not considered fatal error, inform, continue
-		fmt.Println("error adding help command:", err.Error())
-	}
-
-	if err := def.expandRefValues(); err != nil {
-		return nil, err
-	}
-
 	var req = &Request{
 		Flags:     []string{},
 		Command:   "",

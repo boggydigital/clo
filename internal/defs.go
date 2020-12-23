@@ -1,19 +1,51 @@
 package internal
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"strings"
 )
 
 type Definitions struct {
 	Version   int                  `json:"version"`
 	EnvPrefix string               `json:"env-prefix,omitempty"`
+	App       string               `json:"app,omitempty"`
 	Hint      string               `json:"hint,omitempty"`
 	Desc      string               `json:"desc,omitempty"`
 	Flags     []FlagDefinition     `json:"flags,omitempty"`
 	Commands  []CommandDefinition  `json:"commands,omitempty"`
 	Arguments []ArgumentDefinition `json:"arguments,omitempty"`
 	Values    []ValueDefinition    `json:"values,omitempty"`
+}
+
+func LoadEmbedded() (*Definitions, error) {
+	return Load("./app/clove.json")
+}
+
+func Load(path string) (*Definitions, error) {
+	if path == "" {
+		return nil, fmt.Errorf("cannot load definition with no path specified")
+	}
+
+	var dfs *Definitions
+
+	bytes, err := ioutil.ReadFile(path)
+	if err != nil {
+		return dfs, err
+	}
+	err = json.Unmarshal(bytes, &dfs)
+
+	if err := dfs.addHelpCmd(); err != nil {
+		// adding help is not considered fatal error, inform, continue
+		fmt.Println("error adding help command:", err.Error())
+	}
+
+	if err := dfs.expandRefValues(); err != nil {
+		return nil, err
+	}
+
+	return dfs, err
 }
 
 func (def *Definitions) FlagByToken(token string) *FlagDefinition {

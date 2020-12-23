@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+
 	req, err := clove.Parse(os.Args[1:])
 	if err != nil {
 		fmt.Println("error:", err.Error())
