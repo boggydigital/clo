@@ -8,6 +8,9 @@ type Request struct {
 	internal.Request
 }
 
+// Parse converts args into a structured Request that has
+// a command, arguments with values, flags - all according to
+// definitions provided in the JSON file.
 func Parse(args []string) (*Request, error) {
 
 	if len(args) == 0 {

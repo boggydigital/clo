@@ -1,7 +1,8 @@
 package internal
 
 type ExampleDefinition struct {
-	Arguments []string `json:"arguments"`
-	Values    []string `json:"values"`
-	Desc      string   `json:"desc,omitempty"`
+	ArgumentsValues []map[string][]string `json:"argumentsValues"`
+	//Arguments []string `json:"arguments"`
+	//Values    []string `json:"values"`
+	Desc string `json:"desc,omitempty"`
 }

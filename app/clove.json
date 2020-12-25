@@ -23,13 +23,12 @@
       ],
       "examples": [
         {
-          "arguments": [
-            "path"
+          "argumentsValues": [
+            {
+              "path": []
+            }
           ],
-          "values": [
-            "./clove.json"
-          ],
-          "desc": "verify ./clove.json file for common errors and display report"
+          "desc": "verify provided file for common errors and display report"
         }
       ]
     }
@@ -43,8 +42,7 @@
       "env": true,
       "default": true,
       "multiple": false,
-      "required": true,
-      "values": ["temp", "seattle", "kraken"]
+      "required": true
     }
   ]
 }

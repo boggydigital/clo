@@ -2,11 +2,8 @@ package internal
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 )
-
-const tlMax = 10
 
 func (def *Definitions) addHelpCmd() error {
 	if def == nil {
@@ -96,7 +93,7 @@ func printAppHelp(defs *Definitions, verbose bool) error {
 		if verbose && cmd.Desc != "" {
 			cmdDesc = cmd.Desc
 		}
-		fmt.Printf("  %-"+strconv.Itoa(tlMax)+"s %s\n",
+		fmt.Printf("  %-"+defs.CommandsPadding()+"s  %s\n",
 			cmd.Token,
 			cmdDesc)
 	}
@@ -108,7 +105,7 @@ func printAppHelp(defs *Definitions, verbose bool) error {
 			if verbose && flg.Desc != "" {
 				flgDesc = flg.Desc
 			}
-			fmt.Printf("  %-"+strconv.Itoa(tlMax)+"s %s\n",
+			fmt.Printf("  %-"+defs.FlagsPadding()+"s  %s\n",
 				flg.Token,
 				flgDesc)
 		}
@@ -118,6 +115,24 @@ func printAppHelp(defs *Definitions, verbose bool) error {
 		defs.App)
 
 	return nil
+}
+
+func printExampleHelp(ex *ExampleDefinition, cmd string, defs *Definitions) {
+	fmt.Printf("  '%s %s", defs.App, cmd)
+	for avi, argVals := range ex.ArgumentsValues {
+		for arg, vals := range argVals {
+			fmt.Printf(" --%s ", arg)
+			if len(vals) == 0 {
+				fmt.Printf("<%s>", arg)
+				continue
+			}
+			fmt.Print(strings.Join(vals, " "))
+		}
+		if avi == len(ex.ArgumentsValues)-1 {
+			fmt.Print("'")
+		}
+	}
+	fmt.Println(":", ex.Desc)
 }
 
 func printCmdHelp(cmd string, defs *Definitions, verbose bool) error {
@@ -135,14 +150,14 @@ func printCmdHelp(cmd string, defs *Definitions, verbose bool) error {
 	for _, arg := range cd.Arguments {
 		ad := defs.ArgByToken(arg)
 		if ad == nil {
-			fmt.Printf(" %s: invalid argument token\n", arg)
+			fmt.Printf("  %s: invalid argument token\n", arg)
 			continue
 		}
 		argDesc := ad.Hint
 		if verbose && ad.Desc != "" {
 			argDesc = ad.Desc
 		}
-		fmt.Printf("  %-"+strconv.Itoa(tlMax)+"s %s ", arg, argDesc)
+		fmt.Printf("  %-"+defs.ArgumentsPadding(cmd)+"s  %s ", arg, argDesc)
 		if ad.Default {
 			fmt.Print("[Def]")
 		}
@@ -150,7 +165,7 @@ func printCmdHelp(cmd string, defs *Definitions, verbose bool) error {
 			fmt.Print("[Req]")
 		}
 		if ad.Multiple {
-			fmt.Print("[Mult]")
+			fmt.Print("[Mlt]")
 		}
 		if ad.Env {
 			envToken := fmt.Sprintf("%s_%s", strings.ToUpper(cmd), strings.ToUpper(arg))
@@ -162,7 +177,7 @@ func printCmdHelp(cmd string, defs *Definitions, verbose bool) error {
 		fmt.Println()
 
 		if len(ad.Values) > 0 {
-			fmt.Printf("  %-"+strconv.Itoa(tlMax)+"s '%s' supports the following values only: ", "", arg)
+			fmt.Printf("  %-"+defs.ArgumentsPadding(cmd)+"s  supported values: ", "")
 			for i, av := range ad.Values {
 				if i == len(ad.Values)-1 {
 					fmt.Println(av)
@@ -176,14 +191,23 @@ func printCmdHelp(cmd string, defs *Definitions, verbose bool) error {
 	fmt.Println()
 	if verbose {
 		fmt.Println("Arguments [attributes] explanation:")
-		fmt.Printf("  %-"+strconv.Itoa(tlMax)+"s %s\n", "Def", "default argument - value(s) can be provided right after a command without an argument token")
-		fmt.Printf("  %-"+strconv.Itoa(tlMax)+"s %s\n", "Mult", "supports multiple values, that can be provided in sequence or each with argument token")
-		fmt.Printf("  %-"+strconv.Itoa(tlMax)+"s %s\n", "Req", "required argument - app will not run without a value")
-		fmt.Printf("  %-"+strconv.Itoa(tlMax)+"s %s\n", "Env", "value can be provided with an environment variable")
+		fmt.Printf("  %-5s  %s\n", "[Def]", "default argument - value(s) can be provided right "+
+			"after a command without an argument token")
+		fmt.Printf("  %-5s  %s\n", "[Mlt]", "supports multiple values, that can be provided "+
+			"in sequence or each with an argument token")
+		fmt.Printf("  %-5s  %s\n", "[Req]", "required argument - app cannot "+
+			"meaningfully run without a value")
+		fmt.Printf("  %-5s  %s\n", "[Env]", "value can be provided with an "+
+			"environment variable specified above")
+		fmt.Println()
+		fmt.Println("Examples:")
+		for _, ex := range cd.Examples {
+			printExampleHelp(&ex, cmd, defs)
+		}
+	} else {
+		fmt.Printf("Run '%s help %s --verbose' for more information, "+
+			"incl. examples and arguments [attributes] explaination.\n", defs.App, cmd)
 	}
-	// usage:
-	// arguments:
-	// examples:
-	// flags:
+
 	return nil
 }
