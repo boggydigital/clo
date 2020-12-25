@@ -102,6 +102,29 @@ func (def *Definitions) ArgByAbbr(abbr string) *ArgumentDefinition {
 	return nil
 }
 
+func (def *Definitions) ValueByToken(val string) *ValueDefinition {
+	for _, v := range def.Values {
+		if v.Token == val {
+			return &v
+		}
+	}
+	return nil
+}
+
+func (def *Definitions) DefinedValue(values []string) bool {
+	if values == nil ||
+		len(values) == 0 {
+		return false
+	}
+	for _, vt := range values {
+		vd := def.ValueByToken(vt)
+		if vd != nil {
+			return true
+		}
+	}
+	return false
+}
+
 func (def *Definitions) DefaultArg(cmd *CommandDefinition) *ArgumentDefinition {
 	if cmd == nil {
 		return nil
