@@ -98,7 +98,7 @@ func matchValue(token string, tokenType int, arg *ArgumentDefinition) (bool, err
 
 	switch tokenType {
 	case valueFixed:
-		if arg.ValueSupported(token) {
+		if arg.ValidValue(token) {
 			return true, nil
 		} else {
 			if len(arg.Values) > 0 {

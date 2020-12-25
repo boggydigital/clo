@@ -17,8 +17,6 @@ func Parse(args []string) (*Request, error) {
 		return nil, nil
 	}
 
-	// TODO: Parse should use embedded clove.json
-	// in golang 1.16: https://github.com/golang/go/issues/41191
 	def, err := loadEmbedded()
 	if err != nil {
 		return nil, err

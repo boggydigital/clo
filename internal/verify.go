@@ -328,24 +328,31 @@ func examplesArgumentsAreValid(def *Definitions, v bool) error {
 	return nil
 }
 
+func cmdExampleHasValidValues(cmd string, def *Definitions, ex *ExampleDefinition, i int) error {
+	for _, argVal := range ex.ArgumentsValues {
+		for arg, values := range argVal {
+			for _, val := range values {
+				if !def.ValidArgVal(val, arg) {
+					return fmt.Errorf("command '%s' example #%d uses invalid "+
+						"value '%s' for an argument '%s'",
+						cmd,
+						i+1,
+						val,
+						arg)
+				}
+			}
+		}
+	}
+	return nil
+}
+
 func examplesHaveValidValues(def *Definitions, v bool) error {
 	msg := "examples have valid values"
 	for _, cd := range def.Commands {
 		for i, ex := range cd.Examples {
-			for _, argVal := range ex.ArgumentsValues {
-				for arg, values := range argVal {
-					for _, val := range values {
-						if !def.ValidArgVal(val, arg) {
-							vFail(msg, v)
-							return fmt.Errorf("command '%s' example #%d uses invalid "+
-								"value '%s' for an argument '%s'",
-								cd.Token,
-								i+1,
-								val,
-								arg)
-						}
-					}
-				}
+			if err := cmdExampleHasValidValues(cd.Token, def, &ex, i); err != nil {
+				vFail(msg, v)
+				return err
 			}
 		}
 	}

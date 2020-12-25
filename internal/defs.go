@@ -194,14 +194,5 @@ func (def *Definitions) ValidArgVal(val string, arg string) bool {
 	if ad == nil {
 		return false
 	}
-	if len(ad.Values) == 0 {
-		return true
-	}
-	match := false
-	for _, v := range ad.Values {
-		if v == val {
-			match = true
-		}
-	}
-	return match
+	return ad.ValidValue(val)
 }

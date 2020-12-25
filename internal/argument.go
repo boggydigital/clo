@@ -9,7 +9,7 @@ type ArgumentDefinition struct {
 	Values   []string `json:"values,omitempty"`
 }
 
-func (arg *ArgumentDefinition) ValueSupported(val string) bool {
+func (arg *ArgumentDefinition) ValidValue(val string) bool {
 	for _, v := range arg.Values {
 		if v == val {
 			return true
