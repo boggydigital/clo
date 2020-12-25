@@ -10,19 +10,9 @@ type Definitions struct {
 	internal.Definitions
 }
 
-// loadEmbedded loads definitions embedded into the app.
-// TODO: Will actually to that in the 1.16
-func loadEmbedded() (*Definitions, error) {
-	defs, err := internal.LoadEmbedded()
-	if err != nil {
-		return nil, err
-	}
-	return &Definitions{Definitions: *defs}, err
-}
-
-// LoadDefinitions loads definitions JSON at a certain path.
-func LoadDefinitions(path string) (*Definitions, error) {
-	defs, err := internal.Load(path)
+// LoadDefinitions loads definitions JSON from bytes.
+func LoadDefinitions(bytes []byte) (*Definitions, error) {
+	defs, err := internal.Load(bytes)
 	if err != nil {
 		return nil, err
 	}

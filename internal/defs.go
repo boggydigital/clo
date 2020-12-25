@@ -19,22 +19,20 @@ type Definitions struct {
 	Values    []ValueDefinition    `json:"values,omitempty"`
 }
 
-func LoadEmbedded() (*Definitions, error) {
-	return Load("./app/clove.json")
+func loadDefault() (*Definitions, error) {
+	bytes, err := ioutil.ReadFile("app/clove.json")
+	if err != nil {
+		return nil, err
+	}
+	return Load(bytes)
 }
 
-func Load(path string) (*Definitions, error) {
-	if path == "" {
-		return nil, fmt.Errorf("cannot load definition with no path specified")
-	}
-
+func Load(bytes []byte) (*Definitions, error) {
 	var dfs *Definitions
 
-	bytes, err := ioutil.ReadFile(path)
-	if err != nil {
-		return dfs, err
+	if err := json.Unmarshal(bytes, &dfs); err != nil {
+		return nil, err
 	}
-	err = json.Unmarshal(bytes, &dfs)
 
 	if err := dfs.addHelpCmd(); err != nil {
 		// adding help is not considered fatal error, inform, continue
@@ -45,7 +43,7 @@ func Load(path string) (*Definitions, error) {
 		return nil, err
 	}
 
-	return dfs, err
+	return dfs, nil
 }
 
 func (def *Definitions) FlagByToken(token string) *FlagDefinition {

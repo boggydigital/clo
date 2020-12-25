@@ -3,11 +3,17 @@ package cmd
 import (
 	"fmt"
 	"github.com/boggydigital/clove"
+	"io/ioutil"
 )
 
 func Verify(filepath string, verbose bool) error {
 
-	defs, err := clove.LoadDefinitions(filepath)
+	bytes, err := ioutil.ReadFile(filepath)
+	if err != nil {
+		return err
+	}
+
+	defs, err := clove.LoadDefinitions(bytes)
 	if err != nil {
 		return err
 	}

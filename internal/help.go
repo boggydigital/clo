@@ -66,7 +66,7 @@ func (def *Definitions) addHelpCmd() error {
 }
 
 func printHelp(cmd string, verbose bool) error {
-	defs, err := LoadEmbedded()
+	defs, err := loadDefault()
 	if err != nil {
 		return err
 	}
@@ -141,7 +141,7 @@ func printAppAttrsLegend() {
 func printAppMoreInfoPrompt(defs *Definitions, verbose bool) {
 	verbosePrompt := ""
 	if !verbose {
-		verbosePrompt = fmt.Sprintf(" or '%s help --verbose' for more general information", defs.App)
+		verbosePrompt = fmt.Sprintf(" or '%s help --verbose' for more help", defs.App)
 	}
 
 	fmt.Printf("Run '%s help [command]' for help on a specific command%s.\n",

@@ -5,11 +5,56 @@ Clove is a Golang module to build declarative description of a CLI application f
 
 # Using clove in your app
 
+While clove has been designed with Go 1.16 embedding in mind, we'll provide directions on how to use it today and will update once 1.16 is released.
+
+## Installing clove module
+
 TBD
 
-## Handling built-in commands
+## Common clove use patterns
 
-In order to allow clove to handle built-in commands you don't need to do match. In your `Dispatch` handler you need to send `nil` and unknown commands to `clove.Dispatch`. Example:
+Apps that use clove might start with the following general sequence of actions:
+
+- Read definitions bytes (this will be replaced with go:embed in 1.16)
+- Load definitions from bytes
+- Parse `os.Args` using definitions to get `Request` data with command, arguments, flags
+- Dispatch request to command handlers
+
+Here is an example of a `main.go` that implements that (NOTE: error handling is omitted for brevity)
+
+```
+package main
+
+import (
+	"fmt"
+	"github.com/boggydigital/clove"
+	"{your-app-module}/cmd"
+	"io/ioutil"
+	"os"
+)
+
+func main() {
+    // Read definitions bytes
+	defBytes, _ := ioutil.ReadFile("app/clove.json")
+
+    // Load definitions from bytes
+	defs, _ := clove.LoadDefinitions(defBytes)
+
+    // Parse `os.Args` using definitions to get `Request` data
+	req, _ := defs.Parse(os.Args[1:])
+
+    // Dispatch request to command handlers
+	cmd.Dispatch(req)
+}
+```
+
+## Dispatching command requests and handling built-in commands
+
+The recommended approach to handle `Request` commands, arguments and flags is to have a `cmd/dispatch.go` single `Dispatch` method that routes arguments, flags data to command handlers.
+
+In order to allow clove to handle built-in commands, in your `Dispatch` handler you need to send `nil` and unknown commands to `clove.Dispatch`. 
+
+Example:
 
 ```
 package cmd
@@ -20,7 +65,7 @@ import (
 
 func Dispatch(request *clove.Request) error {
 	
-	// allow clove to handle nil requests
+	// allow clove to handle nil requests (this will show help by default)
 	if request == nil {
 		return clove.Dispatch(nil)
 	}
@@ -71,8 +116,7 @@ Top level commands that allow users to control the application. Examples: `verif
 
 - `arguments` - (optional) all argument tokens that apply to this command.
 - `examples`: (optional)
-    - `arguments` - arguments used in this example (should be one of the tokens in the Arguments).
-    - `values` - (optional) argument values we're using in the example. Number of values should match number of non-flag arguments and match fixed values constraint.
+    - `argumentsValues` - map of an arguments, each with a set of values that are used in this example. Argument key should be one of the values in the `arguments` definitions. If an argument has defined values - values for that key should be subset of defined values.
     - `description` - (optional) description of this example
 
 ### Built-in 'help' command
