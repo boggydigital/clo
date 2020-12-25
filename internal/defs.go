@@ -162,3 +162,23 @@ func (def *Definitions) RequiredArgs(cmd string) []string {
 
 	return required
 }
+
+func (def *Definitions) ValidArgVal(val string, arg string) bool {
+	if arg == "" {
+		return false
+	}
+	ad := def.ArgByToken(arg)
+	if ad == nil {
+		return false
+	}
+	if len(ad.Values) == 0 {
+		return true
+	}
+	match := false
+	for _, v := range ad.Values {
+		if v == val {
+			match = true
+		}
+	}
+	return match
+}

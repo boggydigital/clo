@@ -119,14 +119,14 @@ func printAppHelp(defs *Definitions, verbose bool) error {
 
 func printExampleHelp(ex *ExampleDefinition, cmd string, defs *Definitions) {
 	fmt.Printf("  '%s %s", defs.App, cmd)
-	for avi, argVals := range ex.ArgumentsValues {
-		for arg, vals := range argVals {
+	for avi, argValues := range ex.ArgumentsValues {
+		for arg, values := range argValues {
 			fmt.Printf(" --%s ", arg)
-			if len(vals) == 0 {
+			if len(values) == 0 {
 				fmt.Printf("<%s>", arg)
 				continue
 			}
-			fmt.Print(strings.Join(vals, " "))
+			fmt.Print(strings.Join(values, " "))
 		}
 		if avi == len(ex.ArgumentsValues)-1 {
 			fmt.Print("'")

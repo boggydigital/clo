@@ -256,6 +256,103 @@ func differentArgValues(def *Definitions, v bool) error {
 	return nil
 }
 
+func examplesDescAreNotEmpty(def *Definitions, v bool) error {
+	msg := "example descriptions are not empty"
+	for _, cd := range def.Commands {
+		for i, ex := range cd.Examples {
+			if ex.Desc == "" {
+				vFail(msg, v)
+				return fmt.Errorf("command '%s' example #%d doesn't have a description", cd.Token, i+1)
+			}
+		}
+	}
+	vPass(msg, v)
+	return nil
+}
+
+func examplesArgumentsAreNotEmpty(def *Definitions, v bool) error {
+	msg := "examples arguments are not empty"
+	for _, cd := range def.Commands {
+		for i, ex := range cd.Examples {
+			for _, argVal := range ex.ArgumentsValues {
+				for arg, _ := range argVal {
+					if arg == "" {
+						vFail(msg, v)
+						return fmt.Errorf("command '%s' example #%d has an empty argument",
+							cd.Token,
+							i+1)
+					}
+				}
+			}
+		}
+	}
+	vPass(msg, v)
+	return nil
+}
+
+func examplesHaveArgsValues(def *Definitions, v bool) error {
+	msg := "examples have at least one argument (with optional value(s))"
+	for _, cd := range def.Commands {
+		for i, ex := range cd.Examples {
+			if len(ex.ArgumentsValues) == 0 {
+				vFail(msg, v)
+				return fmt.Errorf("command '%s' example #%d doesn't have arguments defined",
+					cd.Token,
+					i+1)
+			}
+		}
+	}
+	vPass(msg, v)
+	return nil
+}
+
+func examplesArgumentsAreValid(def *Definitions, v bool) error {
+	msg := "examples are using valid arguments"
+	for _, cd := range def.Commands {
+		for i, ex := range cd.Examples {
+			for _, argVal := range ex.ArgumentsValues {
+				for arg, _ := range argVal {
+					ad := def.ArgByToken(arg)
+					if ad == nil {
+						vFail(msg, v)
+						return fmt.Errorf("command '%s' example #%d uses undefined argument '%s'",
+							cd.Token,
+							i+1,
+							arg)
+					}
+				}
+			}
+		}
+	}
+	vPass(msg, v)
+	return nil
+}
+
+func examplesHaveValidValues(def *Definitions, v bool) error {
+	msg := "examples have valid values"
+	for _, cd := range def.Commands {
+		for i, ex := range cd.Examples {
+			for _, argVal := range ex.ArgumentsValues {
+				for arg, values := range argVal {
+					for _, val := range values {
+						if !def.ValidArgVal(val, arg) {
+							vFail(msg, v)
+							return fmt.Errorf("command '%s' example #%d uses invalid "+
+								"value '%s' for an argument '%s'",
+								cd.Token,
+								i+1,
+								val,
+								arg)
+						}
+					}
+				}
+			}
+		}
+	}
+	vPass(msg, v)
+	return nil
+}
+
 func appendError(errors []error, err error) []error {
 	if err != nil {
 		return append(errors, err)
@@ -287,9 +384,11 @@ func (def *Definitions) Verify(v bool) []error {
 	errors = appendError(errors, differentArgValues(def, v))
 
 	// examples
-	// TODO: verify examples:
-	// - have arguments that are not empty
-	// - values match non-flag arguments
+	errors = appendError(errors, examplesDescAreNotEmpty(def, v))
+	errors = appendError(errors, examplesArgumentsAreValid(def, v))
+	errors = appendError(errors, examplesArgumentsAreNotEmpty(def, v))
+	errors = appendError(errors, examplesHaveArgsValues(def, v))
+	errors = appendError(errors, examplesHaveValidValues(def, v))
 
 	return errors
 }
