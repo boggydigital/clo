@@ -6,7 +6,7 @@ type CommandDefinition struct {
 	Examples  []ExampleDefinition `json:"examples,omitempty"`
 }
 
-func (cmd *CommandDefinition) ArgSupported(arg string) bool {
+func (cmd *CommandDefinition) ValidArg(arg string) bool {
 	for _, a := range cmd.Arguments {
 		if a == arg {
 			return true

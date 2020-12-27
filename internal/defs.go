@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"strings"
 )
 
 type Definitions struct {
@@ -20,14 +19,16 @@ type Definitions struct {
 }
 
 func LoadDefault() (*Definitions, error) {
-	bytes, err := ioutil.ReadFile("clo.json")
+	return Load("clo.json")
+}
+
+func Load(path string) (*Definitions, error) {
+
+	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return Load(bytes)
-}
 
-func Load(bytes []byte) (*Definitions, error) {
 	var dfs *Definitions
 
 	if err := json.Unmarshal(bytes, &dfs); err != nil {
@@ -134,27 +135,6 @@ func (def *Definitions) DefaultArg(cmd *CommandDefinition) *ArgumentDefinition {
 		}
 		if ad.Default {
 			return ad
-		}
-	}
-	return nil
-}
-
-func (def *Definitions) expandRefValues() error {
-	for i, ad := range def.Arguments {
-		if ad.Values != nil &&
-			len(ad.Values) == 1 &&
-			strings.HasPrefix(ad.Values[0], "from:") {
-			source := strings.TrimPrefix(ad.Values[0], "from:")
-			switch source {
-			case "commands":
-				def.Arguments[i].Values = make([]string, 0)
-				for _, cd := range def.Commands {
-					def.Arguments[i].Values = append(def.Arguments[i].Values, cd.Token)
-				}
-				return nil
-			default:
-				return fmt.Errorf("cannot expand values from an unknown source: '%s'", source)
-			}
 		}
 	}
 	return nil

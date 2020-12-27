@@ -33,7 +33,7 @@ func matchArgument(token string, tokenType int, cmdCtx *CommandDefinition, def *
 
 	// however if the argument matched token, we need to check if it's one of the supported values
 	// for a command context
-	if cmdCtx.ArgSupported(ad.Token) {
+	if cmdCtx.ValidArg(ad.Token) {
 		return true, nil
 	}
 

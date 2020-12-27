@@ -65,6 +65,27 @@ func (def *Definitions) addHelpCmd() error {
 	return nil
 }
 
+func (def *Definitions) expandRefValues() error {
+	for i, ad := range def.Arguments {
+		if ad.Values != nil &&
+			len(ad.Values) == 1 &&
+			strings.HasPrefix(ad.Values[0], "from:") {
+			source := strings.TrimPrefix(ad.Values[0], "from:")
+			switch source {
+			case "commands":
+				def.Arguments[i].Values = make([]string, 0)
+				for _, cd := range def.Commands {
+					def.Arguments[i].Values = append(def.Arguments[i].Values, cd.Token)
+				}
+				return nil
+			default:
+				return fmt.Errorf("cannot expand values from an unknown source: '%s'", source)
+			}
+		}
+	}
+	return nil
+}
+
 func printHelp(cmd string, verbose bool) error {
 	defs, err := LoadDefault()
 	if err != nil {
