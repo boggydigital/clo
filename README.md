@@ -1,3 +1,5 @@
+![Clo logo](clogo.png)
+
 Clo (Command line objects)
 =======================
 
