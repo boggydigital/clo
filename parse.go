@@ -1,7 +1,7 @@
-package clove
+package clo
 
 import (
-	"github.com/boggydigital/clove/internal"
+	"github.com/boggydigital/clo/internal"
 )
 
 type Request struct {

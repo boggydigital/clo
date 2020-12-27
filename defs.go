@@ -1,7 +1,7 @@
-package clove
+package clo
 
 import (
-	"github.com/boggydigital/clove/internal"
+	"github.com/boggydigital/clo/internal"
 )
 
 // Definitions hold commands, arguments, values and flags

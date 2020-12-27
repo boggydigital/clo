@@ -20,7 +20,7 @@ type Definitions struct {
 }
 
 func loadDefault() (*Definitions, error) {
-	bytes, err := ioutil.ReadFile("app/clove.json")
+	bytes, err := ioutil.ReadFile("app/clo.json")
 	if err != nil {
 		return nil, err
 	}

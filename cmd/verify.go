@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/boggydigital/clove"
+	"github.com/boggydigital/clo"
 	"io/ioutil"
 )
 
@@ -13,7 +13,7 @@ func Verify(filepath string, verbose bool) error {
 		return err
 	}
 
-	defs, err := clove.LoadDefinitions(bytes)
+	defs, err := clo.LoadDefinitions(bytes)
 	if err != nil {
 		return err
 	}

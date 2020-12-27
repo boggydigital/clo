@@ -1,3 +1,3 @@
-module github.com/boggydigital/clove
+module github.com/boggydigital/clo
 
 go 1.15

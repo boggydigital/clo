@@ -1,18 +1,18 @@
 package cmd
 
 import (
-	"github.com/boggydigital/clove"
+	"github.com/boggydigital/clo"
 )
 
-func Dispatch(request *clove.Request) error {
+func Dispatch(request *clo.Request) error {
 	if request == nil {
-		return clove.Dispatch(nil)
+		return clo.Dispatch(nil)
 	}
 	verbose := request.GetFlag("verbose")
 	switch request.Command {
 	case "verify":
 		return Verify(request.GetValue("path"), verbose)
 	default:
-		return clove.Dispatch(request)
+		return clo.Dispatch(request)
 	}
 }

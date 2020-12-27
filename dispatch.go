@@ -1,6 +1,6 @@
-package clove
+package clo
 
-import "github.com/boggydigital/clove/internal"
+import "github.com/boggydigital/clo/internal"
 
 // Dispatch Request to a function that can handle the command,
 // with the arguments, and maybe flags.
