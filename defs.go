@@ -2,6 +2,7 @@ package clo
 
 import (
 	"github.com/boggydigital/clo/internal"
+	"io/ioutil"
 )
 
 // Definitions hold commands, arguments, values and flags
@@ -11,7 +12,12 @@ type Definitions struct {
 }
 
 // LoadDefinitions loads definitions JSON from bytes.
-func LoadDefinitions(bytes []byte) (*Definitions, error) {
+func LoadDefinitions(path string) (*Definitions, error) {
+	bytes, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+
 	defs, err := internal.Load(bytes)
 	if err != nil {
 		return nil, err

@@ -11,22 +11,21 @@ provide are not conflicting with each other (e.g. no two commands have the same 
 While clo has been designed with Go 1.16 embedding in mind, we'll provide directions on how to use
 it today and will update once 1.16 is released.
 
-## Installing clo module
+## Using clo module
 
-TBD
-
-`go get github.com/boggydigital/clo`
+- Run `go get github.com/boggydigital/clo`
+- In your app import `github.com/boggydgital/clo`
+- Load definitions with `LoadDefinitions`, 
 
 ## Common clo use patterns
 
 Apps that use clo might start with the following general sequence of actions:
 
-- Read definitions bytes (this will be replaced with go:embed in 1.16)
-- Load definitions from bytes
-- Parse `os.Args` using definitions to get `Request` data with command, arguments, flags
-- Dispatch request to command handlers
+- Add a definitions file named `clo.json` in the root of your project
+- Parse `os.Args` (using default definitions) to get `Request` data with command, arguments, flags
+- Dispatch request to your commands handlers and fallback to `clo.Dispatch` for unknown commands or nil `Request`
 
-Here is an example of a `main.go` that implements that (NOTE: error handling is omitted for brevity)
+Here is an example of a `main.go` that implements this approach (NOTE: error handling is omitted for brevity)
 
 ```
 package main
@@ -40,14 +39,8 @@ import (
 )
 
 func main() {
-    // Read definitions bytes
-	defBytes, _ := ioutil.ReadFile("app/clo.json")
-
-    // Load definitions from bytes
-	defs, _ := clo.LoadDefinitions(defBytes)
-
     // Parse `os.Args` using definitions to get `Request` data
-	req, _ := defs.Parse(os.Args[1:])
+	req, _ := clo.Parse(os.Args[1:])
 
     // Dispatch request to command handlers
 	cmd.Dispatch(req)

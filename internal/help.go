@@ -66,7 +66,7 @@ func (def *Definitions) addHelpCmd() error {
 }
 
 func printHelp(cmd string, verbose bool) error {
-	defs, err := loadDefault()
+	defs, err := LoadDefault()
 	if err != nil {
 		return err
 	}

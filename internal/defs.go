@@ -19,8 +19,8 @@ type Definitions struct {
 	Values    []ValueDefinition    `json:"values,omitempty"`
 }
 
-func loadDefault() (*Definitions, error) {
-	bytes, err := ioutil.ReadFile("app/clo.json")
+func LoadDefault() (*Definitions, error) {
+	bytes, err := ioutil.ReadFile("clo.json")
 	if err != nil {
 		return nil, err
 	}

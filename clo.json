@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "env-prefix": "CLV",
+  "env-prefix": "CLO",
   "app": "clo",
   "hint": "declarative CLI parameters",
   "desc": "declarative CLI commands, arguments and flags that can be verified to avoid common errors",
