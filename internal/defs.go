@@ -149,9 +149,6 @@ func (def *Definitions) RequiredArgs(cmd string) []string {
 	}
 
 	for _, at := range command.Arguments {
-		if at == "" {
-			continue
-		}
 		arg := def.ArgByToken(at)
 		if arg == nil {
 			continue
@@ -164,7 +161,7 @@ func (def *Definitions) RequiredArgs(cmd string) []string {
 	return required
 }
 
-func (def *Definitions) ValidArgVal(val string, arg string) bool {
+func (def *Definitions) ValidArgVal(arg string, val string) bool {
 	if arg == "" {
 		return false
 	}

@@ -332,7 +332,7 @@ func cmdExampleHasValidValues(cmd string, def *Definitions, ex *ExampleDefinitio
 	for _, argVal := range ex.ArgumentsValues {
 		for arg, values := range argVal {
 			for _, val := range values {
-				if !def.ValidArgVal(val, arg) {
+				if !def.ValidArgVal(arg, val) {
 					return fmt.Errorf("command '%s' example #%d uses invalid "+
 						"value '%s' for an argument '%s'",
 						cmd,
