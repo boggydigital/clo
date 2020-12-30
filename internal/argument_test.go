@@ -1,38 +1,29 @@
 package internal
 
 import (
-	"strconv"
 	"testing"
 )
 
-func TestArgWithInvalidValuesHasNoValidValues(t *testing.T) {
-	ad := ArgumentDefinition{
-		Values: nil,
-	}
-
-	if ad.ValidValue("any") {
-		t.Error("argument with nil values shouldn't have valid values")
-	}
-
-	ad.Values = make([]string, 0)
-
-	if ad.ValidValue("any") {
-		t.Error("argument with empty values shouldn't have valid values")
-	}
+var validityNames = []string{"nil", "empty", "valid"}
+var validityTests = []struct {
+	values   []string
+	value    string
+	expected bool
+}{
+	{nil, "any", false},
+	{[]string{}, "any", false},
+	{[]string{"value1"}, "value1", true},
 }
 
-func TestArgValidValueCanBeFound(t *testing.T) {
-	cVals := 3
-	ad := ArgumentDefinition{
-		Values: make([]string, cVals),
-	}
-	for i := 0; i < cVals; i++ {
-		ad.Values[i] = strconv.Itoa(i + 1)
-	}
-
-	for i := 0; i < cVals; i++ {
-		if !ad.ValidValue(strconv.Itoa(i + 1)) {
-			t.Errorf("expected value '%d' to be valid", i+1)
-		}
+func TestValidValue(t *testing.T) {
+	for ii, tt := range validityTests {
+		t.Run(validityNames[ii], func(t *testing.T) {
+			ad := ArgumentDefinition{
+				Values: tt.values,
+			}
+			if ad.ValidValue(tt.value) != tt.expected {
+				t.Error("unexpected value validity:", tt.value)
+			}
+		})
 	}
 }

@@ -1,34 +1,30 @@
 package internal
 
-import (
-	"strconv"
-)
-
-func (def *Definitions) CommandsPadding() string {
+func (def *Definitions) CommandsPadding() int {
 	lToken := ""
 	for _, cmd := range def.Commands {
 		if len(cmd.Token) > len(lToken) {
 			lToken = cmd.Token
 		}
 	}
-	return strconv.Itoa(len(lToken))
+	return len(lToken)
 }
 
-func (def *Definitions) FlagsPadding() string {
+func (def *Definitions) FlagsPadding() int {
 	lToken := ""
 	for _, flg := range def.Flags {
 		if len(flg.Token) > len(lToken) {
 			lToken = flg.Token
 		}
 	}
-	return strconv.Itoa(len(lToken))
+	return len(lToken)
 }
 
-func (def *Definitions) ArgumentsPadding(cmd string) string {
+func (def *Definitions) ArgumentsPadding(cmd string) int {
 	lToken := ""
 	cd := def.CommandByToken(cmd)
 	if cd == nil {
-		return "0"
+		return len(lToken)
 	}
 
 	for _, arg := range cd.Arguments {
@@ -36,5 +32,5 @@ func (def *Definitions) ArgumentsPadding(cmd string) string {
 			lToken = arg
 		}
 	}
-	return strconv.Itoa(len(lToken))
+	return len(lToken)
 }

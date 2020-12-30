@@ -63,7 +63,7 @@ func next(tokenType int) []int {
 	case valueDefault:
 		return []int{valueDefault, argumentAbbr, argument, flagAbbr, flag}
 	case value:
-		return []int{argumentAbbr, argument, flagAbbr, flag, value}
+		return []int{value, argumentAbbr, argument, flagAbbr, flag}
 	// flags
 	case flag:
 		fallthrough

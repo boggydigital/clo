@@ -2,8 +2,8 @@ package internal
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
+	"log"
 )
 
 type Definitions struct {
@@ -37,7 +37,7 @@ func Load(path string) (*Definitions, error) {
 
 	if err := dfs.addHelpCmd(); err != nil {
 		// adding help is not considered fatal error, inform, continue
-		fmt.Println("error adding help command:", err.Error())
+		log.Println("error adding help command:", err.Error())
 	}
 
 	if err := dfs.expandRefValues(); err != nil {

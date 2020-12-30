@@ -4,7 +4,9 @@ import "fmt"
 
 func Dispatch(request *Request) error {
 	if request == nil {
-		return printHelp("", false)
+		request = &Request{
+			Command: "help",
+		}
 	}
 	verbose := request.GetFlag("verbose")
 	switch request.Command {

@@ -6,11 +6,27 @@ import (
 	"strings"
 )
 
+func argEnv(prefix, cmd, arg string) string {
+	if arg == "" {
+		return ""
+	}
+	// using COMMAND_ARGUMENT format to allow specifying different values
+	// for the same argument token for different commands
+	envKey := strings.ToUpper(arg)
+
+	if cmd != "" {
+		envKey = fmt.Sprintf("%s_%s", strings.ToUpper(cmd), envKey)
+	}
+
+	if prefix != "" {
+		envKey = fmt.Sprintf("%s_%s", strings.ToUpper(prefix), envKey)
+	}
+
+	return envKey
+}
+
 // readEnvArgs reads arguments values from the environmental variables
 func (req *Request) readEnvArgs(def *Definitions) error {
-	if req == nil {
-		return fmt.Errorf("cannot fill args from env for a nil request")
-	}
 	if def == nil {
 		return fmt.Errorf("cannot fill args from env using nil definitions")
 	}
@@ -20,16 +36,7 @@ func (req *Request) readEnvArgs(def *Definitions) error {
 			continue
 		}
 
-		// using COMMAND_ARGUMENT format to allow specifying different values
-		// for the same argument token for different commands
-		envKey := fmt.Sprintf("%s_%s",
-			strings.ToUpper(req.Command),
-			strings.ToUpper(arg.Token))
-
-		if def.EnvPrefix != "" {
-			envKey = fmt.Sprintf("%s_%s", strings.ToUpper(def.EnvPrefix), envKey)
-		}
-
+		envKey := argEnv(def.EnvPrefix, req.Command, arg.Token)
 		envVal := os.Getenv(envKey)
 
 		// only add value from environmental variable if it's the only value

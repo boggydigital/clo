@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -118,7 +119,7 @@ func printAppCommands(defs *Definitions, verbose bool) {
 		if verbose && cmd.Desc != "" {
 			cmdDesc = cmd.Desc
 		}
-		fmt.Printf("  %-"+defs.CommandsPadding()+"s  %s",
+		fmt.Printf("  %-"+strconv.Itoa(defs.CommandsPadding())+"s  %s",
 			cmd.Token,
 			cmdDesc)
 		attrs := make([]string, 0)
@@ -140,7 +141,7 @@ func printAppFlags(defs *Definitions, verbose bool) {
 		if verbose && flg.Desc != "" {
 			flgDesc = flg.Desc
 		}
-		fmt.Printf("  %-"+defs.FlagsPadding()+"s  %s",
+		fmt.Printf("  %-"+strconv.Itoa(defs.FlagsPadding())+"s  %s",
 			flg.Token,
 			flgDesc)
 		attrs := make([]string, 0)
@@ -236,10 +237,7 @@ func printArgAttrs(cmd string, arg string, defs *Definitions) error {
 		attrs = append(attrs, "Mult")
 	}
 	if ad.Env {
-		envToken := fmt.Sprintf("%s_%s", strings.ToUpper(cmd), strings.ToUpper(arg))
-		if defs.EnvPrefix != "" {
-			envToken = fmt.Sprintf("%s_%s", strings.ToUpper(defs.EnvPrefix), envToken)
-		}
+		envToken := argEnv(defs.EnvPrefix, cmd, arg)
 		attrs = append(attrs, fmt.Sprintf("Env:%s", envToken))
 	}
 	if ad.Abbr != "" {
@@ -257,7 +255,7 @@ func printArgValues(cmd string, arg string, defs *Definitions, verbose bool) err
 		return fmt.Errorf("  %s: invalid argument token\n", arg)
 	}
 	if len(ad.Values) > 0 {
-		ap := defs.ArgumentsPadding(cmd)
+		ap := strconv.Itoa(defs.ArgumentsPadding(cmd))
 		vd := defs.DefinedValue(ad.Values)
 		valuesOrNewLine := ""
 		if !vd {
@@ -292,7 +290,7 @@ func printCmdArgDesc(cmd string, arg string, defs *Definitions, verbose bool) er
 	if verbose && ad.Desc != "" {
 		argDesc = ad.Desc
 	}
-	fmt.Printf("  %-"+defs.ArgumentsPadding(cmd)+"s  %s", arg, argDesc)
+	fmt.Printf("  %-"+strconv.Itoa(defs.ArgumentsPadding(cmd))+"s  %s", arg, argDesc)
 	return nil
 }
 

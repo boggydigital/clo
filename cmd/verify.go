@@ -7,7 +7,7 @@ import (
 
 func Verify(path string, verbose bool) error {
 
-	defs, err := clo.LoadDefinitions(path)
+	defs, err := clo.LoadDefinitions(path, verbose)
 	if err != nil {
 		return err
 	}

@@ -78,37 +78,44 @@ func testDefs() *Definitions {
 	return defs
 }
 
-func createDefaultDefs(t *testing.T, addLoadBreaks bool) *Definitions {
-	defs := testDefs()
+func breakDefinitions(defs *Definitions) {
+	defs.Arguments = append(defs.Arguments, ArgumentDefinition{
+		CommonDefinition: CommonDefinition{
+			Token: "help:command",
+		},
+		Values: []string{"from:nowhere"},
+	})
+}
 
-	if addLoadBreaks {
-		defs.Arguments = append(defs.Arguments, ArgumentDefinition{
-			CommonDefinition: CommonDefinition{
-				Token: "help:command",
-			},
-			Values: []string{"from:nowhere"},
-		})
-	}
+func writeDefs(defs *Definitions, t *testing.T) {
+	//defs := testDefs()
+
+	//if addLoadBreaks {
+	//	defs.Arguments = append(defs.Arguments, ArgumentDefinition{
+	//		CommonDefinition: CommonDefinition{
+	//			Token: "help:command",
+	//		},
+	//		Values: []string{"from:nowhere"},
+	//	})
+	//}
 
 	if _, err := os.Stat(defaultFilename); os.IsNotExist(err) {
 		jsonBytes, err := json.Marshal(defs)
 		if err != nil {
 			t.Error("cannot serialize test definitions")
-			return nil
+			return
 		}
 		err = ioutil.WriteFile(defaultFilename, jsonBytes, 0644)
 		if err != nil {
 			t.Error("cannot write test definitions")
-			return nil
+			return
 		}
 	} else {
 		t.Errorf("Definitions already exist at path %s", defaultFilename)
 	}
-
-	return defs
 }
 
-func createUnreadableDefs(t *testing.T) {
+func writeUnreadableDefs(t *testing.T) {
 	if _, err := os.Stat(defaultFilename); os.IsNotExist(err) {
 		err = ioutil.WriteFile(defaultFilename, []byte{}, 0644)
 		if err != nil {
@@ -119,16 +126,17 @@ func createUnreadableDefs(t *testing.T) {
 	}
 }
 
-func deleteDefs(path string, t *testing.T) {
-	if os.Remove(path) != nil {
-		t.Errorf("cannot remove test definitions file at %s", path)
+func deleteDefs(t *testing.T) {
+	if os.Remove(defaultFilename) != nil {
+		t.Errorf("cannot remove test definitions file at %s", defaultFilename)
 	}
 }
 
-func TestLoading(t *testing.T) {
+func TestLoad(t *testing.T) {
 	// Load adds 'help' command
-	testDefs := createDefaultDefs(t, false)
-	helpCmd := testDefs.CommandByToken("help")
+	defs := testDefs()
+	writeDefs(defs, t)
+	helpCmd := defs.CommandByToken("help")
 	if helpCmd != nil {
 		t.Error("test definitions already contain help token")
 		return
@@ -150,27 +158,32 @@ func TestLoading(t *testing.T) {
 		t.Error("loaded definitions at path that shouldn't exist")
 	}
 	// cleanup
-	deleteDefs(defaultFilename, t)
+	deleteDefs(t)
 }
 
-func TestLoadBreaks(t *testing.T) {
-	// Load fails with known breaks
-	createDefaultDefs(t, true)
+func TestLoadErrors(t *testing.T) {
+	// Load fails with known breaks:
+	// - Pre-existing "help:command" argument
+	// - Pre-existing "from:nowhere" reference value
+	defs := testDefs()
+	breakDefinitions(defs)
+	writeDefs(defs, t)
 	if defs, err := LoadDefault(); defs != nil || err == nil {
 		t.Error("Load should break with known content problems")
 	}
 	//cleanup
-	deleteDefs(defaultFilename, t)
+	deleteDefs(t)
 
-	createUnreadableDefs(t)
+	// Load empty defs
+	writeUnreadableDefs(t)
 	if defs, err := LoadDefault(); defs != nil || err == nil {
 		t.Error("Load should not return definitions for empty file")
 	}
 	// cleanup
-	deleteDefs(defaultFilename, t)
+	deleteDefs(t)
 }
 
-func TestFlagsSearch(t *testing.T) {
+func TestFlagBy(t *testing.T) {
 	defs := testDefs()
 	fd := defs.FlagByToken("flag1")
 	if fd == nil {
@@ -190,7 +203,7 @@ func TestFlagsSearch(t *testing.T) {
 	}
 }
 
-func TestCommandsSearch(t *testing.T) {
+func TestCommandBy(t *testing.T) {
 	defs := testDefs()
 	cd := defs.CommandByToken("command1")
 	if cd == nil {
@@ -210,7 +223,7 @@ func TestCommandsSearch(t *testing.T) {
 	}
 }
 
-func TestArgsSearch(t *testing.T) {
+func TestArgBy(t *testing.T) {
 	defs := testDefs()
 	ad := defs.ArgByToken("argument1")
 	if ad == nil {
@@ -230,7 +243,7 @@ func TestArgsSearch(t *testing.T) {
 	}
 }
 
-func TestValuesSearch(t *testing.T) {
+func TestValueBy(t *testing.T) {
 	defs := testDefs()
 	vd := defs.ValueByToken("value1")
 	if vd == nil {
@@ -242,7 +255,7 @@ func TestValuesSearch(t *testing.T) {
 	}
 }
 
-func TestDefinedValues(t *testing.T) {
+func TestDefinedValue(t *testing.T) {
 	defs := testDefs()
 	if defs.DefinedValue(nil) {
 		t.Error("nil values cannot be defined")
@@ -258,7 +271,7 @@ func TestDefinedValues(t *testing.T) {
 	}
 }
 
-func TestDefaultArgs(t *testing.T) {
+func TestDefaultArg(t *testing.T) {
 	defs := testDefs()
 	cmd := defs.CommandByToken("command1")
 	if cmd == nil {
