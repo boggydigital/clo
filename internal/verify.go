@@ -2,7 +2,7 @@ package internal
 
 import "fmt"
 
-func sliceFirstDupe(sl []string) string {
+func firstDupe(sl []string) string {
 	if len(sl) < 2 {
 		return ""
 	}
@@ -28,9 +28,9 @@ func vPass(msg string, verbose bool) {
 	}
 }
 
-func cmdTokensAreNotEmpty(def *Definitions, v bool) error {
+func cmdTokensAreNotEmpty(commands []CommandDefinition, v bool) error {
 	msg := "command tokens are not empty"
-	for i, c := range def.Commands {
+	for i, c := range commands {
 		if c.Token == "" {
 			vFail(msg, v)
 			return fmt.Errorf("command #%d has an empty token", i+1)
@@ -40,13 +40,13 @@ func cmdTokensAreNotEmpty(def *Definitions, v bool) error {
 	return nil
 }
 
-func differentCmdTokens(def *Definitions, v bool) error {
+func differentCmdTokens(commands []CommandDefinition, v bool) error {
 	msg := "command tokens are different"
-	cmds := make([]string, 0)
-	for _, c := range def.Commands {
-		cmds = append(cmds, c.Token)
+	dupeCmd := make([]string, 0)
+	for _, c := range commands {
+		dupeCmd = append(dupeCmd, c.Token)
 	}
-	if df := sliceFirstDupe(cmds); df != "" {
+	if df := firstDupe(dupeCmd); df != "" {
 		vFail(msg, v)
 		return fmt.Errorf("commands have duplicate token: '%v'", df)
 	}
@@ -54,13 +54,13 @@ func differentCmdTokens(def *Definitions, v bool) error {
 	return nil
 }
 
-func differentCmdAbbr(def *Definitions, v bool) error {
+func differentCmdAbbr(commands []CommandDefinition, v bool) error {
 	msg := "command abbreviations are different"
-	cmds := make([]string, 0)
-	for _, c := range def.Commands {
-		cmds = append(cmds, c.Abbr)
+	dupeCmd := make([]string, 0)
+	for _, c := range commands {
+		dupeCmd = append(dupeCmd, c.Abbr)
 	}
-	if df := sliceFirstDupe(cmds); df != "" {
+	if df := firstDupe(dupeCmd); df != "" {
 		vFail(msg, v)
 		return fmt.Errorf("commands have duplicate abbreviation: '%v'", df)
 	}
@@ -68,13 +68,13 @@ func differentCmdAbbr(def *Definitions, v bool) error {
 	return nil
 }
 
-func differentArgTokens(def *Definitions, v bool) error {
+func differentArgTokens(args []ArgumentDefinition, v bool) error {
 	msg := "argument tokens are different"
-	args := make([]string, 0)
-	for _, a := range def.Arguments {
-		args = append(args, a.Token)
+	dupeArgs := make([]string, 0)
+	for _, a := range args {
+		dupeArgs = append(dupeArgs, a.Token)
 	}
-	if df := sliceFirstDupe(args); df != "" {
+	if df := firstDupe(dupeArgs); df != "" {
 		vFail(msg, v)
 		return fmt.Errorf("arguments have duplicate token: '%v'", df)
 	}
@@ -82,9 +82,9 @@ func differentArgTokens(def *Definitions, v bool) error {
 	return nil
 }
 
-func argTokensAreNotEmpty(def *Definitions, v bool) error {
+func argTokensAreNotEmpty(args []ArgumentDefinition, v bool) error {
 	msg := "argument tokens are not empty"
-	for i, a := range def.Arguments {
+	for i, a := range args {
 		if a.Token == "" {
 			vFail(msg, v)
 			return fmt.Errorf("argument #%d has an empty token", i+1)
@@ -94,13 +94,13 @@ func argTokensAreNotEmpty(def *Definitions, v bool) error {
 	return nil
 }
 
-func differentArgAbbr(def *Definitions, v bool) error {
+func differentArgAbbr(args []ArgumentDefinition, v bool) error {
 	msg := "argument abbreviations are different"
-	args := make([]string, 0)
-	for _, a := range def.Arguments {
-		args = append(args, a.Abbr)
+	dupeArgs := make([]string, 0)
+	for _, a := range args {
+		dupeArgs = append(dupeArgs, a.Abbr)
 	}
-	if df := sliceFirstDupe(args); df != "" {
+	if df := firstDupe(dupeArgs); df != "" {
 		vFail(msg, v)
 		return fmt.Errorf("arguments have duplicate abbreviation: '%v'", df)
 	}
@@ -108,13 +108,13 @@ func differentArgAbbr(def *Definitions, v bool) error {
 	return nil
 }
 
-func differentFlagTokens(def *Definitions, v bool) error {
+func differentFlagTokens(flags []FlagDefinition, v bool) error {
 	msg := "flag tokens are different"
-	flags := make([]string, 0)
-	for _, f := range def.Flags {
-		flags = append(flags, f.Token)
+	dupeFlags := make([]string, 0)
+	for _, f := range flags {
+		dupeFlags = append(dupeFlags, f.Token)
 	}
-	if df := sliceFirstDupe(flags); df != "" {
+	if df := firstDupe(dupeFlags); df != "" {
 		vFail(msg, v)
 		return fmt.Errorf("flags have duplicate token: '%v'", df)
 	}
@@ -122,13 +122,13 @@ func differentFlagTokens(def *Definitions, v bool) error {
 	return nil
 }
 
-func differentFlagAbbr(def *Definitions, v bool) error {
+func differentFlagAbbr(flags []FlagDefinition, v bool) error {
 	msg := "flag abbreviations are different"
-	flags := make([]string, 0)
-	for _, f := range def.Flags {
-		flags = append(flags, f.Abbr)
+	dupeFlags := make([]string, 0)
+	for _, f := range flags {
+		dupeFlags = append(dupeFlags, f.Abbr)
 	}
-	if df := sliceFirstDupe(flags); df != "" {
+	if df := firstDupe(dupeFlags); df != "" {
 		vFail(msg, v)
 		return fmt.Errorf("flags have duplicate abbreviation: '%v'", df)
 	}
@@ -136,9 +136,9 @@ func differentFlagAbbr(def *Definitions, v bool) error {
 	return nil
 }
 
-func flagTokensAreNotEmpty(def *Definitions, v bool) error {
+func flagTokensAreNotEmpty(flags []FlagDefinition, v bool) error {
 	msg := "flag tokens are not empty"
-	for i, f := range def.Flags {
+	for i, f := range flags {
 		if f.Token == "" {
 			vFail(msg, v)
 			return fmt.Errorf("flag #%d has an empty token", i+1)
@@ -148,20 +148,24 @@ func flagTokensAreNotEmpty(def *Definitions, v bool) error {
 	return nil
 }
 
-func differentAbbr(def *Definitions, v bool) error {
+func differentAbbr(
+	commands []CommandDefinition,
+	args []ArgumentDefinition,
+	flags []FlagDefinition,
+	v bool) error {
 	msg := "all abbreviations are different"
 	abbr := make([]string, 0)
 
-	for _, c := range def.Commands {
+	for _, c := range commands {
 		abbr = append(abbr, c.Abbr)
 	}
-	for _, a := range def.Arguments {
+	for _, a := range args {
 		abbr = append(abbr, a.Abbr)
 	}
-	for _, f := range def.Flags {
+	for _, f := range flags {
 		abbr = append(abbr, f.Abbr)
 	}
-	if da := sliceFirstDupe(abbr); da != "" {
+	if da := firstDupe(abbr); da != "" {
 		vFail(msg, v)
 		return fmt.Errorf("same abbreviation for a command, argument or flag: '%v'", da)
 	}
@@ -169,11 +173,14 @@ func differentAbbr(def *Definitions, v bool) error {
 	return nil
 }
 
-func commandsValidArgs(def *Definitions, v bool) error {
+func commandsValidArgs(
+	commands []CommandDefinition,
+	argByToken func(string) *ArgumentDefinition,
+	v bool) error {
 	msg := "commands have valid arguments"
-	for _, c := range def.Commands {
+	for _, c := range commands {
 		for _, a := range c.Arguments {
-			da := def.ArgByToken(a)
+			da := argByToken(a)
 			if da == nil {
 				vFail(msg, v)
 				return fmt.Errorf("command '%s' has undefined argument '%s'", c.Token, a)
@@ -184,15 +191,15 @@ func commandsValidArgs(def *Definitions, v bool) error {
 	return nil
 }
 
-func allUsedArgs(def *Definitions, v bool) error {
+func allUsedArgs(commands []CommandDefinition, args []ArgumentDefinition, v bool) error {
 	msg := "all arguments are used in commands"
 	cas := make([]string, 0)
-	for _, c := range def.Commands {
+	for _, c := range commands {
 		for _, ca := range c.Arguments {
 			cas = append(cas, ca)
 		}
 	}
-	for _, a := range def.Arguments {
+	for _, a := range args {
 		match := false
 		for _, da := range cas {
 			if a.Token == da {
@@ -209,10 +216,10 @@ func allUsedArgs(def *Definitions, v bool) error {
 	return nil
 }
 
-func differentArgsCmd(def *Definitions, v bool) error {
+func differentArgsCmd(commands []CommandDefinition, v bool) error {
 	msg := "no duplicate arguments in commands"
-	for _, c := range def.Commands {
-		if da := sliceFirstDupe(c.Arguments); da != "" {
+	for _, c := range commands {
+		if da := firstDupe(c.Arguments); da != "" {
 			vFail(msg, v)
 			return fmt.Errorf("command '%s' has duplicate argument '%s'", c.Token, da)
 		}
@@ -221,12 +228,15 @@ func differentArgsCmd(def *Definitions, v bool) error {
 	return nil
 }
 
-func singleDefaultArgPerCmd(def *Definitions, v bool) error {
+func singleDefaultArgPerCmd(
+	commands []CommandDefinition,
+	argByToken func(string) *ArgumentDefinition,
+	v bool) error {
 	msg := "no more than one default argument"
-	for _, cmd := range def.Commands {
+	for _, cmd := range commands {
 		d := ""
 		for _, at := range cmd.Arguments {
-			arg := def.ArgByToken(at)
+			arg := argByToken(at)
 			if arg == nil {
 				continue
 			}
@@ -244,10 +254,10 @@ func singleDefaultArgPerCmd(def *Definitions, v bool) error {
 	return nil
 }
 
-func differentArgValues(def *Definitions, v bool) error {
+func differentArgValues(args []ArgumentDefinition, v bool) error {
 	msg := "no duplicate values in arguments"
-	for _, a := range def.Arguments {
-		if dv := sliceFirstDupe(a.Values); dv != "" {
+	for _, a := range args {
+		if dv := firstDupe(a.Values); dv != "" {
 			vFail(msg, v)
 			return fmt.Errorf("argument '%s' has duplicate value '%s'", a.Token, dv)
 		}
@@ -256,9 +266,9 @@ func differentArgValues(def *Definitions, v bool) error {
 	return nil
 }
 
-func examplesDescAreNotEmpty(def *Definitions, v bool) error {
+func examplesDescAreNotEmpty(commands []CommandDefinition, v bool) error {
 	msg := "example descriptions are not empty"
-	for _, cd := range def.Commands {
+	for _, cd := range commands {
 		for i, ex := range cd.Examples {
 			if ex.Desc == "" {
 				vFail(msg, v)
@@ -270,12 +280,12 @@ func examplesDescAreNotEmpty(def *Definitions, v bool) error {
 	return nil
 }
 
-func examplesArgumentsAreNotEmpty(def *Definitions, v bool) error {
+func examplesArgumentsAreNotEmpty(commands []CommandDefinition, v bool) error {
 	msg := "examples arguments are not empty"
-	for _, cd := range def.Commands {
+	for _, cd := range commands {
 		for i, ex := range cd.Examples {
 			for _, argVal := range ex.ArgumentsValues {
-				for arg, _ := range argVal {
+				for arg := range argVal {
 					if arg == "" {
 						vFail(msg, v)
 						return fmt.Errorf("command '%s' example #%d has an empty argument",
@@ -290,9 +300,9 @@ func examplesArgumentsAreNotEmpty(def *Definitions, v bool) error {
 	return nil
 }
 
-func examplesHaveArgsValues(def *Definitions, v bool) error {
+func examplesHaveArgsValues(commands []CommandDefinition, v bool) error {
 	msg := "examples have at least one argument (with optional value(s))"
-	for _, cd := range def.Commands {
+	for _, cd := range commands {
 		for i, ex := range cd.Examples {
 			if len(ex.ArgumentsValues) == 0 {
 				vFail(msg, v)
@@ -306,13 +316,16 @@ func examplesHaveArgsValues(def *Definitions, v bool) error {
 	return nil
 }
 
-func examplesArgumentsAreValid(def *Definitions, v bool) error {
+func examplesArgumentsAreValid(
+	commands []CommandDefinition,
+	argByToken func(string) *ArgumentDefinition,
+	v bool) error {
 	msg := "examples are using valid arguments"
-	for _, cd := range def.Commands {
+	for _, cd := range commands {
 		for i, ex := range cd.Examples {
 			for _, argVal := range ex.ArgumentsValues {
-				for arg, _ := range argVal {
-					ad := def.ArgByToken(arg)
+				for arg := range argVal {
+					ad := argByToken(arg)
 					if ad == nil {
 						vFail(msg, v)
 						return fmt.Errorf("command '%s' example #%d uses undefined argument '%s'",
@@ -328,11 +341,15 @@ func examplesArgumentsAreValid(def *Definitions, v bool) error {
 	return nil
 }
 
-func cmdExampleHasValidValues(cmd string, def *Definitions, ex *ExampleDefinition, i int) error {
-	for _, argVal := range ex.ArgumentsValues {
+func cmdExampleHasValidValues(
+	cmd string,
+	argumentsValues []map[string][]string,
+	validArgVal func(string, string) bool,
+	i int) error {
+	for _, argVal := range argumentsValues {
 		for arg, values := range argVal {
 			for _, val := range values {
-				if !def.ValidArgVal(arg, val) {
+				if !validArgVal(arg, val) {
 					return fmt.Errorf("command '%s' example #%d uses invalid "+
 						"value '%s' for an argument '%s'",
 						cmd,
@@ -346,11 +363,18 @@ func cmdExampleHasValidValues(cmd string, def *Definitions, ex *ExampleDefinitio
 	return nil
 }
 
-func examplesHaveValidValues(def *Definitions, v bool) error {
+func examplesHaveValidValues(
+	commands []CommandDefinition,
+	validArgVal func(string, string) bool,
+	v bool) error {
 	msg := "examples have valid values"
-	for _, cd := range def.Commands {
+	for _, cd := range commands {
 		for i, ex := range cd.Examples {
-			if err := cmdExampleHasValidValues(cd.Token, def, &ex, i); err != nil {
+			if err := cmdExampleHasValidValues(
+				cd.Token,
+				ex.ArgumentsValues,
+				validArgVal,
+				i); err != nil {
 				vFail(msg, v)
 				return err
 			}
@@ -372,30 +396,30 @@ func (def *Definitions) Verify(v bool) []error {
 	errors := make([]error, 0)
 
 	// tokens and abbreviations
-	errors = appendError(errors, cmdTokensAreNotEmpty(def, v))
-	errors = appendError(errors, differentCmdTokens(def, v))
-	errors = appendError(errors, differentCmdAbbr(def, v))
-	errors = appendError(errors, argTokensAreNotEmpty(def, v))
-	errors = appendError(errors, differentArgTokens(def, v))
-	errors = appendError(errors, differentArgAbbr(def, v))
-	errors = appendError(errors, flagTokensAreNotEmpty(def, v))
-	errors = appendError(errors, differentFlagTokens(def, v))
-	errors = appendError(errors, differentFlagAbbr(def, v))
-	errors = appendError(errors, differentAbbr(def, v))
+	errors = appendError(errors, cmdTokensAreNotEmpty(def.Commands, v))
+	errors = appendError(errors, differentCmdTokens(def.Commands, v))
+	errors = appendError(errors, differentCmdAbbr(def.Commands, v))
+	errors = appendError(errors, argTokensAreNotEmpty(def.Arguments, v))
+	errors = appendError(errors, differentArgTokens(def.Arguments, v))
+	errors = appendError(errors, differentArgAbbr(def.Arguments, v))
+	errors = appendError(errors, flagTokensAreNotEmpty(def.Flags, v))
+	errors = appendError(errors, differentFlagTokens(def.Flags, v))
+	errors = appendError(errors, differentFlagAbbr(def.Flags, v))
+	errors = appendError(errors, differentAbbr(def.Commands, def.Arguments, def.Flags, v))
 
 	// arguments
-	errors = appendError(errors, commandsValidArgs(def, v))
-	errors = appendError(errors, allUsedArgs(def, v))
-	errors = appendError(errors, singleDefaultArgPerCmd(def, v))
-	errors = appendError(errors, differentArgsCmd(def, v))
-	errors = appendError(errors, differentArgValues(def, v))
+	errors = appendError(errors, commandsValidArgs(def.Commands, def.ArgByToken, v))
+	errors = appendError(errors, allUsedArgs(def.Commands, def.Arguments, v))
+	errors = appendError(errors, singleDefaultArgPerCmd(def.Commands, def.ArgByToken, v))
+	errors = appendError(errors, differentArgsCmd(def.Commands, v))
+	errors = appendError(errors, differentArgValues(def.Arguments, v))
 
 	// examples
-	errors = appendError(errors, examplesDescAreNotEmpty(def, v))
-	errors = appendError(errors, examplesArgumentsAreValid(def, v))
-	errors = appendError(errors, examplesArgumentsAreNotEmpty(def, v))
-	errors = appendError(errors, examplesHaveArgsValues(def, v))
-	errors = appendError(errors, examplesHaveValidValues(def, v))
+	errors = appendError(errors, examplesDescAreNotEmpty(def.Commands, v))
+	errors = appendError(errors, examplesArgumentsAreValid(def.Commands, def.ArgByToken, v))
+	errors = appendError(errors, examplesArgumentsAreNotEmpty(def.Commands, v))
+	errors = appendError(errors, examplesHaveArgsValues(def.Commands, v))
+	errors = appendError(errors, examplesHaveValidValues(def.Commands, def.ValidArgVal, v))
 
 	return errors
 }
