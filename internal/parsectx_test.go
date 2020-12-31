@@ -1,52 +1,35 @@
 package internal
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestUpdate(t *testing.T) {
-	pCtx := parseCtx{}
-	defs := testDefs()
-
-	if pCtx.Command != nil || pCtx.Argument != nil {
-		t.Error("unexpected parse context initial condition")
+	tests := []struct {
+		token     string
+		tokenType int
+		cmdNilExp bool
+		argNilExp bool
+	}{
+		{"command-token-that-doesnt-exist", command, true, true},
+		{"command-abbr-that-doesnt-exist", commandAbbr, true, true},
+		{"--arg-token-that-doesnt-exist", argument, true, true},
+		{"--arg-abbr-that-doesnt-exist", argumentAbbr, true, true},
+		{"command1", command, false, true},
+		{"c1", commandAbbr, false, true},
+		{"--argument1", argument, false, false},
+		{"--a1", argumentAbbr, false, false},
 	}
-
-	// invalid updates
-	// commands
-	pCtx.update("command-that-doesnt-exist", command, defs)
-	if pCtx.Command != nil {
-		t.Error("unexpectedly set parse context command by command token that doesn't exist")
-	}
-	pCtx.update("command-abbr-that-doesnt-exist", commandAbbr, defs)
-	if pCtx.Command != nil {
-		t.Error("unexpectedly set parse context command  by command abbr that doesn't exist")
-	}
-	// arguments
-	pCtx.update("--arg-that-doesnt-exist", argument, defs)
-	if pCtx.Argument != nil {
-		t.Error("unexpectedly set parse context command by arg token that doesn't exist")
-	}
-	pCtx.update("--arg-abbr-that-doesnt-exist", argumentAbbr, defs)
-	if pCtx.Argument != nil {
-		t.Error("unexpectedly set parse context command by arg abbr that doesn't exist")
-	}
-
-	// valid updates
-	// commands
-	pCtx.update("command1", command, defs)
-	if pCtx.Command == nil {
-		t.Error("parse context command wasn't set by a valid command token")
-	}
-	pCtx.update("c1", commandAbbr, defs)
-	if pCtx.Command == nil {
-		t.Error("parse context command wasn't set by a valid command abbr")
-	}
-	// arguments
-	pCtx.update("--argument1", argument, defs)
-	if pCtx.Argument == nil {
-		t.Error("parse context command wasn't set by a valid argument token")
-	}
-	pCtx.update("--a1", argumentAbbr, defs)
-	if pCtx.Argument == nil {
-		t.Error("parse context command wasn't set by a valid argument abbr")
+	pCtx, defs := parseCtx{}, testDefs()
+	for _, tt := range tests {
+		t.Run(tt.token, func(t *testing.T) {
+			pCtx.update(tt.token, tt.tokenType, defs)
+			if (pCtx.Command != nil && tt.cmdNilExp) || (pCtx.Command == nil && !tt.cmdNilExp) {
+				t.Error("parse context update produced unexpected command")
+			}
+			if (pCtx.Argument != nil && tt.argNilExp) || (pCtx.Argument == nil && !tt.argNilExp) {
+				t.Error("parse context update produced unexpected argument")
+			}
+		})
 	}
 }

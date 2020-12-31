@@ -5,19 +5,27 @@ import (
 )
 
 func TestDispatch(t *testing.T) {
+	tests := []struct {
+		request  *Request
+		errorExp bool
+	}{
+		{nil, false},
+		{&Request{Command: "help"}, false},
+		{&Request{Command: "command-that-doesnt-exist"}, true},
+	}
 	writeDefs(testDefs(), t)
-	// verify nil Request
-	if err := Dispatch(nil); err != nil {
-		t.Error("dispatch nil request error:", err.Error())
+	t.Cleanup(deleteDefs)
+
+	for _, tt := range tests {
+		name := "nil"
+		if tt.request != nil {
+			name = tt.request.Command
+		}
+		t.Run(name, func(t *testing.T) {
+			err := Dispatch(tt.request)
+			if (err == nil && tt.errorExp) || (err != nil && !tt.errorExp) {
+				t.Errorf("unexpected result dispatching command '%s'", name)
+			}
+		})
 	}
-	// verify help command
-	if err := Dispatch(&Request{Command: "help"}); err != nil {
-		t.Error("dispatch request with help command error:", err.Error())
-	}
-	// verify unknown command error
-	if err := Dispatch(&Request{Command: "command-that-doesnt-exist"}); err == nil {
-		t.Error("command that doesn't exist should create an error")
-	}
-	// cleanup
-	deleteDefs(t)
 }

@@ -2,7 +2,9 @@ package internal
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"testing"
 )
@@ -88,17 +90,6 @@ func breakDefinitions(defs *Definitions) {
 }
 
 func writeDefs(defs *Definitions, t *testing.T) {
-	//defs := testDefs()
-
-	//if addLoadBreaks {
-	//	defs.Arguments = append(defs.Arguments, ArgumentDefinition{
-	//		CommonDefinition: CommonDefinition{
-	//			Token: "help:command",
-	//		},
-	//		Values: []string{"from:nowhere"},
-	//	})
-	//}
-
 	if _, err := os.Stat(defaultFilename); os.IsNotExist(err) {
 		jsonBytes, err := json.Marshal(defs)
 		if err != nil {
@@ -115,7 +106,7 @@ func writeDefs(defs *Definitions, t *testing.T) {
 	}
 }
 
-func writeUnreadableDefs(t *testing.T) {
+func writeEmptyDefs(t *testing.T) {
 	if _, err := os.Stat(defaultFilename); os.IsNotExist(err) {
 		err = ioutil.WriteFile(defaultFilename, []byte{}, 0644)
 		if err != nil {
@@ -126,209 +117,277 @@ func writeUnreadableDefs(t *testing.T) {
 	}
 }
 
-func deleteDefs(t *testing.T) {
+func deleteDefs() {
 	if os.Remove(defaultFilename) != nil {
-		t.Errorf("cannot remove test definitions file at %s", defaultFilename)
+		log.Printf("cannot remove test definitions file at %s", defaultFilename)
 	}
 }
 
+func loadPathThatDoesntExist() (*Definitions, error) {
+	return Load("path/that/doesnt/exist")
+}
+
 func TestLoad(t *testing.T) {
+	names := []string{"load-adds-help", "load-at-a-path-that-doesnt-exist"}
+	tests := []struct {
+		load      func() (*Definitions, error)
+		validLoad bool
+		addedCmd  string
+	}{
+		{LoadDefault, true, "help"},
+		{loadPathThatDoesntExist, false, "help"},
+	}
+
 	// Load adds 'help' command
 	defs := testDefs()
 	writeDefs(defs, t)
-	helpCmd := defs.CommandByToken("help")
-	if helpCmd != nil {
-		t.Error("test definitions already contain help token")
-		return
-	}
+	t.Cleanup(deleteDefs)
 
-	defs, err := LoadDefault()
-	if defs == nil || err != nil {
-		t.Error("cannot load default definitions")
-		return
+	for ii, tt := range tests {
+		t.Run(names[ii], func(t *testing.T) {
+			// command shouldn't exist before we add it at load
+			cmd := defs.CommandByToken(tt.addedCmd)
+			if cmd != nil {
+				t.Error("test definitions already contain help token")
+			}
+
+			defs, err := tt.load()
+			if tt.validLoad && err != nil {
+				t.Error(err.Error())
+			}
+			if (defs == nil && tt.validLoad) || (defs != nil && !tt.validLoad) {
+				t.Error("unexpected results encountered while loading definitions")
+				return
+			}
+
+			if defs != nil {
+				cmd := defs.CommandByToken(tt.addedCmd)
+				if cmd == nil {
+					t.Error("test definitions should gain help token at load")
+				}
+			}
+		})
 	}
-	helpCmd = defs.CommandByToken("help")
-	if helpCmd == nil {
-		t.Error("Load definitions didn't add 'help' command")
-		return
-	}
-	// Load fails with a path that doesn't exist
-	defs, err = Load("path/that/doesnt/exist")
-	if defs != nil || err == nil {
-		t.Error("loaded definitions at path that shouldn't exist")
-	}
-	// cleanup
-	deleteDefs(t)
+}
+
+func setupBrokenDefs(t *testing.T) {
+	defs := testDefs()
+	breakDefinitions(defs)
+	writeDefs(defs, t)
+	t.Cleanup(deleteDefs)
+}
+
+func setupEmptyDefs(t *testing.T) {
+	writeEmptyDefs(t)
+	t.Cleanup(deleteDefs)
 }
 
 func TestLoadErrors(t *testing.T) {
 	// Load fails with known breaks:
 	// - Pre-existing "help:command" argument
 	// - Pre-existing "from:nowhere" reference value
-	defs := testDefs()
-	breakDefinitions(defs)
-	writeDefs(defs, t)
-	if defs, err := LoadDefault(); defs != nil || err == nil {
-		t.Error("Load should break with known content problems")
+	names := []string{"broken_defs", "empty_defs"}
+	tests := []struct {
+		setup func(t *testing.T)
+	}{
+		{setupBrokenDefs},
+		{setupEmptyDefs},
 	}
-	//cleanup
-	deleteDefs(t)
 
-	// Load empty defs
-	writeUnreadableDefs(t)
-	if defs, err := LoadDefault(); defs != nil || err == nil {
-		t.Error("Load should not return definitions for empty file")
-	}
-	// cleanup
-	deleteDefs(t)
-}
-
-func TestFlagBy(t *testing.T) {
-	defs := testDefs()
-	fd := defs.FlagByToken("flag1")
-	if fd == nil {
-		t.Error("cannot find an expected flag by token")
-	}
-	fd = defs.FlagByToken("flag-token-that-doesnt-exist")
-	if fd != nil {
-		t.Error("found a flag that doesn't exist by token")
-	}
-	fd = defs.FlagByAbbr("f1")
-	if fd == nil {
-		t.Error("cannot find an expected flag by abbr")
-	}
-	fd = defs.FlagByAbbr("flag-abbr-that-doesnt-exist")
-	if fd != nil {
-		t.Error("found a flag that doesn't exist by abbr")
+	for ii, tt := range tests {
+		t.Run(names[ii], func(t *testing.T) {
+			tt.setup(t)
+			if defs, err := LoadDefault(); defs != nil || err == nil {
+				t.Error("expected Load to fail with known problematic defs")
+			}
+		})
 	}
 }
 
-func TestCommandBy(t *testing.T) {
-	defs := testDefs()
-	cd := defs.CommandByToken("command1")
-	if cd == nil {
-		t.Error("cannot find an expected command by token")
-	}
-	cd = defs.CommandByToken("command-token-that-doesnt-exist")
-	if cd != nil {
-		t.Error("found a command that doesn't exist by token")
-	}
-	cd = defs.CommandByAbbr("c1")
-	if cd == nil {
-		t.Error("cannot find an expected command by abbr")
-	}
-	cd = defs.CommandByAbbr("command-abbr-that-doesnt-exist")
-	if cd != nil {
-		t.Error("found a command that doesn't exist by abbr")
+func genByTokenAbbrTests(prefix string) []struct {
+	token  string
+	nilExp bool
+} {
+	return []struct {
+		token  string
+		nilExp bool
+	}{
+		// valid token/abbr
+		{prefix + "1", false},
+		// invalid token/abbr
+		{prefix + "-token-that-doesnt-exist", true},
 	}
 }
 
-func TestArgBy(t *testing.T) {
+func TestFlagByToken(t *testing.T) {
 	defs := testDefs()
-	ad := defs.ArgByToken("argument1")
-	if ad == nil {
-		t.Error("cannot find an expected argument by token")
+	for _, tt := range genByTokenAbbrTests("flag") {
+		t.Run(tt.token, func(t *testing.T) {
+			fd := defs.FlagByToken(tt.token)
+			if (fd == nil && !tt.nilExp) || (fd != nil && tt.nilExp) {
+				t.Error("unexpected flag by token result")
+			}
+		})
 	}
-	ad = defs.ArgByToken("argument-token-that-doesnt-exist")
-	if ad != nil {
-		t.Error("found an argument that doesn't exist by token")
+}
+
+func TestFlagByAbbr(t *testing.T) {
+	defs := testDefs()
+	for _, tt := range genByTokenAbbrTests("f") {
+		t.Run(tt.token, func(t *testing.T) {
+			fd := defs.FlagByAbbr(tt.token)
+			if (fd == nil && !tt.nilExp) || (fd != nil && tt.nilExp) {
+				t.Error("unexpected flag by abbr result")
+			}
+		})
 	}
-	ad = defs.ArgByAbbr("a1")
-	if ad == nil {
-		t.Error("cannot find an expected argument by abbr")
+}
+
+func TestCommandByToken(t *testing.T) {
+	defs := testDefs()
+	for _, tt := range genByTokenAbbrTests("command") {
+		t.Run(tt.token, func(t *testing.T) {
+			cd := defs.CommandByToken(tt.token)
+			if (cd == nil && !tt.nilExp) || (cd != nil && tt.nilExp) {
+				t.Error("unexpected command by token result")
+			}
+		})
 	}
-	ad = defs.ArgByAbbr("arg-abbr-that-doesnt-exist")
-	if ad != nil {
-		t.Error("found an argument that doesn't exist by abbr")
+}
+
+func TestCommandByAbbr(t *testing.T) {
+	defs := testDefs()
+	for _, tt := range genByTokenAbbrTests("c") {
+		t.Run(tt.token, func(t *testing.T) {
+			cd := defs.CommandByAbbr(tt.token)
+			if (cd == nil && !tt.nilExp) || (cd != nil && tt.nilExp) {
+				t.Error("unexpected command by abbr result")
+			}
+		})
+	}
+}
+
+func TestArgByToken(t *testing.T) {
+	defs := testDefs()
+	for _, tt := range genByTokenAbbrTests("argument") {
+		t.Run(tt.token, func(t *testing.T) {
+			cd := defs.ArgByToken(tt.token)
+			if (cd == nil && !tt.nilExp) || (cd != nil && tt.nilExp) {
+				t.Error("unexpected argument by token result")
+			}
+		})
+	}
+}
+
+func TestArgByAbbr(t *testing.T) {
+	defs := testDefs()
+	for _, tt := range genByTokenAbbrTests("a") {
+		t.Run(tt.token, func(t *testing.T) {
+			cd := defs.ArgByAbbr(tt.token)
+			if (cd == nil && !tt.nilExp) || (cd != nil && tt.nilExp) {
+				t.Error("unexpected argument by abbr result")
+			}
+		})
 	}
 }
 
 func TestValueBy(t *testing.T) {
 	defs := testDefs()
-	vd := defs.ValueByToken("value1")
-	if vd == nil {
-		t.Error("cannot find an expected value by token")
-	}
-	vd = defs.ValueByToken("value-token-that-doesnt-exist")
-	if vd != nil {
-		t.Error("found a value that doesn't exist by token")
+	for _, tt := range genByTokenAbbrTests("value") {
+		t.Run(tt.token, func(t *testing.T) {
+			cd := defs.ValueByToken(tt.token)
+			if (cd == nil && !tt.nilExp) || (cd != nil && tt.nilExp) {
+				t.Error("unexpected value by token result")
+			}
+		})
 	}
 }
 
 func TestDefinedValue(t *testing.T) {
 	defs := testDefs()
-	if defs.DefinedValue(nil) {
-		t.Error("nil values cannot be defined")
-	}
-	if defs.DefinedValue([]string{}) {
-		t.Error("empty values cannot be defined")
-	}
-	if !defs.DefinedValue([]string{"value1"}) {
-		t.Error("unexpected undefined value")
-	}
-	if defs.DefinedValue([]string{"value-that-doesnt-exist"}) {
-		t.Error("unexpected defined value")
+	for ii, tt := range validityTests {
+		t.Run(validityNames[ii], func(t *testing.T) {
+			if defs.DefinedValue(tt.values) != tt.expected {
+				t.Error("unexpected defined value result")
+			}
+		})
 	}
 }
 
 func TestDefaultArg(t *testing.T) {
 	defs := testDefs()
-	cmd := defs.CommandByToken("command1")
-	if cmd == nil {
-		t.Errorf("cannot find required command: command1")
-		return
+	tests := []struct {
+		cmd      *CommandDefinition
+		validCmd bool
+		args     []string
+		nilExp   bool
+	}{
+		{nil, false, nil, true},
+		{
+			defs.CommandByToken("command1"),
+			true,
+			[]string{"argument-that-doesnt-exist", "argument1", "argument2"},
+			false,
+		},
+		{defs.CommandByToken("command2"), true, nil, true},
 	}
 
-	if defs.DefaultArg(nil) != nil {
-		t.Error("nil commands shouldn't have default arg")
-	}
-
-	newArgs := make([]string, 0)
-	newArgs = append(newArgs, "unknown-argument")
-	for _, a := range cmd.Arguments {
-		newArgs = append(newArgs, a)
-	}
-	cmd.Arguments = newArgs
-	if defs.DefaultArg(cmd) == nil {
-		t.Errorf("%s is expected to have a default arg", cmd.Token)
-	}
-
-	cmd = defs.CommandByToken("command2")
-	if cmd == nil {
-		t.Errorf("cannot find required command: command2")
-		return
-	}
-
-	if defs.DefaultArg(cmd) != nil {
-		t.Errorf("%s is NOT expected to have a default arg", cmd.Token)
+	for _, tt := range tests {
+		name := "nil"
+		if tt.cmd != nil {
+			name = tt.cmd.Token
+		}
+		t.Run(name, func(t *testing.T) {
+			if tt.validCmd && tt.cmd == nil {
+				t.Error("expected a valid command")
+			}
+			if tt.validCmd && tt.args != nil {
+				tt.cmd.Arguments = tt.args
+			}
+			ad := defs.DefaultArg(tt.cmd)
+			if (ad != nil && tt.nilExp) || (ad == nil && !tt.nilExp) {
+				t.Errorf("unexpected default argument resolution for command '%s'", name)
+			}
+		})
 	}
 }
 
 func TestRequiredArgs(t *testing.T) {
 	defs := testDefs()
-
-	if len(defs.RequiredArgs("command-that-doesnt-exist")) != 0 {
-		t.Error("commands that don't exist shouldn't have required args")
+	tests := []struct {
+		cmd          string
+		requiredArgs int
+	}{
+		{"command-that-doesnt-exist", 0},
+		{defs.Commands[0].Token, 1},
 	}
-
-	defs.Commands[0].Arguments = append(defs.Commands[0].Arguments, "unknown-argument")
-	if len(defs.RequiredArgs(defs.Commands[0].Token)) != 1 {
-		t.Errorf("%s is expected to have 1 required argument",
-			defs.Commands[0].Token)
+	// this is required to hit a "if arg == nil {" condition
+	defs.Commands[0].Arguments = append(defs.Commands[0].Arguments, "argument-that-doesnt-exist")
+	for _, tt := range tests {
+		t.Run(tt.cmd, func(t *testing.T) {
+			if len(defs.RequiredArgs(tt.cmd)) != tt.requiredArgs {
+				t.Errorf("unexpected number of required arguments for command '%s'", tt.cmd)
+			}
+		})
 	}
-
 }
 
 func TestValidArgVal(t *testing.T) {
+	tests := []struct {
+		arg      string
+		val      string
+		expected bool
+	}{
+		{"", "", false},
+		{"argument-that-doesnt-exist", "", false},
+		{"argument1", "value1", true},
+	}
 	defs := testDefs()
-
-	if defs.ValidArgVal("", "") {
-		t.Error("empty arguments shouldn't have valid args")
-	}
-	if defs.ValidArgVal("argument-that-doesnt-exist", "") {
-		t.Error("arguments that don't exist shouldn't have valid args")
-	}
-	if !defs.ValidArgVal("argument1", "value1") {
-		t.Error("cannot confirm a valid argument")
+	for _, tt := range tests {
+		t.Run(fmt.Sprintf("%s-%s", tt.arg, tt.val), func(t *testing.T) {
+			if defs.ValidArgVal(tt.arg, tt.val) != tt.expected {
+				t.Errorf("unexpected validity of the '%s' value for '%s' argument", tt.val, tt.arg)
+			}
+		})
 	}
 }
