@@ -68,6 +68,18 @@ func differentCmdAbbr(commands []CommandDefinition, v bool) error {
 	return nil
 }
 
+func argTokensAreNotEmpty(args []ArgumentDefinition, v bool) error {
+	msg := "argument tokens are not empty"
+	for i, a := range args {
+		if a.Token == "" {
+			vFail(msg, v)
+			return fmt.Errorf("argument #%d has an empty token", i+1)
+		}
+	}
+	vPass(msg, v)
+	return nil
+}
+
 func differentArgTokens(args []ArgumentDefinition, v bool) error {
 	msg := "argument tokens are different"
 	dupeArgs := make([]string, 0)
@@ -82,18 +94,6 @@ func differentArgTokens(args []ArgumentDefinition, v bool) error {
 	return nil
 }
 
-func argTokensAreNotEmpty(args []ArgumentDefinition, v bool) error {
-	msg := "argument tokens are not empty"
-	for i, a := range args {
-		if a.Token == "" {
-			vFail(msg, v)
-			return fmt.Errorf("argument #%d has an empty token", i+1)
-		}
-	}
-	vPass(msg, v)
-	return nil
-}
-
 func differentArgAbbr(args []ArgumentDefinition, v bool) error {
 	msg := "argument abbreviations are different"
 	dupeArgs := make([]string, 0)
@@ -103,6 +103,18 @@ func differentArgAbbr(args []ArgumentDefinition, v bool) error {
 	if df := firstDupe(dupeArgs); df != "" {
 		vFail(msg, v)
 		return fmt.Errorf("arguments have duplicate abbreviation: '%v'", df)
+	}
+	vPass(msg, v)
+	return nil
+}
+
+func flagTokensAreNotEmpty(flags []FlagDefinition, v bool) error {
+	msg := "flag tokens are not empty"
+	for i, f := range flags {
+		if f.Token == "" {
+			vFail(msg, v)
+			return fmt.Errorf("flag #%d has an empty token", i+1)
+		}
 	}
 	vPass(msg, v)
 	return nil
@@ -131,18 +143,6 @@ func differentFlagAbbr(flags []FlagDefinition, v bool) error {
 	if df := firstDupe(dupeFlags); df != "" {
 		vFail(msg, v)
 		return fmt.Errorf("flags have duplicate abbreviation: '%v'", df)
-	}
-	vPass(msg, v)
-	return nil
-}
-
-func flagTokensAreNotEmpty(flags []FlagDefinition, v bool) error {
-	msg := "flag tokens are not empty"
-	for i, f := range flags {
-		if f.Token == "" {
-			vFail(msg, v)
-			return fmt.Errorf("flag #%d has an empty token", i+1)
-		}
 	}
 	vPass(msg, v)
 	return nil
