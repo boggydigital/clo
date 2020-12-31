@@ -7,7 +7,7 @@ import (
 func TestDispatch(t *testing.T) {
 	tests := []struct {
 		request  *Request
-		errorExp bool
+		expError bool
 	}{
 		{nil, false},
 		{&Request{Command: "help"}, false},
@@ -23,9 +23,7 @@ func TestDispatch(t *testing.T) {
 		}
 		t.Run(name, func(t *testing.T) {
 			err := Dispatch(tt.request)
-			if (err == nil && tt.errorExp) || (err != nil && !tt.errorExp) {
-				t.Errorf("unexpected result dispatching command '%s'", name)
-			}
+			assertError(t, err, tt.expError)
 		})
 	}
 }

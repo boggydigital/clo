@@ -16,15 +16,17 @@ var validityTests = []struct {
 	{[]string{"value-that-doesnt-exist"}, "value1", false},
 }
 
+func assertEquals(t *testing.T, v1, v2 interface{}) {
+	if v1 != v2 {
+		t.Error()
+	}
+}
+
 func TestValidValue(t *testing.T) {
 	for ii, tt := range validityTests {
 		t.Run(validityNames[ii], func(t *testing.T) {
-			ad := ArgumentDefinition{
-				Values: tt.values,
-			}
-			if ad.ValidValue(tt.value) != tt.expected {
-				t.Error("unexpected value validity:", tt.value)
-			}
+			ad := ArgumentDefinition{Values: tt.values}
+			assertEquals(t, ad.ValidValue(tt.value), tt.expected)
 		})
 	}
 }

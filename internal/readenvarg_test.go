@@ -21,7 +21,7 @@ func TestArgEnv(t *testing.T) {
 	for ii, tt := range tests {
 		t.Run(names[ii], func(t *testing.T) {
 			if argEnv(tt.prefix, tt.cmd, tt.arg) != tt.env {
-				t.Error("env doesn't match prefix, command and arg")
+				t.Error()
 			}
 		})
 	}
@@ -30,7 +30,7 @@ func TestArgEnv(t *testing.T) {
 func TestReadEnvArg(t *testing.T) {
 	req := Request{}
 	if err := req.readEnvArgs(nil); err == nil {
-		t.Error("reading env. variable for a nil definitions should produce an error")
+		t.Error()
 	}
 	// setup - make sure argument1 expects value from env
 	defs := testDefs()
@@ -43,7 +43,7 @@ func TestReadEnvArg(t *testing.T) {
 	}
 	// trivial validation that we're starting from an empty value
 	if len(req.Arguments[defs.Arguments[0].Token]) > 0 {
-		t.Errorf("argument '%s' value should be empty before reading from env. variable", defs.Arguments[0].Token)
+		t.Error()
 	}
 	// store existing value of the env. variable
 	envToken := argEnv(defs.EnvPrefix, defs.Commands[0].Token, defs.Arguments[0].Token)
@@ -51,18 +51,18 @@ func TestReadEnvArg(t *testing.T) {
 	storedEnv := os.Getenv(envToken)
 	// set the value we'll expect to see as argument1 value
 	if err := os.Setenv(envToken, envValue); err != nil {
-		t.Errorf("test execution error, cannot set value of the '%s' env. variable", envToken)
+		t.Error(err.Error())
 	}
 	// read empty arguments values from env
 	if err := req.readEnvArgs(defs); err != nil {
-		t.Error("test execution error, reading env. variable:", err.Error())
+		t.Error(err.Error())
 	}
 	// there should be a value we got from env. variable
 	if len(req.Arguments[defs.Arguments[0].Token]) < 1 {
-		t.Errorf("argument '%s' value was not set from an env. variable", defs.Arguments[0].Token)
+		t.Error()
 	}
 	// reset env. variable value to original stored value
 	if err := os.Setenv(envToken, storedEnv); err != nil {
-		t.Errorf("test execution error, cannot reset value of the '%s' env. variable", envToken)
+		t.Error(err.Error())
 	}
 }

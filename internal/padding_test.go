@@ -5,14 +5,14 @@ import "testing"
 func TestCommandsPadding(t *testing.T) {
 	defs := testDefs()
 	if defs.CommandsPadding() != len("command1") {
-		t.Error("unexpected commands padding")
+		t.Error()
 	}
 }
 
 func TestFlagsPadding(t *testing.T) {
 	defs := testDefs()
 	if defs.FlagsPadding() != len("flag1") {
-		t.Error("unexpected flags padding")
+		t.Error()
 	}
 }
 
@@ -29,7 +29,7 @@ func TestArgumentsPadding(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.cmd, func(t *testing.T) {
 			if defs.ArgumentsPadding(tt.cmd) != tt.expPadding {
-				t.Errorf("unexpected arguments padding for command '%s'", tt.cmd)
+				t.Error()
 			}
 		})
 	}

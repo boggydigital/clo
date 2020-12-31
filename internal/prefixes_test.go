@@ -17,7 +17,7 @@ func TestHasPrefix(t *testing.T) {
 	for ii, tt := range tests {
 		t.Run(names[ii], func(t *testing.T) {
 			if hasPrefix(tt.token) != tt.expected {
-				t.Errorf("token '%s' doesn't meet prefix expectations", tt.token)
+				t.Error()
 			}
 		})
 	}
@@ -38,7 +38,7 @@ func TestTrimPrefix(t *testing.T) {
 	for ii, tt := range tests {
 		t.Run(names[ii], func(t *testing.T) {
 			if trimPrefix(tt.token) != tt.expected {
-				t.Errorf("token '%s' prefix wasn't properly trimmed", tt.token)
+				t.Error()
 			}
 		})
 	}

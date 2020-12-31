@@ -26,7 +26,7 @@ func TestFirstDupe(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			dupe := firstDupe(tt.slice)
 			if dupe != tt.dupe {
-				t.Error("unexpected first dupe")
+				t.Error()
 			}
 		})
 	}
@@ -45,6 +45,7 @@ func genCommands(commands []string) []CommandDefinition {
 	for _, c := range commands {
 		cd := CommandDefinition{
 			CommonDefinition: CommonDefinition{Token: c, Abbr: c},
+			Arguments:        commands,
 		}
 		comDefs = append(comDefs, cd)
 	}
@@ -98,13 +99,17 @@ func differentTokensTests() []TokensTest {
 	}
 }
 
+func assertError(t *testing.T, err error, expError bool) {
+	if (err != nil && !expError) || (err == nil && expError) {
+		t.Error()
+	}
+}
+
 func TestCmdTokensAreNotEmpty(t *testing.T) {
 	for _, tt := range noEmptyTokensTests() {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
 			err := cmdTokensAreNotEmpty(genCommands(tt.tokens), false)
-			if (err != nil && !tt.expError) || (err == nil && tt.expError) {
-				t.Error("unexpected command tokens not empty error state")
-			}
+			assertError(t, err, tt.expError)
 		})
 	}
 }
@@ -113,9 +118,7 @@ func TestDifferentCmdTokens(t *testing.T) {
 	for _, tt := range differentTokensTests() {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
 			err := differentCmdTokens(genCommands(tt.tokens), false)
-			if (err != nil && !tt.expError) || (err == nil && tt.expError) {
-				t.Error("unexpected different command tokens error state")
-			}
+			assertError(t, err, tt.expError)
 		})
 	}
 }
@@ -124,9 +127,7 @@ func TestDifferentCmdAbbr(t *testing.T) {
 	for _, tt := range differentTokensTests() {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
 			err := differentCmdAbbr(genCommands(tt.tokens), false)
-			if (err != nil && !tt.expError) || (err == nil && tt.expError) {
-				t.Error("unexpected different command abbr error state")
-			}
+			assertError(t, err, tt.expError)
 		})
 	}
 }
@@ -135,9 +136,7 @@ func TestArgTokensAreNotEmpty(t *testing.T) {
 	for _, tt := range noEmptyTokensTests() {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
 			err := argTokensAreNotEmpty(genArguments(tt.tokens), false)
-			if (err != nil && !tt.expError) || (err == nil && tt.expError) {
-				t.Error("unexpected argument tokens not empty error state")
-			}
+			assertError(t, err, tt.expError)
 		})
 	}
 }
@@ -146,9 +145,7 @@ func TestDifferentArgTokens(t *testing.T) {
 	for _, tt := range differentTokensTests() {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
 			err := differentArgTokens(genArguments(tt.tokens), false)
-			if (err != nil && !tt.expError) || (err == nil && tt.expError) {
-				t.Error("unexpected different argument tokens error state")
-			}
+			assertError(t, err, tt.expError)
 		})
 	}
 }
@@ -157,9 +154,7 @@ func TestDifferentArgAbbr(t *testing.T) {
 	for _, tt := range differentTokensTests() {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
 			err := differentArgAbbr(genArguments(tt.tokens), false)
-			if (err != nil && !tt.expError) || (err == nil && tt.expError) {
-				t.Error("unexpected different arguments abbr error state")
-			}
+			assertError(t, err, tt.expError)
 		})
 	}
 }
@@ -168,9 +163,7 @@ func TestFlagTokensAreNotEmpty(t *testing.T) {
 	for _, tt := range noEmptyTokensTests() {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
 			err := flagTokensAreNotEmpty(genFlags(tt.tokens), false)
-			if (err != nil && !tt.expError) || (err == nil && tt.expError) {
-				t.Error("unexpected flag tokens not empty error state")
-			}
+			assertError(t, err, tt.expError)
 		})
 	}
 }
@@ -179,9 +172,7 @@ func TestDifferentFlagTokens(t *testing.T) {
 	for _, tt := range differentTokensTests() {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
 			err := differentFlagTokens(genFlags(tt.tokens), false)
-			if (err != nil && !tt.expError) || (err == nil && tt.expError) {
-				t.Error("unexpected different flag tokens error state")
-			}
+			assertError(t, err, tt.expError)
 		})
 	}
 }
@@ -190,9 +181,102 @@ func TestDifferentFlagAbbr(t *testing.T) {
 	for _, tt := range differentTokensTests() {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
 			err := differentFlagAbbr(genFlags(tt.tokens), false)
-			if (err != nil && !tt.expError) || (err == nil && tt.expError) {
-				t.Error("unexpected different flag abbr error state")
-			}
+			assertError(t, err, tt.expError)
+		})
+	}
+}
+
+func TestDifferentAbbr(t *testing.T) {
+	tests := []struct {
+		commands  []string
+		arguments []string
+		flags     []string
+		expError  bool
+	}{
+		{nil, nil, nil, false},
+		{[]string{}, []string{}, []string{}, false},
+		{[]string{"1"}, []string{"2"}, []string{"3"}, false},
+		{[]string{"1"}, []string{"2"}, []string{"3"}, false},
+		{[]string{"1", "2"}, []string{"2"}, []string{"3"}, true},
+		{[]string{"1"}, []string{"2", "1"}, []string{"3"}, true},
+		{[]string{"1"}, []string{"2"}, []string{"1", "3"}, true},
+	}
+	for _, tt := range tests {
+		name := strings.Join(tt.commands, "-") + "-" +
+			strings.Join(tt.arguments, "-") + "-" +
+			strings.Join(tt.flags, "-")
+		t.Run(name, func(t *testing.T) {
+			err := differentAbbr(
+				genCommands(tt.commands),
+				genArguments(tt.arguments),
+				genFlags(tt.flags), false)
+			assertError(t, err, tt.expError)
+		})
+	}
+}
+
+func argByToken(token string) *ArgumentDefinition {
+	// default arguments
+	if strings.HasPrefix(token, "default") {
+		return &ArgumentDefinition{
+			CommonDefinition: CommonDefinition{
+				Token: token,
+			},
+			Default: true,
+		}
+	}
+
+	switch token {
+	case "":
+		return nil
+	default:
+		return &ArgumentDefinition{
+			CommonDefinition: CommonDefinition{
+				Token: token,
+			},
+		}
+	}
+}
+
+func TestCommandsValidArgs(t *testing.T) {
+	for _, tt := range noEmptyTokensTests() {
+		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
+			err := commandsValidArgs(genCommands(tt.tokens), argByToken, false)
+			assertError(t, err, tt.expError)
+		})
+	}
+}
+
+func TestAllUsedArgs(t *testing.T) {
+	tests := []struct {
+		commands  []string
+		arguments []string
+		expError  bool
+	}{
+		{nil, nil, false},
+		{[]string{}, []string{}, false},
+		{[]string{"1"}, []string{"1"}, false},
+		{[]string{"1"}, []string{"2"}, true},
+	}
+
+	for _, tt := range tests {
+		name := strings.Join(tt.commands, "-") + "-" +
+			strings.Join(tt.arguments, "-")
+		t.Run(name, func(t *testing.T) {
+			err := allUsedArgs(
+				genCommands(tt.commands),
+				genArguments(tt.arguments),
+				false)
+			assertError(t, err, tt.expError)
+		})
+	}
+}
+
+func TestDifferentArgsCmd(t *testing.T) {
+	for _, tt := range differentTokensTests() {
+		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
+			err := differentArgsCmd(genCommands(tt.tokens), false)
+			assertError(t, err, tt.expError)
 		})
 	}
 }

@@ -28,10 +28,7 @@ func TestTokenString(t *testing.T) {
 		t.Run(testName, func(t *testing.T) {
 			act := tokenString(tt.tokenType)
 			if act != tt.tokenStr {
-				t.Errorf("tokenType %d string was expected to be %s and was %s",
-					tt.tokenType,
-					tt.tokenStr,
-					act)
+				t.Error()
 			}
 		})
 	}
@@ -58,7 +55,7 @@ func TestNext(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tokenString(tt.tokenType), func(t *testing.T) {
 			if len(next(tt.tokenType)) != tt.nextLen {
-				t.Error("unexpected length of the next token types")
+				t.Error()
 			}
 		})
 	}
@@ -66,7 +63,7 @@ func TestNext(t *testing.T) {
 
 func TestFirst(t *testing.T) {
 	if len(first()) != 2 {
-		t.Error("expected 2 tokens to be the first possible")
+		t.Error()
 	}
 }
 
@@ -75,7 +72,7 @@ func TestExpandAbbr(t *testing.T) {
 		token     string
 		expToken  string
 		tokenType int
-		errorExp  bool
+		expError  bool
 	}{
 		{"c1", "command1", commandAbbr, false},
 		{"command-abbr-that-doesnt-exist", "", commandAbbr, true},
@@ -95,11 +92,9 @@ func TestExpandAbbr(t *testing.T) {
 		t.Run(tt.token, func(t *testing.T) {
 			expToken, err := expandAbbr(tt.token, tt.tokenType, defs)
 			if expToken != tt.expToken {
-				t.Error("unexpected expanded token")
+				t.Error()
 			}
-			if (err != nil && !tt.errorExp) || (err == nil && tt.errorExp) {
-				t.Error("unexpected error result")
-			}
+			assertError(t, err, tt.expError)
 		})
 	}
 }

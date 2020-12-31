@@ -25,10 +25,10 @@ func TestUpdate(t *testing.T) {
 		t.Run(tt.token, func(t *testing.T) {
 			pCtx.update(tt.token, tt.tokenType, defs)
 			if (pCtx.Command != nil && tt.cmdNilExp) || (pCtx.Command == nil && !tt.cmdNilExp) {
-				t.Error("parse context update produced unexpected command")
+				t.Error()
 			}
 			if (pCtx.Argument != nil && tt.argNilExp) || (pCtx.Argument == nil && !tt.argNilExp) {
-				t.Error("parse context update produced unexpected argument")
+				t.Error()
 			}
 		})
 	}
