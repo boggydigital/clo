@@ -47,9 +47,25 @@ func genCommands(commands []string) []CommandDefinition {
 			CommonDefinition: CommonDefinition{Token: c, Abbr: c},
 			Arguments:        commands,
 		}
+		genExample(&cd, commands)
 		comDefs = append(comDefs, cd)
 	}
 	return comDefs
+}
+
+func genExample(cd *CommandDefinition, tokens []string) {
+	desc := strings.Join(tokens, "")
+	cd.Examples = append(cd.Examples, ExampleDefinition{
+		ArgumentsValues: map[string][]string{},
+		Desc:            desc,
+	})
+	cd.Examples[0].ArgumentsValues = make(map[string][]string, 0)
+	for _, tt := range tokens {
+		if strings.HasPrefix(desc, "empty") {
+			continue
+		}
+		cd.Examples[0].ArgumentsValues[tt] = tokens
+	}
 }
 
 func genArguments(args []string) []ArgumentDefinition {
@@ -217,25 +233,15 @@ func TestDifferentAbbr(t *testing.T) {
 }
 
 func argByToken(token string) *ArgumentDefinition {
-	// default arguments
 	if strings.HasPrefix(token, "default") {
+		// default arguments
 		return &ArgumentDefinition{
 			CommonDefinition: CommonDefinition{
 				Token: token,
 			},
 			Default: true,
 		}
-	} else if strings.HasSuffix(token, "-doesnt-exist") {
-		return nil
 	}
-	//} else if strings.HasPrefix(token, "required") {
-	//	return &ArgumentDefinition{
-	//		CommonDefinition: CommonDefinition{
-	//			Token: token,
-	//		},
-	//		Required: true,
-	//	}
-	//}
 
 	switch token {
 	case "":
@@ -298,7 +304,7 @@ func TestSingleDefaultArgPerCmd(t *testing.T) {
 		{[]string{}, false},
 		{[]string{"1", "2", "3"}, false},
 		{[]string{"default1", "default2"}, true},
-		{[]string{"default1", "token-that-doesnt-exist", "default2"}, true},
+		{[]string{"default1", "", "default2"}, true},
 	}
 	for _, tt := range tests {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
@@ -318,6 +324,54 @@ func TestDifferentArgValues(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
 			err := differentArgValues(genArguments(tt.tokens), false)
+			assertError(t, err, tt.expError)
+		})
+	}
+}
+
+var examplesTests = []TokensTest{
+	{nil, false},
+	{[]string{}, false},
+	{[]string{"1", "2"}, false},
+	{[]string{"", ""}, true},
+}
+
+func TestExamplesDescAreNotEmpty(t *testing.T) {
+	for _, tt := range examplesTests {
+		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
+			err := examplesDescAreNotEmpty(genCommands(tt.tokens), false)
+			assertError(t, err, tt.expError)
+		})
+	}
+}
+
+func TestExamplesArgumentsAreNotEmpty(t *testing.T) {
+	for _, tt := range examplesTests {
+		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
+			err := examplesArgumentsAreNotEmpty(genCommands(tt.tokens), false)
+			assertError(t, err, tt.expError)
+		})
+	}
+}
+
+func TestExamplesHaveArgsValues(t *testing.T) {
+	tests := []TokensTest{
+		{nil, false},
+		{[]string{}, false},
+		{[]string{"empty"}, true},
+	}
+	for _, tt := range tests {
+		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
+			err := examplesHaveArgsValues(genCommands(tt.tokens), false)
+			assertError(t, err, tt.expError)
+		})
+	}
+}
+
+func TestExamplesArgumentsAreValid(t *testing.T) {
+	for _, tt := range examplesTests {
+		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
+			err := examplesArgumentsAreValid(genCommands(tt.tokens), argByToken, false)
 			assertError(t, err, tt.expError)
 		})
 	}

@@ -23,11 +23,9 @@
       ],
       "examples": [
         {
-          "argumentsValues": [
-            {
-              "path": []
-            }
-          ],
+          "argumentsValues": {
+            "path": []
+          },
           "desc": "verify provided file for common errors and display report"
         }
       ]

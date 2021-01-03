@@ -284,14 +284,12 @@ func examplesArgumentsAreNotEmpty(commands []CommandDefinition, v bool) error {
 	msg := "examples arguments are not empty"
 	for _, cd := range commands {
 		for i, ex := range cd.Examples {
-			for _, argVal := range ex.ArgumentsValues {
-				for arg := range argVal {
-					if arg == "" {
-						vFail(msg, v)
-						return fmt.Errorf("command '%s' example #%d has an empty argument",
-							cd.Token,
-							i+1)
-					}
+			for arg := range ex.ArgumentsValues {
+				if arg == "" {
+					vFail(msg, v)
+					return fmt.Errorf("command '%s' example #%d has an empty argument",
+						cd.Token,
+						i+1)
 				}
 			}
 		}
@@ -323,16 +321,14 @@ func examplesArgumentsAreValid(
 	msg := "examples are using valid arguments"
 	for _, cd := range commands {
 		for i, ex := range cd.Examples {
-			for _, argVal := range ex.ArgumentsValues {
-				for arg := range argVal {
-					ad := argByToken(arg)
-					if ad == nil {
-						vFail(msg, v)
-						return fmt.Errorf("command '%s' example #%d uses undefined argument '%s'",
-							cd.Token,
-							i+1,
-							arg)
-					}
+			for arg := range ex.ArgumentsValues {
+				ad := argByToken(arg)
+				if ad == nil {
+					vFail(msg, v)
+					return fmt.Errorf("command '%s' example #%d uses undefined argument '%s'",
+						cd.Token,
+						i+1,
+						arg)
 				}
 			}
 		}
@@ -343,20 +339,18 @@ func examplesArgumentsAreValid(
 
 func cmdExampleHasValidValues(
 	cmd string,
-	argumentsValues []map[string][]string,
+	argumentsValues map[string][]string,
 	validArgVal func(string, string) bool,
 	i int) error {
-	for _, argVal := range argumentsValues {
-		for arg, values := range argVal {
-			for _, val := range values {
-				if !validArgVal(arg, val) {
-					return fmt.Errorf("command '%s' example #%d uses invalid "+
-						"value '%s' for an argument '%s'",
-						cmd,
-						i+1,
-						val,
-						arg)
-				}
+	for arg, values := range argumentsValues {
+		for _, val := range values {
+			if !validArgVal(arg, val) {
+				return fmt.Errorf("command '%s' example #%d uses invalid "+
+					"value '%s' for an argument '%s'",
+					cmd,
+					i+1,
+					val,
+					arg)
 			}
 		}
 	}

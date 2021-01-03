@@ -192,20 +192,15 @@ func printAppHelp(defs *Definitions, verbose bool) error {
 
 func printExampleHelp(ex *ExampleDefinition, cmd string, defs *Definitions) {
 	fmt.Printf("  '%s %s", defs.App, cmd)
-	for avi, argValues := range ex.ArgumentsValues {
-		for arg, values := range argValues {
-			fmt.Printf(" --%s ", arg)
-			if len(values) == 0 {
-				fmt.Printf("<%s>", arg)
-				continue
-			}
-			fmt.Print(strings.Join(values, " "))
+	for arg, values := range ex.ArgumentsValues {
+		fmt.Printf(" --%s ", arg)
+		if len(values) == 0 {
+			fmt.Printf("<%s>", arg)
+			continue
 		}
-		if avi == len(ex.ArgumentsValues)-1 {
-			fmt.Print("'")
-		}
+		fmt.Print(strings.Join(values, " "))
 	}
-	fmt.Println(":", ex.Desc)
+	fmt.Println("':", ex.Desc)
 }
 
 func printCmdUsage(cmd string, defs *Definitions) error {
