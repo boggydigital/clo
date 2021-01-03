@@ -42,20 +42,24 @@ func TestVPass(t *testing.T) {
 	vPass("", true)
 }
 
-func genCommands(commands []string) []CommandDefinition {
+func mockCommandDefinition(cmd string, args []string) *CommandDefinition {
+	cd := CommandDefinition{
+		CommonDefinition: CommonDefinition{Token: cmd, Abbr: cmd},
+		Arguments:        args,
+	}
+	mockExample(&cd, args)
+	return &cd
+}
+
+func mockCommandDefinitions(commands []string) []CommandDefinition {
 	comDefs := make([]CommandDefinition, 0)
 	for _, c := range commands {
-		cd := CommandDefinition{
-			CommonDefinition: CommonDefinition{Token: c, Abbr: c},
-			Arguments:        commands,
-		}
-		genExample(&cd, commands)
-		comDefs = append(comDefs, cd)
+		comDefs = append(comDefs, *mockCommandDefinition(c, commands))
 	}
 	return comDefs
 }
 
-func genExample(cd *CommandDefinition, tokens []string) {
+func mockExample(cd *CommandDefinition, tokens []string) {
 	desc := strings.Join(tokens, "")
 	cd.Examples = append(cd.Examples, ExampleDefinition{
 		ArgumentsValues: map[string][]string{},
@@ -70,14 +74,18 @@ func genExample(cd *CommandDefinition, tokens []string) {
 	}
 }
 
-func genArguments(args []string) []ArgumentDefinition {
+func mockArgumentDefinition(arg string, values []string) *ArgumentDefinition {
+	ad := ArgumentDefinition{
+		CommonDefinition: CommonDefinition{Token: arg, Abbr: arg},
+		Values:           values,
+	}
+	return &ad
+}
+
+func genArgumentDefinitions(args []string) []ArgumentDefinition {
 	argDefs := make([]ArgumentDefinition, 0)
 	for _, a := range args {
-		ad := ArgumentDefinition{
-			CommonDefinition: CommonDefinition{Token: a, Abbr: a},
-			Values:           args,
-		}
-		argDefs = append(argDefs, ad)
+		argDefs = append(argDefs, *mockArgumentDefinition(a, args))
 	}
 	return argDefs
 }
@@ -127,7 +135,7 @@ func assertError(t *testing.T, err error, expError bool) {
 func TestCmdTokensAreNotEmpty(t *testing.T) {
 	for _, tt := range noEmptyTokensTests() {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := cmdTokensAreNotEmpty(genCommands(tt.tokens), false)
+			err := cmdTokensAreNotEmpty(mockCommandDefinitions(tt.tokens), false)
 			assertError(t, err, tt.expError)
 		})
 	}
@@ -136,7 +144,7 @@ func TestCmdTokensAreNotEmpty(t *testing.T) {
 func TestDifferentCmdTokens(t *testing.T) {
 	for _, tt := range differentTokensTests() {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := differentCmdTokens(genCommands(tt.tokens), false)
+			err := differentCmdTokens(mockCommandDefinitions(tt.tokens), false)
 			assertError(t, err, tt.expError)
 		})
 	}
@@ -145,7 +153,7 @@ func TestDifferentCmdTokens(t *testing.T) {
 func TestDifferentCmdAbbr(t *testing.T) {
 	for _, tt := range differentTokensTests() {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := differentCmdAbbr(genCommands(tt.tokens), false)
+			err := differentCmdAbbr(mockCommandDefinitions(tt.tokens), false)
 			assertError(t, err, tt.expError)
 		})
 	}
@@ -154,7 +162,7 @@ func TestDifferentCmdAbbr(t *testing.T) {
 func TestArgTokensAreNotEmpty(t *testing.T) {
 	for _, tt := range noEmptyTokensTests() {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := argTokensAreNotEmpty(genArguments(tt.tokens), false)
+			err := argTokensAreNotEmpty(genArgumentDefinitions(tt.tokens), false)
 			assertError(t, err, tt.expError)
 		})
 	}
@@ -163,7 +171,7 @@ func TestArgTokensAreNotEmpty(t *testing.T) {
 func TestDifferentArgTokens(t *testing.T) {
 	for _, tt := range differentTokensTests() {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := differentArgTokens(genArguments(tt.tokens), false)
+			err := differentArgTokens(genArgumentDefinitions(tt.tokens), false)
 			assertError(t, err, tt.expError)
 		})
 	}
@@ -172,7 +180,7 @@ func TestDifferentArgTokens(t *testing.T) {
 func TestDifferentArgAbbr(t *testing.T) {
 	for _, tt := range differentTokensTests() {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := differentArgAbbr(genArguments(tt.tokens), false)
+			err := differentArgAbbr(genArgumentDefinitions(tt.tokens), false)
 			assertError(t, err, tt.expError)
 		})
 	}
@@ -226,8 +234,8 @@ func TestDifferentAbbr(t *testing.T) {
 			strings.Join(tt.flags, "-")
 		t.Run(name, func(t *testing.T) {
 			err := differentAbbr(
-				genCommands(tt.commands),
-				genArguments(tt.arguments),
+				mockCommandDefinitions(tt.commands),
+				genArgumentDefinitions(tt.arguments),
 				genFlags(tt.flags), false)
 			assertError(t, err, tt.expError)
 		})
@@ -260,7 +268,7 @@ func mockArgByToken(token string) *ArgumentDefinition {
 func TestCommandsValidArgs(t *testing.T) {
 	for _, tt := range noEmptyTokensTests() {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := commandsValidArgs(genCommands(tt.tokens), mockArgByToken, false)
+			err := commandsValidArgs(mockCommandDefinitions(tt.tokens), mockArgByToken, false)
 			assertError(t, err, tt.expError)
 		})
 	}
@@ -283,8 +291,8 @@ func TestAllUsedArgs(t *testing.T) {
 			strings.Join(tt.arguments, "-")
 		t.Run(name, func(t *testing.T) {
 			err := allUsedArgs(
-				genCommands(tt.commands),
-				genArguments(tt.arguments),
+				mockCommandDefinitions(tt.commands),
+				genArgumentDefinitions(tt.arguments),
 				false)
 			assertError(t, err, tt.expError)
 		})
@@ -294,7 +302,7 @@ func TestAllUsedArgs(t *testing.T) {
 func TestDifferentArgsCmd(t *testing.T) {
 	for _, tt := range differentTokensTests() {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := differentArgsCmd(genCommands(tt.tokens), false)
+			err := differentArgsCmd(mockCommandDefinitions(tt.tokens), false)
 			assertError(t, err, tt.expError)
 		})
 	}
@@ -310,7 +318,7 @@ func TestSingleDefaultArgPerCmd(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := singleDefaultArgPerCmd(genCommands(tt.tokens), mockArgByToken, false)
+			err := singleDefaultArgPerCmd(mockCommandDefinitions(tt.tokens), mockArgByToken, false)
 			assertError(t, err, tt.expError)
 		})
 	}
@@ -325,7 +333,7 @@ func TestDifferentArgValues(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := differentArgValues(genArguments(tt.tokens), false)
+			err := differentArgValues(genArgumentDefinitions(tt.tokens), false)
 			assertError(t, err, tt.expError)
 		})
 	}
@@ -341,7 +349,7 @@ var examplesTests = []TokensTest{
 func TestExamplesDescAreNotEmpty(t *testing.T) {
 	for _, tt := range examplesTests {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := examplesDescAreNotEmpty(genCommands(tt.tokens), false)
+			err := examplesDescAreNotEmpty(mockCommandDefinitions(tt.tokens), false)
 			assertError(t, err, tt.expError)
 		})
 	}
@@ -350,7 +358,7 @@ func TestExamplesDescAreNotEmpty(t *testing.T) {
 func TestExamplesArgumentsAreNotEmpty(t *testing.T) {
 	for _, tt := range examplesTests {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := examplesArgumentsAreNotEmpty(genCommands(tt.tokens), false)
+			err := examplesArgumentsAreNotEmpty(mockCommandDefinitions(tt.tokens), false)
 			assertError(t, err, tt.expError)
 		})
 	}
@@ -364,7 +372,7 @@ func TestExamplesHaveArgsValues(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := examplesHaveArgsValues(genCommands(tt.tokens), false)
+			err := examplesHaveArgsValues(mockCommandDefinitions(tt.tokens), false)
 			assertError(t, err, tt.expError)
 		})
 	}
@@ -373,7 +381,7 @@ func TestExamplesHaveArgsValues(t *testing.T) {
 func TestExamplesArgumentsAreValid(t *testing.T) {
 	for _, tt := range examplesTests {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := examplesArgumentsAreValid(genCommands(tt.tokens), mockArgByToken, false)
+			err := examplesArgumentsAreValid(mockCommandDefinitions(tt.tokens), mockArgByToken, false)
 			assertError(t, err, tt.expError)
 		})
 	}
@@ -413,7 +421,7 @@ func TestExamplesHaveValidValues(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := examplesHaveValidValues(genCommands(tt.tokens), mockValidArgVal, false)
+			err := examplesHaveValidValues(mockCommandDefinitions(tt.tokens), mockValidArgVal, false)
 			assertError(t, err, tt.expError)
 		})
 	}

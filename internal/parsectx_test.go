@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestUpdate(t *testing.T) {
+func TestParseCtxUpdate(t *testing.T) {
 	tests := []struct {
 		token     string
 		tokenType int

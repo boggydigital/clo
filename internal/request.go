@@ -53,9 +53,6 @@ func (req *Request) commandHasRequiredArgs(def *Definitions) error {
 	if def == nil {
 		return errors.New("cannot verify required argument using nil definitions")
 	}
-	if req == nil {
-		return errors.New("cannot verify nil request for required arguments")
-	}
 
 	requiredArgs := def.RequiredArgs(req.Command)
 	for _, ra := range requiredArgs {
