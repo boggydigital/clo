@@ -57,6 +57,7 @@ func genArguments(args []string) []ArgumentDefinition {
 	for _, a := range args {
 		ad := ArgumentDefinition{
 			CommonDefinition: CommonDefinition{Token: a, Abbr: a},
+			Values:           args,
 		}
 		argDefs = append(argDefs, ad)
 	}
@@ -224,7 +225,17 @@ func argByToken(token string) *ArgumentDefinition {
 			},
 			Default: true,
 		}
+	} else if strings.HasSuffix(token, "-doesnt-exist") {
+		return nil
 	}
+	//} else if strings.HasPrefix(token, "required") {
+	//	return &ArgumentDefinition{
+	//		CommonDefinition: CommonDefinition{
+	//			Token: token,
+	//		},
+	//		Required: true,
+	//	}
+	//}
 
 	switch token {
 	case "":
@@ -276,6 +287,37 @@ func TestDifferentArgsCmd(t *testing.T) {
 	for _, tt := range differentTokensTests() {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
 			err := differentArgsCmd(genCommands(tt.tokens), false)
+			assertError(t, err, tt.expError)
+		})
+	}
+}
+
+func TestSingleDefaultArgPerCmd(t *testing.T) {
+	tests := []TokensTest{
+		{nil, false},
+		{[]string{}, false},
+		{[]string{"1", "2", "3"}, false},
+		{[]string{"default1", "default2"}, true},
+		{[]string{"default1", "token-that-doesnt-exist", "default2"}, true},
+	}
+	for _, tt := range tests {
+		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
+			err := singleDefaultArgPerCmd(genCommands(tt.tokens), argByToken, false)
+			assertError(t, err, tt.expError)
+		})
+	}
+}
+
+func TestDifferentArgValues(t *testing.T) {
+	tests := []TokensTest{
+		{nil, false},
+		{[]string{}, false},
+		{[]string{"1", "2", "3"}, false},
+		{[]string{"1", "1"}, true},
+	}
+	for _, tt := range tests {
+		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
+			err := differentArgValues(genArguments(tt.tokens), false)
 			assertError(t, err, tt.expError)
 		})
 	}
