@@ -1,6 +1,8 @@
 package internal
 
 import (
+	"errors"
+	"strconv"
 	"strings"
 	"testing"
 )
@@ -232,7 +234,7 @@ func TestDifferentAbbr(t *testing.T) {
 	}
 }
 
-func argByToken(token string) *ArgumentDefinition {
+func mockArgByToken(token string) *ArgumentDefinition {
 	if strings.HasPrefix(token, "default") {
 		// default arguments
 		return &ArgumentDefinition{
@@ -258,7 +260,7 @@ func argByToken(token string) *ArgumentDefinition {
 func TestCommandsValidArgs(t *testing.T) {
 	for _, tt := range noEmptyTokensTests() {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := commandsValidArgs(genCommands(tt.tokens), argByToken, false)
+			err := commandsValidArgs(genCommands(tt.tokens), mockArgByToken, false)
 			assertError(t, err, tt.expError)
 		})
 	}
@@ -308,7 +310,7 @@ func TestSingleDefaultArgPerCmd(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := singleDefaultArgPerCmd(genCommands(tt.tokens), argByToken, false)
+			err := singleDefaultArgPerCmd(genCommands(tt.tokens), mockArgByToken, false)
 			assertError(t, err, tt.expError)
 		})
 	}
@@ -371,8 +373,71 @@ func TestExamplesHaveArgsValues(t *testing.T) {
 func TestExamplesArgumentsAreValid(t *testing.T) {
 	for _, tt := range examplesTests {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := examplesArgumentsAreValid(genCommands(tt.tokens), argByToken, false)
+			err := examplesArgumentsAreValid(genCommands(tt.tokens), mockArgByToken, false)
 			assertError(t, err, tt.expError)
 		})
+	}
+}
+
+func mockValidArgVal(arg, val string) bool {
+	if strings.HasPrefix(val, "invalid") {
+		return false
+	}
+	return true
+}
+
+func TestCmdExampleHasValidValues(t *testing.T) {
+	tests := []struct {
+		argValues map[string][]string
+		expError  bool
+	}{
+		{nil, false},
+		{map[string][]string{}, false},
+		{map[string][]string{"a": {"1", "2"}}, false},
+		{map[string][]string{"a": {"invalid"}}, true},
+	}
+	for ii, tt := range tests {
+		t.Run(strconv.Itoa(ii), func(t *testing.T) {
+			err := cmdExampleHasValidValues("", tt.argValues, mockValidArgVal, 0)
+			assertError(t, err, tt.expError)
+		})
+	}
+}
+
+func TestExamplesHaveValidValues(t *testing.T) {
+	tests := []TokensTest{
+		{nil, false},
+		{[]string{}, false},
+		{[]string{"1", "2"}, false},
+		{[]string{"invalid"}, true},
+	}
+	for _, tt := range tests {
+		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
+			err := examplesHaveValidValues(genCommands(tt.tokens), mockValidArgVal, false)
+			assertError(t, err, tt.expError)
+		})
+	}
+}
+
+func TestAppendError(t *testing.T) {
+	tests := []error{errors.New(""), nil}
+	errs := make([]error, 0)
+	for ii, tt := range tests {
+		t.Run(strconv.Itoa(ii), func(t *testing.T) {
+			errs = appendError(errs, tt)
+			if len(errs) != 1 {
+				t.Error()
+			}
+		})
+	}
+}
+
+func TestVerify(t *testing.T) {
+	// We've already verified individual error cases above
+	// so running known good definitions for the coverage
+	defs := testDefs()
+	errs := defs.Verify(false)
+	if len(errs) > 0 {
+		t.Error()
 	}
 }
