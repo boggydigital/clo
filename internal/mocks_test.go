@@ -222,6 +222,9 @@ func mockArgumentDefinition(arg string, values []string) *ArgumentDefinition {
 		CommonDefinition: CommonDefinition{Token: arg, Abbr: arg},
 		Values:           values,
 	}
+	if strings.HasPrefix(arg, "default") {
+		ad.Default = true
+	}
 	return &ad
 }
 

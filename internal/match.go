@@ -14,6 +14,9 @@ func matchArgument(token string, tokenType int, cmdCtx *CommandDefinition, def *
 		return false, nil
 	}
 
+	if def == nil {
+		return false, fmt.Errorf("cannot match argument with nil definitions")
+	}
 	// first, try looking up argument by a token or an abbreviation,
 	// given a token type
 	var ad *ArgumentDefinition
@@ -29,6 +32,10 @@ func matchArgument(token string, tokenType int, cmdCtx *CommandDefinition, def *
 	// report no match if the token didn't match any of the arguments or argument abbreviations
 	if ad == nil {
 		return false, nil
+	}
+
+	if cmdCtx == nil {
+		return false, fmt.Errorf("cannot validate argument in the context of nil command")
 	}
 
 	// however if the argument matched token, we need to check if it's one of the supported values
@@ -49,6 +56,9 @@ func matchFlag(token string, tokenType int, def *Definitions) (bool, error) {
 		return false, nil
 	}
 
+	if def == nil {
+		return false, fmt.Errorf("cannot match flag with nil definitions")
+	}
 	// check if flag matches a token or abbreviation
 	switch tokenType {
 	case flag:
@@ -62,19 +72,30 @@ func matchFlag(token string, tokenType int, def *Definitions) (bool, error) {
 
 func matchDefaultValue(token string, tokenType int, ctx *parseCtx, def *Definitions) (bool, error) {
 
+	if tokenType != valueDefault {
+		return false, nil
+	}
+
+	if ctx == nil {
+		return false, fmt.Errorf("cannot match default value with nil context")
+	}
 	if ctx.Command == nil ||
 		(ctx.Argument != nil && !ctx.Argument.Default) {
 		return false, nil
 	}
+
+	if def == nil {
+		return false, fmt.Errorf("cannot match default value with nil definitions")
+	}
 	defArg := def.DefaultArg(ctx.Command)
 
-	match, err := matchValue(token, tokenType, defArg)
+	m, err := matchValue(token, tokenType, defArg)
 
-	if match && err == nil {
+	if m && err == nil {
 		ctx.Argument = defArg
 	}
 
-	return match, err
+	return m, err
 }
 
 func matchValue(token string, tokenType int, arg *ArgumentDefinition) (bool, error) {

@@ -16,11 +16,47 @@ type RequestTest struct {
 	expError bool
 }
 
-var mockValidityTests = []struct {
+type TokenHelpTest struct {
+	token string
+	defs  *Definitions
+}
+
+type ValidityTest struct {
 	values   []string
 	value    string
 	expected bool
-}{
+}
+
+type MatchTest struct {
+	token     string
+	tokenType int
+	expected  bool
+	expError  bool
+}
+
+type MatchFlagTest struct {
+	MatchTest
+	def *Definitions
+}
+
+type MatchArgumentTest struct {
+	MatchTest
+	cmd *CommandDefinition
+	def *Definitions
+}
+
+type MatchDefaultValueTest struct {
+	MatchTest
+	ctx *parseCtx
+	def *Definitions
+}
+
+type MatchValueTest struct {
+	MatchTest
+	arg *ArgumentDefinition
+}
+
+var mockValidityTests = []ValidityTest{
 	{nil, "any", false},
 	{[]string{}, "any", false},
 	{[]string{"value1"}, "value1", true},
@@ -92,11 +128,6 @@ var mockRequestArgumentTests = []RequestTest{
 }
 
 var mockHelpDefinitionsTests = []*Definitions{nil, mockDefinitions()}
-
-type TokenHelpTest struct {
-	token string
-	defs  *Definitions
-}
 
 var mockPrintArgumentHelpTests = []TokenHelpTest{
 	{"", nil},
