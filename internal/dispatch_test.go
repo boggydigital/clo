@@ -13,8 +13,8 @@ func TestDispatch(t *testing.T) {
 		{&Request{Command: "help"}, false},
 		{&Request{Command: "command-that-doesnt-exist"}, true},
 	}
-	writeDefs(testDefs(), t)
-	t.Cleanup(deleteDefs)
+	writeMockDefs(mockDefinitions(), t)
+	t.Cleanup(deleteMockDefs)
 
 	for _, tt := range tests {
 		name := "nil"

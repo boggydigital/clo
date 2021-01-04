@@ -3,17 +3,13 @@ package internal
 import "testing"
 
 func TestCommandsPadding(t *testing.T) {
-	defs := testDefs()
-	if defs.CommandsPadding() != len("command1") {
-		t.Error()
-	}
+	defs := mockDefinitions()
+	assertEquals(t, defs.CommandsPadding(), len("command1"))
 }
 
 func TestFlagsPadding(t *testing.T) {
-	defs := testDefs()
-	if defs.FlagsPadding() != len("flag1") {
-		t.Error()
-	}
+	defs := mockDefinitions()
+	assertEquals(t, defs.FlagsPadding(), len("flag1"))
 }
 
 func TestArgumentsPadding(t *testing.T) {
@@ -24,13 +20,11 @@ func TestArgumentsPadding(t *testing.T) {
 		{"command1", len("argument1")},
 		{"command-that-doesnt-exist", 0},
 	}
-	defs := testDefs()
+	defs := mockDefinitions()
 
 	for _, tt := range tests {
 		t.Run(tt.cmd, func(t *testing.T) {
-			if defs.ArgumentsPadding(tt.cmd) != tt.expPadding {
-				t.Error()
-			}
+			assertEquals(t, defs.ArgumentsPadding(tt.cmd), tt.expPadding)
 		})
 	}
 }

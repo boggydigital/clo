@@ -1,130 +1,10 @@
 package internal
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"log"
-	"os"
-	"reflect"
+	"strings"
 	"testing"
 )
-
-const defaultFilename = "clo.json"
-
-func testDefs() *Definitions {
-	defs := &Definitions{
-		Version:   1,
-		EnvPrefix: "CORRECT",
-		App:       "clo",
-		Hint:      "hint",
-		Desc:      "desc",
-		Flags: []FlagDefinition{
-			{
-				CommonDefinition: CommonDefinition{
-					Token: "flag1",
-					Abbr:  "f1",
-				},
-			},
-			{
-				CommonDefinition: CommonDefinition{
-					Token: "flag2",
-					Abbr:  "f2",
-				},
-			},
-		},
-		Commands: []CommandDefinition{
-			{
-				CommonDefinition: CommonDefinition{
-					Token: "command1",
-					Abbr:  "c1",
-				},
-				Arguments: []string{
-					"argument1",
-					"argument2",
-				},
-			},
-			{
-				CommonDefinition: CommonDefinition{
-					Token: "command2",
-				},
-			},
-		},
-		Arguments: []ArgumentDefinition{
-			{
-				CommonDefinition: CommonDefinition{
-					Token: "argument1",
-					Abbr:  "a1",
-				},
-				Default:  true,
-				Multiple: true,
-				Required: true,
-				Values:   []string{"value1", "value2"},
-			},
-			{
-				CommonDefinition: CommonDefinition{
-					Token: "argument2",
-					Abbr:  "a2",
-				},
-				Values: []string{"value3", "value4"},
-			},
-		},
-		Values: []ValueDefinition{
-			{
-				CommonDefinition: CommonDefinition{
-					Token: "value1",
-				},
-			},
-		},
-	}
-
-	return defs
-}
-
-func breakDefinitions(defs *Definitions) {
-	defs.Arguments = append(defs.Arguments, ArgumentDefinition{
-		CommonDefinition: CommonDefinition{
-			Token: "help:command",
-		},
-		Values: []string{"from:nowhere"},
-	})
-}
-
-func writeDefs(defs *Definitions, t *testing.T) {
-	if _, err := os.Stat(defaultFilename); os.IsNotExist(err) {
-		jsonBytes, err := json.Marshal(defs)
-		if err != nil {
-			t.FailNow()
-		}
-		err = ioutil.WriteFile(defaultFilename, jsonBytes, 0644)
-		if err != nil {
-			t.FailNow()
-		}
-	} else {
-		t.Error()
-	}
-}
-
-func writeEmptyDefs(t *testing.T) {
-	if _, err := os.Stat(defaultFilename); os.IsNotExist(err) {
-		err = ioutil.WriteFile(defaultFilename, []byte{}, 0644)
-		if err != nil {
-			t.Error()
-		}
-	} else {
-		t.Error()
-	}
-}
-
-func deleteDefs() {
-	if os.Remove(defaultFilename) != nil {
-		log.Printf("cannot remove test definitions file at %s", defaultFilename)
-	}
-}
-
-func loadPathThatDoesntExist() (*Definitions, error) {
-	return Load("path/that/doesnt/exist")
-}
 
 func TestLoad(t *testing.T) {
 	names := []string{"load-adds-help", "load-at-a-path-that-doesnt-exist"}
@@ -134,50 +14,30 @@ func TestLoad(t *testing.T) {
 		addedCmd  string
 	}{
 		{LoadDefault, true, "help"},
-		{loadPathThatDoesntExist, false, "help"},
+		{loadMockPathThatDoesntExist, false, "help"},
 	}
 
 	// Load adds 'help' command
-	defs := testDefs()
-	writeDefs(defs, t)
-	t.Cleanup(deleteDefs)
+	defs := mockDefinitions()
+	writeMockDefs(defs, t)
+	t.Cleanup(deleteMockDefs)
 
 	for ii, tt := range tests {
 		t.Run(names[ii], func(t *testing.T) {
 			// command shouldn't exist before we add it at load
 			cmd := defs.CommandByToken(tt.addedCmd)
-			if cmd != nil {
-				t.Error()
-			}
+			assertNil(t, cmd, true)
 
 			defs, err := tt.load()
-			if tt.validLoad && err != nil {
-				t.Error(err.Error())
-			}
-			if (defs == nil && tt.validLoad) || (defs != nil && !tt.validLoad) {
-				t.FailNow()
-			}
+			assertError(t, err, !tt.validLoad)
+			assertNil(t, defs, !tt.validLoad)
 
 			if defs != nil {
 				cmd := defs.CommandByToken(tt.addedCmd)
-				if cmd == nil {
-					t.Error()
-				}
+				assertNil(t, cmd, false)
 			}
 		})
 	}
-}
-
-func setupBrokenDefs(t *testing.T) {
-	defs := testDefs()
-	breakDefinitions(defs)
-	writeDefs(defs, t)
-	t.Cleanup(deleteDefs)
-}
-
-func setupEmptyDefs(t *testing.T) {
-	writeEmptyDefs(t)
-	t.Cleanup(deleteDefs)
 }
 
 func TestLoadErrors(t *testing.T) {
@@ -186,46 +46,27 @@ func TestLoadErrors(t *testing.T) {
 	// - Pre-existing "from:nowhere" reference value
 	names := []string{"broken_defs", "empty_defs"}
 	tests := []struct {
-		setup func(t *testing.T)
+		setup    func(t *testing.T)
+		expNil   bool
+		expError bool
 	}{
-		{setupBrokenDefs},
-		{setupEmptyDefs},
+		{setupBrokenMockDefs, true, true},
+		{setupEmptyMockDefs, true, true},
 	}
 
 	for ii, tt := range tests {
 		t.Run(names[ii], func(t *testing.T) {
 			tt.setup(t)
-			if defs, err := LoadDefault(); defs != nil || err == nil {
-				t.Error()
-			}
+			defs, err := LoadDefault()
+			assertNil(t, defs, tt.expNil)
+			assertError(t, err, tt.expError)
 		})
 	}
 }
 
-type TokenTest struct {
-	token  string
-	expNil bool
-}
-
-func genByTokenAbbrTests(prefix string) []TokenTest {
-	return []TokenTest{
-		// valid token/abbr
-		{prefix + "1", false},
-		// invalid token/abbr
-		{prefix + "-token-that-doesnt-exist", true},
-	}
-}
-
-func assertNil(t *testing.T, v interface{}, expNil bool) {
-	val := reflect.ValueOf(v)
-	if (val.IsNil() && !expNil) || (!val.IsNil() && expNil) {
-		t.Error()
-	}
-}
-
 func TestFlagByToken(t *testing.T) {
-	defs := testDefs()
-	for _, tt := range genByTokenAbbrTests("flag") {
+	defs := mockDefinitions()
+	for _, tt := range mockByTokenAbbrTests("flag") {
 		t.Run(tt.token, func(t *testing.T) {
 			fd := defs.FlagByToken(tt.token)
 			assertNil(t, fd, tt.expNil)
@@ -234,8 +75,8 @@ func TestFlagByToken(t *testing.T) {
 }
 
 func TestFlagByAbbr(t *testing.T) {
-	defs := testDefs()
-	for _, tt := range genByTokenAbbrTests("f") {
+	defs := mockDefinitions()
+	for _, tt := range mockByTokenAbbrTests("f") {
 		t.Run(tt.token, func(t *testing.T) {
 			fd := defs.FlagByAbbr(tt.token)
 			assertNil(t, fd, tt.expNil)
@@ -244,8 +85,8 @@ func TestFlagByAbbr(t *testing.T) {
 }
 
 func TestCommandByToken(t *testing.T) {
-	defs := testDefs()
-	for _, tt := range genByTokenAbbrTests("command") {
+	defs := mockDefinitions()
+	for _, tt := range mockByTokenAbbrTests("command") {
 		t.Run(tt.token, func(t *testing.T) {
 			cd := defs.CommandByToken(tt.token)
 			assertNil(t, cd, tt.expNil)
@@ -254,8 +95,8 @@ func TestCommandByToken(t *testing.T) {
 }
 
 func TestCommandByAbbr(t *testing.T) {
-	defs := testDefs()
-	for _, tt := range genByTokenAbbrTests("c") {
+	defs := mockDefinitions()
+	for _, tt := range mockByTokenAbbrTests("c") {
 		t.Run(tt.token, func(t *testing.T) {
 			cd := defs.CommandByAbbr(tt.token)
 			assertNil(t, cd, tt.expNil)
@@ -264,8 +105,8 @@ func TestCommandByAbbr(t *testing.T) {
 }
 
 func TestArgByToken(t *testing.T) {
-	defs := testDefs()
-	for _, tt := range genByTokenAbbrTests("argument") {
+	defs := mockDefinitions()
+	for _, tt := range mockByTokenAbbrTests("argument") {
 		t.Run(tt.token, func(t *testing.T) {
 			cd := defs.ArgByToken(tt.token)
 			assertNil(t, cd, tt.expNil)
@@ -274,8 +115,8 @@ func TestArgByToken(t *testing.T) {
 }
 
 func TestArgByAbbr(t *testing.T) {
-	defs := testDefs()
-	for _, tt := range genByTokenAbbrTests("a") {
+	defs := mockDefinitions()
+	for _, tt := range mockByTokenAbbrTests("a") {
 		t.Run(tt.token, func(t *testing.T) {
 			cd := defs.ArgByAbbr(tt.token)
 			assertNil(t, cd, tt.expNil)
@@ -284,8 +125,8 @@ func TestArgByAbbr(t *testing.T) {
 }
 
 func TestValueBy(t *testing.T) {
-	defs := testDefs()
-	for _, tt := range genByTokenAbbrTests("value") {
+	defs := mockDefinitions()
+	for _, tt := range mockByTokenAbbrTests("value") {
 		t.Run(tt.token, func(t *testing.T) {
 			cd := defs.ValueByToken(tt.token)
 			assertNil(t, cd, tt.expNil)
@@ -294,18 +135,16 @@ func TestValueBy(t *testing.T) {
 }
 
 func TestDefinedValue(t *testing.T) {
-	defs := testDefs()
-	for ii, tt := range validityTests {
-		t.Run(validityNames[ii], func(t *testing.T) {
-			if defs.DefinedValue(tt.values) != tt.expected {
-				t.Error()
-			}
+	defs := mockDefinitions()
+	for _, tt := range mockValidityTests {
+		t.Run(strings.Join(tt.values, "-"), func(t *testing.T) {
+			assertEquals(t, defs.DefinedValue(tt.values), tt.expected)
 		})
 	}
 }
 
 func TestDefaultArg(t *testing.T) {
-	defs := testDefs()
+	defs := mockDefinitions()
 	tests := []struct {
 		cmd      *CommandDefinition
 		validCmd bool
@@ -328,9 +167,7 @@ func TestDefaultArg(t *testing.T) {
 			name = tt.cmd.Token
 		}
 		t.Run(name, func(t *testing.T) {
-			if tt.validCmd && tt.cmd == nil {
-				t.Error()
-			}
+			assertNil(t, tt.cmd, !tt.validCmd)
 			if tt.validCmd && tt.args != nil {
 				tt.cmd.Arguments = tt.args
 			}
@@ -341,7 +178,7 @@ func TestDefaultArg(t *testing.T) {
 }
 
 func TestRequiredArgs(t *testing.T) {
-	defs := testDefs()
+	defs := mockDefinitions()
 	tests := []struct {
 		cmd          string
 		requiredArgs int
@@ -353,9 +190,7 @@ func TestRequiredArgs(t *testing.T) {
 	defs.Commands[0].Arguments = append(defs.Commands[0].Arguments, "argument-that-doesnt-exist")
 	for _, tt := range tests {
 		t.Run(tt.cmd, func(t *testing.T) {
-			if len(defs.RequiredArgs(tt.cmd)) != tt.requiredArgs {
-				t.Error()
-			}
+			assertEquals(t, len(defs.RequiredArgs(tt.cmd)), tt.requiredArgs)
 		})
 	}
 }
@@ -370,12 +205,10 @@ func TestValidArgVal(t *testing.T) {
 		{"argument-that-doesnt-exist", "", false},
 		{"argument1", "value1", true},
 	}
-	defs := testDefs()
+	defs := mockDefinitions()
 	for _, tt := range tests {
 		t.Run(fmt.Sprintf("%s-%s", tt.arg, tt.val), func(t *testing.T) {
-			if defs.ValidArgVal(tt.arg, tt.val) != tt.expected {
-				t.Error()
-			}
+			assertEquals(t, defs.ValidArgVal(tt.arg, tt.val), tt.expected)
 		})
 	}
 }

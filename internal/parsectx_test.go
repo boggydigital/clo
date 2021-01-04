@@ -20,16 +20,12 @@ func TestParseCtxUpdate(t *testing.T) {
 		{"--argument1", argument, false, false},
 		{"--a1", argumentAbbr, false, false},
 	}
-	pCtx, defs := parseCtx{}, testDefs()
+	pCtx, defs := parseCtx{}, mockDefinitions()
 	for _, tt := range tests {
 		t.Run(tt.token, func(t *testing.T) {
 			pCtx.update(tt.token, tt.tokenType, defs)
-			if (pCtx.Command != nil && tt.cmdNilExp) || (pCtx.Command == nil && !tt.cmdNilExp) {
-				t.Error()
-			}
-			if (pCtx.Argument != nil && tt.argNilExp) || (pCtx.Argument == nil && !tt.argNilExp) {
-				t.Error()
-			}
+			assertNil(t, pCtx.Command, tt.cmdNilExp)
+			assertNil(t, pCtx.Argument, tt.argNilExp)
 		})
 	}
 }

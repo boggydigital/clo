@@ -5,13 +5,6 @@ import (
 	"testing"
 )
 
-func mockParseCtx(cmd, arg string) *parseCtx {
-	return &parseCtx{
-		Command:  mockCommandDefinition(cmd, nil),
-		Argument: mockArgumentDefinition(arg, nil),
-	}
-}
-
 func TestRequestUpdate(t *testing.T) {
 	tests := []struct {
 		token     string
