@@ -35,12 +35,12 @@ func Load(path string) (*Definitions, error) {
 		return nil, err
 	}
 
-	if err := dfs.addHelpCmd(); err != nil {
+	if err := tryAddHelpCommand(dfs); err != nil {
 		// adding help is not considered fatal error, inform, continue
 		log.Println("error adding help command:", err.Error())
 	}
 
-	if err := dfs.expandRefValues(); err != nil {
+	if err := expandRefValues(dfs.Arguments, dfs.Commands); err != nil {
 		return nil, err
 	}
 

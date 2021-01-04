@@ -2,12 +2,12 @@ package internal
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"testing"
 )
 
-func TestLoad(t *testing.T) {
-	names := []string{"load-adds-help", "load-at-a-path-that-doesnt-exist"}
+func TestDefinitionsLoad(t *testing.T) {
 	tests := []struct {
 		load      func() (*Definitions, error)
 		validLoad bool
@@ -23,7 +23,7 @@ func TestLoad(t *testing.T) {
 	t.Cleanup(deleteMockDefs)
 
 	for ii, tt := range tests {
-		t.Run(names[ii], func(t *testing.T) {
+		t.Run(strconv.Itoa(ii), func(t *testing.T) {
 			// command shouldn't exist before we add it at load
 			cmd := defs.CommandByToken(tt.addedCmd)
 			assertNil(t, cmd, true)
@@ -40,11 +40,10 @@ func TestLoad(t *testing.T) {
 	}
 }
 
-func TestLoadErrors(t *testing.T) {
+func TestDefinitionsLoadErrors(t *testing.T) {
 	// Load fails with known breaks:
 	// - Pre-existing "help:command" argument
 	// - Pre-existing "from:nowhere" reference value
-	names := []string{"broken_defs", "empty_defs"}
 	tests := []struct {
 		setup    func(t *testing.T)
 		expNil   bool
@@ -55,7 +54,7 @@ func TestLoadErrors(t *testing.T) {
 	}
 
 	for ii, tt := range tests {
-		t.Run(names[ii], func(t *testing.T) {
+		t.Run(strconv.Itoa(ii), func(t *testing.T) {
 			tt.setup(t)
 			defs, err := LoadDefault()
 			assertNil(t, defs, tt.expNil)
@@ -64,7 +63,7 @@ func TestLoadErrors(t *testing.T) {
 	}
 }
 
-func TestFlagByToken(t *testing.T) {
+func TestDefinitionsFlagByToken(t *testing.T) {
 	defs := mockDefinitions()
 	for _, tt := range mockByTokenAbbrTests("flag") {
 		t.Run(tt.token, func(t *testing.T) {
@@ -74,7 +73,7 @@ func TestFlagByToken(t *testing.T) {
 	}
 }
 
-func TestFlagByAbbr(t *testing.T) {
+func TestDefinitionsFlagByAbbr(t *testing.T) {
 	defs := mockDefinitions()
 	for _, tt := range mockByTokenAbbrTests("f") {
 		t.Run(tt.token, func(t *testing.T) {
@@ -84,7 +83,7 @@ func TestFlagByAbbr(t *testing.T) {
 	}
 }
 
-func TestCommandByToken(t *testing.T) {
+func TestDefinitionsCommandByToken(t *testing.T) {
 	defs := mockDefinitions()
 	for _, tt := range mockByTokenAbbrTests("command") {
 		t.Run(tt.token, func(t *testing.T) {
@@ -94,7 +93,7 @@ func TestCommandByToken(t *testing.T) {
 	}
 }
 
-func TestCommandByAbbr(t *testing.T) {
+func TestDefinitionsCommandByAbbr(t *testing.T) {
 	defs := mockDefinitions()
 	for _, tt := range mockByTokenAbbrTests("c") {
 		t.Run(tt.token, func(t *testing.T) {
@@ -104,7 +103,7 @@ func TestCommandByAbbr(t *testing.T) {
 	}
 }
 
-func TestArgByToken(t *testing.T) {
+func TestDefinitionsArgByToken(t *testing.T) {
 	defs := mockDefinitions()
 	for _, tt := range mockByTokenAbbrTests("argument") {
 		t.Run(tt.token, func(t *testing.T) {
@@ -114,7 +113,7 @@ func TestArgByToken(t *testing.T) {
 	}
 }
 
-func TestArgByAbbr(t *testing.T) {
+func TestDefinitionsArgByAbbr(t *testing.T) {
 	defs := mockDefinitions()
 	for _, tt := range mockByTokenAbbrTests("a") {
 		t.Run(tt.token, func(t *testing.T) {
@@ -124,7 +123,7 @@ func TestArgByAbbr(t *testing.T) {
 	}
 }
 
-func TestValueBy(t *testing.T) {
+func TestDefinitionsValueByToken(t *testing.T) {
 	defs := mockDefinitions()
 	for _, tt := range mockByTokenAbbrTests("value") {
 		t.Run(tt.token, func(t *testing.T) {
@@ -134,7 +133,7 @@ func TestValueBy(t *testing.T) {
 	}
 }
 
-func TestDefinedValue(t *testing.T) {
+func TestDefinitionsDefinedValue(t *testing.T) {
 	defs := mockDefinitions()
 	for _, tt := range mockValidityTests {
 		t.Run(strings.Join(tt.values, "-"), func(t *testing.T) {
@@ -143,7 +142,7 @@ func TestDefinedValue(t *testing.T) {
 	}
 }
 
-func TestDefaultArg(t *testing.T) {
+func TestDefinitionsDefaultArg(t *testing.T) {
 	defs := mockDefinitions()
 	tests := []struct {
 		cmd      *CommandDefinition
@@ -177,7 +176,7 @@ func TestDefaultArg(t *testing.T) {
 	}
 }
 
-func TestRequiredArgs(t *testing.T) {
+func TestDefinitionsRequiredArgs(t *testing.T) {
 	defs := mockDefinitions()
 	tests := []struct {
 		cmd          string
@@ -195,7 +194,7 @@ func TestRequiredArgs(t *testing.T) {
 	}
 }
 
-func TestValidArgVal(t *testing.T) {
+func TestDefinitionsValidArgVal(t *testing.T) {
 	tests := []struct {
 		arg      string
 		val      string

@@ -1,9 +1,11 @@
 package internal
 
-import "testing"
+import (
+	"strconv"
+	"testing"
+)
 
 func TestHasPrefix(t *testing.T) {
-	names := []string{"double", "single", "empty", "underscore"}
 	tests := []struct {
 		token    string
 		expected bool
@@ -15,7 +17,7 @@ func TestHasPrefix(t *testing.T) {
 	}
 
 	for ii, tt := range tests {
-		t.Run(names[ii], func(t *testing.T) {
+		t.Run(strconv.Itoa(ii), func(t *testing.T) {
 			assertEquals(t, hasPrefix(tt.token), tt.expected)
 		})
 	}
@@ -23,7 +25,6 @@ func TestHasPrefix(t *testing.T) {
 
 func TestTrimPrefix(t *testing.T) {
 	token := "token"
-	names := []string{"single", "double", "no_prefix"}
 	tests := []struct {
 		token    string
 		expected string
@@ -34,7 +35,7 @@ func TestTrimPrefix(t *testing.T) {
 	}
 
 	for ii, tt := range tests {
-		t.Run(names[ii], func(t *testing.T) {
+		t.Run(strconv.Itoa(ii), func(t *testing.T) {
 			assertEquals(t, trimPrefix(tt.token), tt.expected)
 		})
 	}

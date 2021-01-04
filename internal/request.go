@@ -53,13 +53,16 @@ func (req *Request) commandHasRequiredArgs(def *Definitions) error {
 	if def == nil {
 		return errors.New("cannot verify required argument using nil definitions")
 	}
+	if req == nil {
+		return errors.New("cannot verify required argument using nil request")
+	}
 
 	requiredArgs := def.RequiredArgs(req.Command)
 	for _, ra := range requiredArgs {
 		matched := false
-		for at, avs := range req.Arguments {
-			if ra == at {
-				if len(avs) == 0 {
+		for arg, values := range req.Arguments {
+			if ra == arg {
+				if len(values) == 0 {
 					return fmt.Errorf("required argument '%v' is missing values", ra)
 				}
 				matched = true
@@ -81,16 +84,16 @@ func (req *Request) argumentsMultipleValues(def *Definitions) error {
 		return errors.New("cannot verify nil request for required arguments")
 	}
 
-	for at, avs := range req.Arguments {
-		if at == "" {
+	for arg, values := range req.Arguments {
+		if arg == "" {
 			continue
 		}
-		arg := def.ArgByToken(at)
-		if arg == nil {
+		ad := def.ArgByToken(arg)
+		if ad == nil {
 			continue
 		}
-		if !arg.Multiple && len(avs) > 1 {
-			return fmt.Errorf("argument '%v' has multiple values, supports no more than one", at)
+		if !ad.Multiple && len(values) > 1 {
+			return fmt.Errorf("argument '%v' has multiple values, supports no more than one", arg)
 		}
 	}
 
@@ -116,23 +119,32 @@ func (req *Request) verify(def *Definitions) error {
 	return nil
 }
 
-func (req *Request) GetFlag(key string) bool {
+func (req *Request) GetFlag(flag string) bool {
+	if req == nil {
+		return false
+	}
 	for _, f := range req.Flags {
-		if f == key {
+		if f == flag {
 			return true
 		}
 	}
 	return false
 }
 
-func (req *Request) GetValue(key string) string {
-	vs := req.Arguments[key]
+func (req *Request) GetValue(arg string) string {
+	if req == nil {
+		return ""
+	}
+	vs := req.Arguments[arg]
 	if len(vs) > 0 {
 		return vs[0]
 	}
 	return ""
 }
 
-func (req *Request) GetValues(key string) []string {
-	return req.Arguments[key]
+func (req *Request) GetValues(arg string) []string {
+	if req == nil {
+		return []string{}
+	}
+	return req.Arguments[arg]
 }

@@ -307,7 +307,7 @@ func TestAppendError(t *testing.T) {
 	}
 }
 
-func TestVerify(t *testing.T) {
+func TestDefinitionsVerify(t *testing.T) {
 	// We've already verified individual error cases above
 	// so running known good definitions for the coverage
 	defs := mockDefinitions()

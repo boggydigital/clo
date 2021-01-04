@@ -6,19 +6,8 @@ import (
 	"strings"
 )
 
-func (def *Definitions) addHelpCmd() error {
-	if def == nil {
-		return fmt.Errorf("cannot add 'help' command to nil definitions")
-	}
-
-	// check if definitions already have 'help' token specified
-	helpCmd := def.CommandByToken("help")
-	if helpCmd != nil {
-		// don't return error as we're assuming author knows what they're doing
-		return nil
-	}
-
-	helpCmd = &CommandDefinition{
+func createHelpCommandDefinition() *CommandDefinition {
+	return &CommandDefinition{
 		CommonDefinition: CommonDefinition{
 			Token: "help",
 			Abbr:  "",
@@ -26,23 +15,12 @@ func (def *Definitions) addHelpCmd() error {
 			Desc:  "display help for the app or a specific command",
 		},
 	}
+}
 
-	// set abbreviation if not used by other commands
-	hAbbr := def.CommandByAbbr("h")
-	if hAbbr == nil {
-		helpCmd.Abbr = "h"
-	}
-
-	// create argument
-	argToken := "help:command"
-	commandArg := def.ArgByToken(argToken)
-	if commandArg != nil {
-		return fmt.Errorf("cannot add 'help' command as argument '%s' already exists", argToken)
-	}
-
-	commandArg = &ArgumentDefinition{
+func createHelpArgumentDefinition(token string) *ArgumentDefinition {
+	return &ArgumentDefinition{
 		CommonDefinition: CommonDefinition{
-			Token: argToken,
+			Token: token,
 			Abbr:  "",
 			Hint:  "app command",
 		},
@@ -51,32 +29,92 @@ func (def *Definitions) addHelpCmd() error {
 		Required: false,
 		Values:   []string{"from:commands"},
 	}
+}
 
-	cAbbr := def.ArgByAbbr("c")
-	if cAbbr == nil {
-		commandArg.Abbr = "c"
+func addCommandAbbr(abbr string, cd *CommandDefinition, cmdByAbbr func(string) *CommandDefinition) {
+	cmd := cmdByAbbr(abbr)
+	if cmd == nil && cd != nil {
+		cd.Abbr = abbr
+	}
+}
+
+func addArgAbbr(abbr string, ad *ArgumentDefinition, argByAbbr func(string) *ArgumentDefinition) {
+	arg := argByAbbr(abbr)
+	if arg == nil && ad != nil {
+		ad.Abbr = abbr
+	}
+}
+
+func addHelpCommand(token, abbr string, cmdByToken, cmdByArg func(string) *CommandDefinition) *CommandDefinition {
+	// check if definitions already have 'help' token specified
+	helpCmd := cmdByToken(token)
+	if helpCmd != nil {
+		return nil
 	}
 
-	def.Arguments = append(def.Arguments, *commandArg)
+	helpCmd = createHelpCommandDefinition()
+	addCommandAbbr(abbr, helpCmd, cmdByArg)
 
-	helpCmd.Arguments = []string{argToken}
+	return helpCmd
+}
 
-	def.Commands = append(def.Commands, *helpCmd)
+func addHelpCommandArgument(token, abbr string, argByToken, argByAbbr func(string) *ArgumentDefinition) (*ArgumentDefinition, error) {
+	// create argument
+	helpCmdArg := argByToken(token)
+	if helpCmdArg != nil {
+		return nil, fmt.Errorf("cannot add 'help' command as argument '%s' already exists", token)
+	}
+
+	helpCmdArg = createHelpArgumentDefinition(token)
+	addArgAbbr(abbr, helpCmdArg, argByAbbr)
+
+	return helpCmdArg, nil
+}
+
+func tryAddHelpCommand(def *Definitions) error {
+	if def == nil {
+		return fmt.Errorf("cannot add 'help' command to nil definitions")
+	}
+
+	const (
+		cmdToken = "help"
+		cmdAbbr  = "h"
+		argToken = "help:command"
+		argAbbr  = "c"
+	)
+
+	addedHelpCmd := addHelpCommand(cmdToken, cmdAbbr, def.CommandByToken, def.CommandByAbbr)
+	if addedHelpCmd == nil {
+		// don't return error as we're assuming author knows what they're doing
+		return nil
+	}
+
+	helpCmdArg, err := addHelpCommandArgument(argToken, argAbbr, def.ArgByToken, def.ArgByAbbr)
+	if err != nil {
+		return err
+	}
+
+	if helpCmdArg != nil {
+		def.Arguments = append(def.Arguments, *helpCmdArg)
+	}
+
+	addedHelpCmd.Arguments = []string{argToken}
+	def.Commands = append(def.Commands, *addedHelpCmd)
 
 	return nil
 }
 
-func (def *Definitions) expandRefValues() error {
-	for i, ad := range def.Arguments {
+func expandRefValues(args []ArgumentDefinition, commands []CommandDefinition) error {
+	for i, ad := range args {
 		if ad.Values != nil &&
 			len(ad.Values) == 1 &&
 			strings.HasPrefix(ad.Values[0], "from:") {
 			source := strings.TrimPrefix(ad.Values[0], "from:")
 			switch source {
 			case "commands":
-				def.Arguments[i].Values = make([]string, 0)
-				for _, cd := range def.Commands {
-					def.Arguments[i].Values = append(def.Arguments[i].Values, cd.Token)
+				args[i].Values = make([]string, 0)
+				for _, cd := range commands {
+					args[i].Values = append(args[i].Values, cd.Token)
 				}
 				return nil
 			default:
@@ -329,9 +367,11 @@ func printCmdExamples(cmd string, defs *Definitions) error {
 	if cd == nil {
 		return fmt.Errorf("command token '%s' is not defined", cmd)
 	}
-	fmt.Println("Examples:")
-	for _, ex := range cd.Examples {
-		printExampleHelp(&ex, cmd, defs)
+	if len(cd.Examples) > 0 {
+		fmt.Println("Examples:")
+		for _, ex := range cd.Examples {
+			printExampleHelp(&ex, cmd, defs)
+		}
 	}
 	return nil
 }

@@ -2,12 +2,12 @@ package internal
 
 import (
 	"os"
+	"strconv"
 	"strings"
 	"testing"
 )
 
 func TestArgEnv(t *testing.T) {
-	names := []string{"empty_arg", "only_arg", "cmd_arg", "prefix_cmd_arg"}
 	tests := []struct {
 		prefix, cmd, arg string
 		env              string
@@ -19,7 +19,7 @@ func TestArgEnv(t *testing.T) {
 	}
 
 	for ii, tt := range tests {
-		t.Run(names[ii], func(t *testing.T) {
+		t.Run(strconv.Itoa(ii), func(t *testing.T) {
 			assertEquals(t, argEnv(tt.prefix, tt.cmd, tt.arg), tt.env)
 		})
 	}

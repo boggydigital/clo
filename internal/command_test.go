@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestValidArg(t *testing.T) {
+func TestCommandDefinitionValidArg(t *testing.T) {
 	for _, tt := range mockValidityTests {
 		t.Run(strings.Join(tt.values, "-"), func(t *testing.T) {
 			cd := mockCommandDefinition("", tt.values)

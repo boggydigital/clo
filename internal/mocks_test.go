@@ -12,7 +12,7 @@ import (
 const defaultMockFilename = "clo.json"
 
 func mockDefinitions() *Definitions {
-	defs := &Definitions{
+	return &Definitions{
 		Version:   1,
 		EnvPrefix: "CORRECT",
 		App:       "clo",
@@ -76,8 +76,6 @@ func mockDefinitions() *Definitions {
 			},
 		},
 	}
-
-	return defs
 }
 
 func breakMockDefinitions(defs *Definitions) {
@@ -196,27 +194,37 @@ func mockFlagDefinitions(flags []string) []FlagDefinition {
 	return flagDefs
 }
 
+func mockCommandByToken(token string) *CommandDefinition {
+	switch token {
+	case "":
+		return nil
+	default:
+		return mockCommandDefinition(token, nil)
+	}
+}
+
+func mockCommandByAbbr(token string) *CommandDefinition {
+	return mockCommandByToken(token)
+}
+
 func mockArgByToken(token string) *ArgumentDefinition {
 	if strings.HasPrefix(token, "default") {
 		// default arguments
-		return &ArgumentDefinition{
-			CommonDefinition: CommonDefinition{
-				Token: token,
-			},
-			Default: true,
-		}
+		arg := mockArgumentDefinition(token, nil)
+		arg.Default = true
+		return arg
 	}
 
 	switch token {
 	case "":
 		return nil
 	default:
-		return &ArgumentDefinition{
-			CommonDefinition: CommonDefinition{
-				Token: token,
-			},
-		}
+		return mockArgumentDefinition(token, nil)
 	}
+}
+
+func mockArgByAbbr(token string) *ArgumentDefinition {
+	return mockArgByToken(token)
 }
 
 func mockValidArgVal(arg, val string) bool {

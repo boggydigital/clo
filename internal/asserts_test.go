@@ -11,6 +11,12 @@ func assertEquals(t *testing.T, v1, v2 interface{}) {
 	}
 }
 
+func assertNotEquals(t *testing.T, v1, v2 interface{}) {
+	if v1 == v2 {
+		t.Error()
+	}
+}
+
 func assertNil(t *testing.T, v interface{}, expNil bool) {
 	val := reflect.ValueOf(v)
 	if (val.IsNil() && !expNil) || (!val.IsNil() && expNil) {

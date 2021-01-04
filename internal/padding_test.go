@@ -7,12 +7,12 @@ func TestCommandsPadding(t *testing.T) {
 	assertEquals(t, defs.CommandsPadding(), len("command1"))
 }
 
-func TestFlagsPadding(t *testing.T) {
+func TestDefinitionsFlagsPadding(t *testing.T) {
 	defs := mockDefinitions()
 	assertEquals(t, defs.FlagsPadding(), len("flag1"))
 }
 
-func TestArgumentsPadding(t *testing.T) {
+func TestDefinitionsArgumentsPadding(t *testing.T) {
 	tests := []struct {
 		cmd        string
 		expPadding int

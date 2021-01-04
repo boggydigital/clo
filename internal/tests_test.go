@@ -10,6 +10,12 @@ type TokensTest struct {
 	expError bool
 }
 
+type RequestTest struct {
+	req      *Request
+	defs     *Definitions
+	expError bool
+}
+
 var mockValidityTests = []struct {
 	values   []string
 	value    string
@@ -55,4 +61,24 @@ func mockByTokenAbbrTests(prefix string) []TokenTest {
 		// invalid token/abbr
 		{prefix + "-token-that-doesnt-exist", true},
 	}
+}
+
+var mockRequestCommandTests = []RequestTest{
+	{nil, nil, true},
+	{nil, mockDefinitions(), true},
+	{&Request{Command: "command2", Arguments: nil}, mockDefinitions(), false},
+	{&Request{Command: "command1", Arguments: nil}, mockDefinitions(), true},
+	{&Request{Command: "command1", Arguments: map[string][]string{"argument3": {}}}, mockDefinitions(), true},
+	{&Request{Command: "command1", Arguments: map[string][]string{"argument1": {}}}, mockDefinitions(), true},
+	{&Request{Command: "command1", Arguments: map[string][]string{"argument1": {"1"}}}, mockDefinitions(), false},
+}
+
+var mockRequestArgumentTests = []RequestTest{
+	{nil, nil, true},
+	{nil, mockDefinitions(), true},
+	{&Request{Arguments: map[string][]string{}}, mockDefinitions(), false},
+	{&Request{Arguments: map[string][]string{"": {}}}, mockDefinitions(), false},
+	{&Request{Arguments: map[string][]string{"argument1": {"1", "2"}}}, mockDefinitions(), false},
+	{&Request{Arguments: map[string][]string{"argument2": {"1", "2"}}}, mockDefinitions(), true},
+	{&Request{Arguments: map[string][]string{"argument3": {"1", "2"}}}, mockDefinitions(), false},
 }
