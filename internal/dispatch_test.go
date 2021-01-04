@@ -6,15 +6,15 @@ import (
 
 func TestDispatch(t *testing.T) {
 	tests := []struct {
-		request  *Request
-		expError bool
+		writeDefs func(*testing.T)
+		request   *Request
+		expError  bool
 	}{
-		{nil, false},
-		{&Request{Command: "help"}, false},
-		{&Request{Command: "command-that-doesnt-exist"}, true},
+		{writeDefaultMockDefs, nil, false},
+		{writeDefaultMockDefs, &Request{Command: "help"}, false},
+		{writeDefaultMockDefs, &Request{Command: "command-that-doesnt-exist"}, true},
+		{writeEmptyMockDefs, nil, true},
 	}
-	writeMockDefs(mockDefinitions(), t)
-	t.Cleanup(deleteMockDefs)
 
 	for _, tt := range tests {
 		name := "nil"
@@ -22,6 +22,9 @@ func TestDispatch(t *testing.T) {
 			name = tt.request.Command
 		}
 		t.Run(name, func(t *testing.T) {
+			tt.writeDefs(t)
+			//writeMockDefs(tt.defs, t)
+			t.Cleanup(deleteMockDefs)
 			err := Dispatch(tt.request)
 			assertError(t, err, tt.expError)
 		})

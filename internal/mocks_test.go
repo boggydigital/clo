@@ -78,13 +78,23 @@ func mockDefinitions() *Definitions {
 	}
 }
 
-func breakMockDefinitions(defs *Definitions) {
+func mockAddHelpCommand(defs *Definitions) *Definitions {
+	defs.Commands = append(defs.Commands, CommandDefinition{
+		CommonDefinition: CommonDefinition{
+			Token: "help",
+		}})
+	return defs
+}
+
+func mockAddHelpCommandArgument(defs *Definitions) *Definitions {
 	defs.Arguments = append(defs.Arguments, ArgumentDefinition{
 		CommonDefinition: CommonDefinition{
 			Token: "help:command",
 		},
 		Values: []string{"from:nowhere"},
 	})
+
+	return defs
 }
 
 func writeMockDefs(defs *Definitions, t *testing.T) {
@@ -100,6 +110,10 @@ func writeMockDefs(defs *Definitions, t *testing.T) {
 	} else {
 		t.Error()
 	}
+}
+
+func writeDefaultMockDefs(t *testing.T) {
+	writeMockDefs(mockDefinitions(), t)
 }
 
 func writeEmptyMockDefs(t *testing.T) {
@@ -125,7 +139,7 @@ func loadMockPathThatDoesntExist() (*Definitions, error) {
 
 func setupBrokenMockDefs(t *testing.T) {
 	defs := mockDefinitions()
-	breakMockDefinitions(defs)
+	mockAddHelpCommandArgument(defs)
 	writeMockDefs(defs, t)
 	t.Cleanup(deleteMockDefs)
 }
@@ -203,6 +217,14 @@ func mockCommandByToken(token string) *CommandDefinition {
 	}
 }
 
+func mockCommandByTokenNoHelp(token string) *CommandDefinition {
+	if token == "help" {
+		return nil
+	} else {
+		return mockCommandByToken(token)
+	}
+}
+
 func mockCommandByAbbr(token string) *CommandDefinition {
 	return mockCommandByToken(token)
 }
@@ -223,11 +245,19 @@ func mockArgByToken(token string) *ArgumentDefinition {
 	}
 }
 
+func mockArgByTokenNoHelp(token string) *ArgumentDefinition {
+	if token == "help" {
+		return nil
+	} else {
+		return mockArgByToken(token)
+	}
+}
+
 func mockArgByAbbr(token string) *ArgumentDefinition {
 	return mockArgByToken(token)
 }
 
-func mockValidArgVal(arg, val string) bool {
+func mockValidArgVal(val string) bool {
 	if strings.HasPrefix(val, "invalid") {
 		return false
 	}

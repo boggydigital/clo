@@ -46,6 +46,9 @@ func addArgAbbr(abbr string, ad *ArgumentDefinition, argByAbbr func(string) *Arg
 }
 
 func addHelpCommand(token, abbr string, cmdByToken, cmdByArg func(string) *CommandDefinition) *CommandDefinition {
+	if cmdByToken == nil {
+		return nil
+	}
 	// check if definitions already have 'help' token specified
 	helpCmd := cmdByToken(token)
 	if helpCmd != nil {
@@ -59,6 +62,9 @@ func addHelpCommand(token, abbr string, cmdByToken, cmdByArg func(string) *Comma
 }
 
 func addHelpCommandArgument(token, abbr string, argByToken, argByAbbr func(string) *ArgumentDefinition) (*ArgumentDefinition, error) {
+	if argByToken == nil {
+		return nil, nil
+	}
 	// create argument
 	helpCmdArg := argByToken(token)
 	if helpCmdArg != nil {
@@ -125,19 +131,22 @@ func expandRefValues(args []ArgumentDefinition, commands []CommandDefinition) er
 	return nil
 }
 
-func printHelp(cmd string, verbose bool) error {
-	defs, err := LoadDefault()
-	if err != nil {
-		return err
+func printHelp(cmd string, defs *Definitions, verbose bool) error {
+	if defs == nil {
+		return fmt.Errorf("cannot show help without definitions")
 	}
 	if cmd == "" {
-		return printAppHelp(defs, verbose)
+		printAppHelp(defs, verbose)
 	} else {
 		return printCmdHelp(cmd, defs, verbose)
 	}
+	return nil
 }
 
 func printAppIntro(defs *Definitions, verbose bool) {
+	if defs == nil {
+		return
+	}
 	appDesc := defs.Hint
 	if verbose && defs.Desc != "" {
 		appDesc = defs.Desc
@@ -146,6 +155,9 @@ func printAppIntro(defs *Definitions, verbose bool) {
 }
 
 func printAppUsage(defs *Definitions) {
+	if defs == nil {
+		return
+	}
 	fmt.Printf("Usage: %s command [<--arguments [<values>]>] [<--flags>]\n",
 		defs.App)
 }
@@ -163,7 +175,6 @@ func printAppCommands(defs *Definitions, verbose bool) {
 		attrs := make([]string, 0)
 		if cmd.Abbr != "" {
 			attrs = append(attrs, fmt.Sprintf("Abbr:%s", cmd.Abbr))
-
 		}
 		if len(attrs) > 0 {
 			fmt.Printf(" (%s)", strings.Join(attrs, ","))
@@ -209,7 +220,7 @@ func printAppMoreInfoPrompt(defs *Definitions, verbose bool) {
 		verbosePrompt)
 }
 
-func printAppHelp(defs *Definitions, verbose bool) error {
+func printAppHelp(defs *Definitions, verbose bool) {
 	printAppIntro(defs, verbose)
 	fmt.Println()
 	printAppUsage(defs)
@@ -225,7 +236,6 @@ func printAppHelp(defs *Definitions, verbose bool) error {
 		fmt.Println()
 	}
 	printAppMoreInfoPrompt(defs, verbose)
-	return nil
 }
 
 func printExampleHelp(ex *ExampleDefinition, cmd string, defs *Definitions) {
@@ -301,7 +311,8 @@ func printArgValues(cmd string, arg string, defs *Definitions, verbose bool) err
 			for _, vt := range ad.Values {
 				vd := defs.ValueByToken(vt)
 				if vd == nil {
-					return fmt.Errorf("command '%s' argument '%s' has unknown value token '%s'", cmd, arg, vt)
+					continue
+					//return fmt.Errorf("command '%s' argument '%s' has unknown value token '%s'", cmd, arg, vt)
 				}
 				valDesc := vd.Hint
 				if verbose && vd.Desc != "" {

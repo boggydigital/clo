@@ -82,3 +82,5 @@ var mockRequestArgumentTests = []RequestTest{
 	{&Request{Arguments: map[string][]string{"argument2": {"1", "2"}}}, mockDefinitions(), true},
 	{&Request{Arguments: map[string][]string{"argument3": {"1", "2"}}}, mockDefinitions(), false},
 }
+
+var mockHelpDefinitionsTests = []*Definitions{nil, mockDefinitions()}
