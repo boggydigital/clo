@@ -34,6 +34,14 @@ var mockExamplesTests = []TokensTest{
 	{[]string{"", ""}, true},
 }
 
+var mockEmptyExamplesTests = []TokensTest{
+	{nil, false},
+	{[]string{}, false},
+	{[]string{"1", "2"}, false},
+	{[]string{"empty"}, false},
+	{[]string{"skip"}, true},
+}
+
 func mockNoEmptyTokensTests() []TokensTest {
 	return []TokensTest{
 		{nil, false},
@@ -80,7 +88,27 @@ var mockRequestArgumentTests = []RequestTest{
 	{&Request{Arguments: map[string][]string{"": {}}}, mockDefinitions(), false},
 	{&Request{Arguments: map[string][]string{"argument1": {"1", "2"}}}, mockDefinitions(), false},
 	{&Request{Arguments: map[string][]string{"argument2": {"1", "2"}}}, mockDefinitions(), true},
-	{&Request{Arguments: map[string][]string{"argument3": {"1", "2"}}}, mockDefinitions(), false},
+	{&Request{Arguments: map[string][]string{"argument-that-doesnt-exist": {"1", "2"}}}, mockDefinitions(), false},
 }
 
 var mockHelpDefinitionsTests = []*Definitions{nil, mockDefinitions()}
+
+type TokenHelpTest struct {
+	token string
+	defs  *Definitions
+}
+
+var mockPrintArgumentHelpTests = []TokenHelpTest{
+	{"", nil},
+	{"argument1", mockDefinitions()},
+	{"argument2", mockDefinitions()},
+	{"argument3", mockDefinitions()},
+	{"argument-that-doesnt-exist", mockDefinitions()},
+}
+
+var mockPrintCommandHelpTests = []TokenHelpTest{
+	{"", nil},
+	{"command1", mockDefinitions()},
+	{"command2", mockDefinitions()},
+	{"command-that-doesnt-exist", mockDefinitions()},
+}

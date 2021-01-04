@@ -241,12 +241,7 @@ func TestExamplesArgumentsAreNotEmpty(t *testing.T) {
 }
 
 func TestExamplesHaveArgsValues(t *testing.T) {
-	tests := []TokensTest{
-		{nil, false},
-		{[]string{}, false},
-		{[]string{"empty"}, true},
-	}
-	for _, tt := range tests {
+	for _, tt := range mockEmptyExamplesTests {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
 			err := examplesHaveArgsValues(mockCommandDefinitions(tt.tokens), false)
 			assertError(t, err, tt.expError)

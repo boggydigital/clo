@@ -138,7 +138,7 @@ func printHelp(cmd string, defs *Definitions, verbose bool) error {
 	if cmd == "" {
 		printAppHelp(defs, verbose)
 	} else {
-		return printCmdHelp(cmd, defs, verbose)
+		printCmdHelp(cmd, defs, verbose)
 	}
 	return nil
 }
@@ -163,6 +163,9 @@ func printAppUsage(defs *Definitions) {
 }
 
 func printAppCommands(defs *Definitions, verbose bool) {
+	if defs == nil {
+		return
+	}
 	fmt.Println("Commands:")
 	for _, cmd := range defs.Commands {
 		cmdDesc := cmd.Hint
@@ -184,6 +187,9 @@ func printAppCommands(defs *Definitions, verbose bool) {
 }
 
 func printAppFlags(defs *Definitions, verbose bool) {
+	if defs == nil {
+		return
+	}
 	fmt.Println("Flags:")
 	for _, flg := range defs.Flags {
 		flgDesc := flg.Hint
@@ -210,6 +216,9 @@ func printAppAttrsLegend() {
 }
 
 func printAppMoreInfoPrompt(defs *Definitions, verbose bool) {
+	if defs == nil {
+		return
+	}
 	verbosePrompt := ""
 	if !verbose {
 		verbosePrompt = fmt.Sprintf(" or '%s help --verbose' for more help", defs.App)
@@ -227,7 +236,7 @@ func printAppHelp(defs *Definitions, verbose bool) {
 	fmt.Println()
 	printAppCommands(defs, verbose)
 	fmt.Println()
-	if len(defs.Flags) > 0 {
+	if defs != nil && len(defs.Flags) > 0 {
 		printAppFlags(defs, verbose)
 		fmt.Println()
 	}
@@ -239,6 +248,9 @@ func printAppHelp(defs *Definitions, verbose bool) {
 }
 
 func printExampleHelp(ex *ExampleDefinition, cmd string, defs *Definitions) {
+	if defs == nil {
+		return
+	}
 	fmt.Printf("  '%s %s", defs.App, cmd)
 	for arg, values := range ex.ArgumentsValues {
 		fmt.Printf(" --%s ", arg)
@@ -251,23 +263,28 @@ func printExampleHelp(ex *ExampleDefinition, cmd string, defs *Definitions) {
 	fmt.Println("':", ex.Desc)
 }
 
-func printCmdUsage(cmd string, defs *Definitions) error {
+func printCmdUsage(cmd string, defs *Definitions) {
+	if defs == nil {
+		return
+	}
 	cmdUsage := fmt.Sprintf("Usage: %s %s ", defs.App, cmd)
 	cd := defs.CommandByToken(cmd)
 	if cd == nil {
-		return fmt.Errorf("command token '%s' is not defined", cmd)
+		return
 	}
 	if len(cd.Arguments) > 0 {
 		cmdUsage += "[<arguments>]"
 	}
 	fmt.Println(cmdUsage)
-	return nil
 }
 
-func printArgAttrs(cmd string, arg string, defs *Definitions) error {
+func printArgAttrs(cmd string, arg string, defs *Definitions) {
+	if defs == nil {
+		return
+	}
 	ad := defs.ArgByToken(arg)
 	if ad == nil {
-		return fmt.Errorf("  %s: invalid argument token\n", arg)
+		return
 	}
 	attrs := make([]string, 0)
 	if ad.Default {
@@ -289,13 +306,15 @@ func printArgAttrs(cmd string, arg string, defs *Definitions) error {
 	if len(attrs) > 0 {
 		fmt.Printf(" (%s)", strings.Join(attrs, ","))
 	}
-	return nil
 }
 
-func printArgValues(cmd string, arg string, defs *Definitions, verbose bool) error {
+func printArgValues(cmd string, arg string, defs *Definitions, verbose bool) {
+	if defs == nil {
+		return
+	}
 	ad := defs.ArgByToken(arg)
 	if ad == nil {
-		return fmt.Errorf("  %s: invalid argument token\n", arg)
+		return
 	}
 	if len(ad.Values) > 0 {
 		ap := strconv.Itoa(defs.ArgumentsPadding(cmd))
@@ -322,41 +341,38 @@ func printArgValues(cmd string, arg string, defs *Definitions, verbose bool) err
 			}
 		}
 	}
-	return nil
 }
 
-func printCmdArgDesc(cmd string, arg string, defs *Definitions, verbose bool) error {
+func printCmdArgDesc(cmd string, arg string, defs *Definitions, verbose bool) {
+	if defs == nil {
+		return
+	}
 	ad := defs.ArgByToken(arg)
 	if ad == nil {
-		return fmt.Errorf("%s: invalid argument token\n", arg)
+		return
 	}
 	argDesc := ad.Hint
 	if verbose && ad.Desc != "" {
 		argDesc = ad.Desc
 	}
 	fmt.Printf("  %-"+strconv.Itoa(defs.ArgumentsPadding(cmd))+"s  %s", arg, argDesc)
-	return nil
 }
 
-func printCmdArgs(cmd string, defs *Definitions, verbose bool) error {
+func printCmdArgs(cmd string, defs *Definitions, verbose bool) {
+	if defs == nil {
+		return
+	}
 	cd := defs.CommandByToken(cmd)
 	if cd == nil {
-		return fmt.Errorf("command token '%s' is not defined", cmd)
+		return
 	}
 	fmt.Println("Arguments:")
 	for _, arg := range cd.Arguments {
-		if err := printCmdArgDesc(cmd, arg, defs, verbose); err != nil {
-			return err
-		}
-		if err := printArgAttrs(cmd, arg, defs); err != nil {
-			return err
-		}
+		printCmdArgDesc(cmd, arg, defs, verbose)
+		printArgAttrs(cmd, arg, defs)
 		fmt.Println()
-		if err := printArgValues(cmd, arg, defs, verbose); err != nil {
-			return err
-		}
+		printArgValues(cmd, arg, defs, verbose)
 	}
-	return nil
 }
 
 func printArgAttrsLegend() {
@@ -373,10 +389,13 @@ func printArgAttrsLegend() {
 		"used in place of a full token")
 }
 
-func printCmdExamples(cmd string, defs *Definitions) error {
+func printCmdExamples(cmd string, defs *Definitions) {
+	if defs == nil {
+		return
+	}
 	cd := defs.CommandByToken(cmd)
 	if cd == nil {
-		return fmt.Errorf("command token '%s' is not defined", cmd)
+		return
 	}
 	if len(cd.Examples) > 0 {
 		fmt.Println("Examples:")
@@ -384,31 +403,26 @@ func printCmdExamples(cmd string, defs *Definitions) error {
 			printExampleHelp(&ex, cmd, defs)
 		}
 	}
-	return nil
 }
 
 func printCmdMoreInfoPrompt(cmd string, defs *Definitions) {
+	if defs == nil {
+		return
+	}
 	fmt.Printf("Run '%s help %s --verbose' for more information, "+
 		"examples and arguments (attributes).\n", defs.App, cmd)
 }
 
-func printCmdHelp(cmd string, defs *Definitions, verbose bool) error {
-	if err := printCmdUsage(cmd, defs); err != nil {
-		return err
-	}
+func printCmdHelp(cmd string, defs *Definitions, verbose bool) {
+	printCmdUsage(cmd, defs)
 	fmt.Println()
-	if err := printCmdArgs(cmd, defs, verbose); err != nil {
-		return err
-	}
+	printCmdArgs(cmd, defs, verbose)
 	fmt.Println()
 	if verbose {
 		printArgAttrsLegend()
 		fmt.Println()
-		if err := printCmdExamples(cmd, defs); err != nil {
-			return err
-		}
+		printCmdExamples(cmd, defs)
 	} else {
 		printCmdMoreInfoPrompt(cmd, defs)
 	}
-	return nil
 }

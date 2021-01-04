@@ -23,6 +23,8 @@ func mockDefinitions() *Definitions {
 				CommonDefinition: CommonDefinition{
 					Token: "flag1",
 					Abbr:  "f1",
+					Hint:  "flag1 hint",
+					Desc:  "flag1 description",
 				},
 			},
 			{
@@ -37,6 +39,8 @@ func mockDefinitions() *Definitions {
 				CommonDefinition: CommonDefinition{
 					Token: "command1",
 					Abbr:  "c1",
+					Hint:  "command1 hint",
+					Desc:  "command1 description",
 				},
 				Arguments: []string{
 					"argument1",
@@ -46,7 +50,15 @@ func mockDefinitions() *Definitions {
 			{
 				CommonDefinition: CommonDefinition{
 					Token: "command2",
+					Hint:  "command2 hint",
+					Desc:  "command2 description",
 				},
+			},
+			{
+				CommonDefinition: CommonDefinition{
+					Token: "command3",
+				},
+				Arguments: []string{"argument3"},
 			},
 		},
 		Arguments: []ArgumentDefinition{
@@ -54,6 +66,8 @@ func mockDefinitions() *Definitions {
 				CommonDefinition: CommonDefinition{
 					Token: "argument1",
 					Abbr:  "a1",
+					Hint:  "argument1 hint",
+					Desc:  "argument1 description",
 				},
 				Default:  true,
 				Multiple: true,
@@ -67,11 +81,20 @@ func mockDefinitions() *Definitions {
 				},
 				Values: []string{"value3", "value4"},
 			},
+			{
+				CommonDefinition: CommonDefinition{
+					Token: "argument3",
+					Abbr:  "a3",
+				},
+				Env: true,
+			},
 		},
 		Values: []ValueDefinition{
 			{
 				CommonDefinition: CommonDefinition{
 					Token: "value1",
+					Hint:  "value1 hint",
+					Desc:  "value1 desc",
 				},
 			},
 		},
@@ -94,6 +117,11 @@ func mockAddHelpCommandArgument(defs *Definitions) *Definitions {
 		Values: []string{"from:nowhere"},
 	})
 
+	return defs
+}
+
+func mockAddArgumentThatDoesntExist(defs *Definitions) *Definitions {
+	defs.Commands[0].Arguments = append(defs.Commands[0].Arguments, "argument-that-doesnt-exist")
 	return defs
 }
 
@@ -154,7 +182,7 @@ func mockCommandDefinition(cmd string, args []string) *CommandDefinition {
 		CommonDefinition: CommonDefinition{Token: cmd, Abbr: cmd},
 		Arguments:        args,
 	}
-	mockExample(&cd, args)
+	mockAddExample(&cd, args)
 	return &cd
 }
 
@@ -166,19 +194,27 @@ func mockCommandDefinitions(commands []string) []CommandDefinition {
 	return comDefs
 }
 
-func mockExample(cd *CommandDefinition, tokens []string) {
-	desc := strings.Join(tokens, "")
-	cd.Examples = append(cd.Examples, ExampleDefinition{
-		ArgumentsValues: map[string][]string{},
+func mockExampleDefinition(desc string, tokens []string) *ExampleDefinition {
+	ed := &ExampleDefinition{
+		ArgumentsValues: make(map[string][]string, 0),
 		Desc:            desc,
-	})
-	cd.Examples[0].ArgumentsValues = make(map[string][]string, 0)
-	for _, tt := range tokens {
-		if strings.HasPrefix(desc, "empty") {
-			continue
-		}
-		cd.Examples[0].ArgumentsValues[tt] = tokens
 	}
+	for _, tt := range tokens {
+		switch tt {
+		case "empty":
+			ed.ArgumentsValues[tt] = []string{}
+		case "skip":
+			continue
+		default:
+			ed.ArgumentsValues[tt] = tokens
+		}
+	}
+	return ed
+}
+
+func mockAddExample(cd *CommandDefinition, tokens []string) {
+	desc := strings.Join(tokens, "")
+	cd.Examples = append(cd.Examples, *mockExampleDefinition(desc, tokens))
 }
 
 func mockArgumentDefinition(arg string, values []string) *ArgumentDefinition {
