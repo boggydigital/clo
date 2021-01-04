@@ -257,7 +257,7 @@ func mockArgByAbbr(token string) *ArgumentDefinition {
 	return mockArgByToken(token)
 }
 
-func mockValidArgVal(val string) bool {
+func mockValidArgVal(arg, val string) bool {
 	if strings.HasPrefix(val, "invalid") {
 		return false
 	}
