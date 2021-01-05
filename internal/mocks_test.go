@@ -305,7 +305,7 @@ func mockValidArgVal(arg, val string) bool {
 
 func mockParseCtx(cmd, arg string) *parseCtx {
 	return &parseCtx{
-		Command:  mockCommandDefinition(cmd, nil),
+		Command:  mockCommandDefinition(cmd, []string{arg}),
 		Argument: mockArgumentDefinition(arg, nil),
 	}
 }

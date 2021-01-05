@@ -124,23 +124,28 @@ func matchValue(token string, tokenType int, arg *ArgumentDefinition) (bool, err
 		} else {
 			if len(arg.Values) > 0 {
 				// check for sequence break (another argument) before verifying a fixed value
-				if hasPrefix(token) {
-					return false, nil
-				}
 				return false, fmt.Errorf("unsupported value '%v' for an argument '%v'", token, arg.Token)
 			} else {
 				return false, nil
 			}
 		}
 	case value:
-		return len(arg.Values) == 0, nil
+		if len(arg.Values) == 0 {
+			return true, nil
+		} else {
+			return arg.ValidValue(token), nil
+		}
+	default:
+		return false, nil
 	}
-	return false, nil
 }
 
 // match a token to a given token type, in the context of existing
 // command, argument (applicable to tokens.argument and tokens.value, tokens.valueFixed, tokens.valueDefault)
 func match(token string, tokenType int, ctx *parseCtx, def *Definitions) (bool, error) {
+	if def == nil {
+		return false, fmt.Errorf("cannot match token with nil definitions")
+	}
 	switch tokenType {
 	case command:
 		return def.CommandByToken(token) != nil, nil

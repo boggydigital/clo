@@ -9,6 +9,10 @@ import (
 // multiple values, etc.
 func (def *Definitions) Parse(args []string) (*Request, error) {
 
+	if def == nil {
+		return nil, fmt.Errorf("cannot parse using nil definitions")
+	}
+
 	var req = &Request{
 		Flags:     []string{},
 		Command:   "",

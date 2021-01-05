@@ -149,7 +149,25 @@ func TestMatchValue(t *testing.T) {
 		// hasPrefix
 		{MatchTest{"-", value, false, false}, mockArgumentDefinition("", []string{})},
 		// tokenType == valueDefault
-
+		{MatchTest{"value-that-doesnt-exist", valueDefault, false, false}, mockArgumentDefinition("", []string{"value1", "value2"})},
+		{MatchTest{"any-value", valueDefault, false, false}, mockArgumentDefinition("", []string{""})},
+		{MatchTest{"value1", valueDefault, true, false}, mockArgumentDefinition("default", []string{"value1", "value2"})},
+		{MatchTest{"any-value", valueDefault, true, false}, mockArgumentDefinition("default", []string{})},
+		// tokenType == valueFixed
+		{MatchTest{"value1", valueFixed, true, false}, mockArgumentDefinition("", []string{"value1", "value2"})},
+		{MatchTest{"value-that-doesnt-exist", valueFixed, false, true}, mockArgumentDefinition("", []string{"value1", "value2"})},
+		{MatchTest{"any-value", valueFixed, false, false}, mockArgumentDefinition("", []string{})},
+		// tokenType == value
+		{MatchTest{"value1", value, true, false}, mockArgumentDefinition("", []string{"value1", "value2"})},
+		{MatchTest{"value-that-doesnt-exist", value, false, false}, mockArgumentDefinition("", []string{"value1", "value2"})},
+		{MatchTest{"any-value", value, true, false}, mockArgumentDefinition("", []string{})},
+		// other token types
+		{MatchTest{"value", command, false, false}, mockArgumentDefinition("", []string{})},
+		{MatchTest{"value", commandAbbr, false, false}, mockArgumentDefinition("", []string{})},
+		{MatchTest{"value", argument, false, false}, mockArgumentDefinition("", []string{})},
+		{MatchTest{"value", argumentAbbr, false, false}, mockArgumentDefinition("", []string{})},
+		{MatchTest{"value", flag, false, false}, mockArgumentDefinition("", []string{})},
+		{MatchTest{"value", flagAbbr, false, false}, mockArgumentDefinition("", []string{})},
 	}
 	for _, tt := range tests {
 		t.Run(tt.token, func(t *testing.T) {
@@ -158,4 +176,82 @@ func TestMatchValue(t *testing.T) {
 			assertError(t, err, tt.expError)
 		})
 	}
+}
+
+func TestMatch(t *testing.T) {
+	defs := mockDefinitions()
+	command1ParseCtx := &parseCtx{Command: &defs.Commands[0]}
+	argument1ParseCtx := &parseCtx{Argument: &defs.Arguments[0]}
+	argument3ParseCtx := &parseCtx{Argument: &defs.Arguments[2]}
+	tests := []MatchDefaultValueTest{
+		// def == nil
+		{MatchTest{"", command, false, true}, nil, nil},
+		{MatchTest{"", commandAbbr, false, true}, nil, nil},
+		{MatchTest{"", argument, false, true}, nil, nil},
+		{MatchTest{"", argumentAbbr, false, true}, nil, nil},
+		{MatchTest{"", valueDefault, false, true}, nil, nil},
+		{MatchTest{"", valueFixed, false, true}, nil, nil},
+		{MatchTest{"", value, false, true}, nil, nil},
+		{MatchTest{"", flag, false, true}, nil, nil},
+		{MatchTest{"", flagAbbr, false, true}, nil, nil},
+		{MatchTest{"", -1, false, true}, nil, nil},
+		{MatchTest{"", math.MaxInt64, false, true}, nil, nil},
+		// command token
+		{MatchTest{"command1", command, true, false}, nil, defs},
+		{MatchTest{"command-that-doesnt-exist", command, false, false}, nil, defs},
+		// command abbr
+		{MatchTest{"c1", commandAbbr, true, false}, nil, defs},
+		{MatchTest{"c-abbr-that-doesnt-exist", commandAbbr, false, false}, nil, defs},
+		// flag token
+		{MatchTest{"-flag1", flag, true, false}, nil, defs},
+		{MatchTest{"--flag1", flag, true, false}, nil, defs},
+		{MatchTest{"flag1", flag, false, false}, nil, defs},
+		{MatchTest{"-flag-that-doesnt-exist", flag, false, false}, nil, defs},
+		{MatchTest{"--flag-that-doesnt-exist", flag, false, false}, nil, defs},
+		// flag abbr
+		{MatchTest{"-f1", flagAbbr, true, false}, nil, defs},
+		{MatchTest{"--f1", flagAbbr, true, false}, nil, defs},
+		{MatchTest{"f1", flagAbbr, false, false}, nil, defs},
+		{MatchTest{"-f-abbr-that-doesnt-exist", flagAbbr, false, false}, nil, defs},
+		{MatchTest{"--f-abbr-that-doesnt-exist", flagAbbr, false, false}, nil, defs},
+		// argument token
+		{MatchTest{"-argument1", argument, true, false}, command1ParseCtx, defs},
+		{MatchTest{"--argument1", argument, true, false}, command1ParseCtx, defs},
+		{MatchTest{"argument1", argument, false, false}, command1ParseCtx, defs},
+		{MatchTest{"-argument-that-doesnt-exist", argument, false, false}, command1ParseCtx, defs},
+		{MatchTest{"--argument-that-doesnt-exist", argument, false, false}, command1ParseCtx, defs},
+		// argument abbr
+		{MatchTest{"-a1", argumentAbbr, true, false}, command1ParseCtx, defs},
+		{MatchTest{"--a1", argumentAbbr, true, false}, command1ParseCtx, defs},
+		{MatchTest{"a1", argumentAbbr, false, false}, command1ParseCtx, defs},
+		{MatchTest{"-a-abbr-that-doesnt-exist", argumentAbbr, false, false}, command1ParseCtx, defs},
+		{MatchTest{"--a-abbr-that-doesnt-exist", argumentAbbr, false, false}, command1ParseCtx, defs},
+		// value
+		{MatchTest{"value1", value, true, false}, argument1ParseCtx, defs},
+		{MatchTest{"any-value", value, true, false}, argument3ParseCtx, defs},
+		{MatchTest{"-value1", value, false, false}, argument1ParseCtx, defs},
+		{MatchTest{"any-value", value, false, false}, argument1ParseCtx, defs},
+		{MatchTest{"-value1", value, false, false}, argument3ParseCtx, defs},
+		// valueFixed
+		{MatchTest{"value1", valueFixed, true, false}, argument1ParseCtx, defs},
+		{MatchTest{"any-value", valueFixed, false, false}, argument3ParseCtx, defs},
+		{MatchTest{"-value1", valueFixed, false, false}, argument1ParseCtx, defs},
+		{MatchTest{"any-value", valueFixed, false, true}, argument1ParseCtx, defs},
+		{MatchTest{"-value1", valueFixed, false, false}, argument3ParseCtx, defs},
+		// valueDefault
+		{MatchTest{"value1", valueDefault, true, false}, command1ParseCtx, defs},
+		{MatchTest{"any-value", valueDefault, false, true}, command1ParseCtx, defs},
+		{MatchTest{"-value1", valueDefault, false, false}, command1ParseCtx, defs},
+		// invalid token types
+		{MatchTest{"", -1, false, true}, nil, defs},
+		{MatchTest{"", math.MaxInt64, false, true}, nil, defs},
+	}
+	for _, tt := range tests {
+		t.Run(tt.token, func(t *testing.T) {
+			m, err := match(tt.token, tt.tokenType, tt.ctx, tt.def)
+			assertEquals(t, m, tt.expected)
+			assertError(t, err, tt.expError)
+		})
+	}
+
 }
