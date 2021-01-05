@@ -1,12 +1,12 @@
 ![Clo logo](clogo.png)
 
-Clo (Command line objects)
-=======================
+Clo (Command line objectives)
+=============================
 
-Clo is a Golang module to build declarative description of a CLI application flags, commands and
-arguments. Clo parses user provided application CLI parameters and returns a structured `Request`.
-Clo takes care of basic commands like `help` and `version` and makes sure the definitions you
-provide are not conflicting with each other (e.g. no two commands have the same abbreviation).
+Clo is a Golang module to build declarations of a CLI application objectives - that is flags, commands and
+arguments. Clo parses user provided application CLI input string (args) and returns a structured `Request` object.
+Clo takes care of a `help` command (perhaps more in the future) and makes sure the definitions you
+provide are not conflicting with each other (e.g. no commands share the same abbreviation).
 
 # Using clo in your app
 
