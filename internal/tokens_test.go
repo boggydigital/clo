@@ -26,7 +26,7 @@ func TestTokenString(t *testing.T) {
 	for _, tt := range tests {
 		testName := tt.tokenStr
 		t.Run(testName, func(t *testing.T) {
-			assertEquals(t, tokenString(tt.tokenType), tt.tokenStr)
+			assertValEquals(t, tokenString(tt.tokenType), tt.tokenStr)
 		})
 	}
 }
@@ -51,13 +51,13 @@ func TestNext(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tokenString(tt.tokenType), func(t *testing.T) {
-			assertEquals(t, len(next(tt.tokenType)), tt.nextLen)
+			assertValEquals(t, len(next(tt.tokenType)), tt.nextLen)
 		})
 	}
 }
 
 func TestFirst(t *testing.T) {
-	assertEquals(t, len(first()), 2)
+	assertValEquals(t, len(first()), 2)
 }
 
 func TestExpandAbbr(t *testing.T) {
@@ -84,7 +84,7 @@ func TestExpandAbbr(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.token, func(t *testing.T) {
 			expToken, err := expandAbbr(tt.token, tt.tokenType, defs)
-			assertEquals(t, expToken, tt.expToken)
+			assertValEquals(t, expToken, tt.expToken)
 			assertError(t, err, tt.expError)
 		})
 	}

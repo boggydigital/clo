@@ -22,7 +22,7 @@ func TestFirstDupe(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.dupe, func(t *testing.T) {
-			assertEquals(t, firstDupe(tt.slice), tt.dupe)
+			assertValEquals(t, firstDupe(tt.slice), tt.dupe)
 		})
 	}
 }
@@ -297,7 +297,7 @@ func TestAppendError(t *testing.T) {
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
 			errs = appendError(errs, tt)
-			assertEquals(t, len(errs), 1)
+			assertValEquals(t, len(errs), 1)
 		})
 	}
 }
@@ -307,5 +307,5 @@ func TestDefinitionsVerify(t *testing.T) {
 	// so running known good definitions for the coverage
 	defs := mockDefinitions()
 	errs := defs.Verify(false)
-	assertEquals(t, len(errs), 0)
+	assertValEquals(t, len(errs), 0)
 }

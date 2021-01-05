@@ -4,12 +4,12 @@ import "testing"
 
 func TestCommandsPadding(t *testing.T) {
 	defs := mockDefinitions()
-	assertEquals(t, defs.CommandsPadding(), len("command1"))
+	assertValEquals(t, defs.CommandsPadding(), len("command1"))
 }
 
 func TestDefinitionsFlagsPadding(t *testing.T) {
 	defs := mockDefinitions()
-	assertEquals(t, defs.FlagsPadding(), len("flag1"))
+	assertValEquals(t, defs.FlagsPadding(), len("flag1"))
 }
 
 func TestDefinitionsArgumentsPadding(t *testing.T) {
@@ -24,7 +24,7 @@ func TestDefinitionsArgumentsPadding(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.cmd, func(t *testing.T) {
-			assertEquals(t, defs.ArgumentsPadding(tt.cmd), tt.expPadding)
+			assertValEquals(t, defs.ArgumentsPadding(tt.cmd), tt.expPadding)
 		})
 	}
 }

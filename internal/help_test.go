@@ -25,11 +25,11 @@ func TestAddCommandAbbr(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.token, func(t *testing.T) {
 			if tt.cmd != nil {
-				assertNotEquals(t, tt.cmd.Abbr, tt.token)
+				assertValNotEquals(t, tt.cmd.Abbr, tt.token)
 			}
 			addCommandAbbr(tt.token, tt.cmd, mockCommandByAbbr)
 			if tt.cmd != nil {
-				assertEquals(t, tt.cmd.Abbr, tt.token)
+				assertValEquals(t, tt.cmd.Abbr, tt.token)
 			}
 		})
 	}
@@ -46,11 +46,11 @@ func TestAddArgAbbr(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.token, func(t *testing.T) {
 			if tt.arg != nil {
-				assertNotEquals(t, tt.arg.Abbr, tt.token)
+				assertValNotEquals(t, tt.arg.Abbr, tt.token)
 			}
 			addArgAbbr(tt.token, tt.arg, mockArgByAbbr)
 			if tt.arg != nil {
-				assertEquals(t, tt.arg.Abbr, tt.token)
+				assertValEquals(t, tt.arg.Abbr, tt.token)
 			}
 		})
 	}
@@ -72,7 +72,7 @@ func TestAddHelpCommand(t *testing.T) {
 			cmd := addHelpCommand(tt.token, "", tt.cmdByToken, mockCommandByAbbr)
 			assertNil(t, cmd, tt.expNil)
 			if cmd != nil {
-				assertEquals(t, cmd.Token, tt.token)
+				assertValEquals(t, cmd.Token, tt.token)
 			}
 		})
 	}
@@ -96,7 +96,7 @@ func TestAddHelpCommandArgument(t *testing.T) {
 			assertNil(t, arg, tt.expNil)
 			assertError(t, err, tt.expError)
 			if arg != nil {
-				assertEquals(t, arg.Token, tt.token)
+				assertValEquals(t, arg.Token, tt.token)
 			}
 		})
 	}

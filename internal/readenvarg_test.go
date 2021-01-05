@@ -20,7 +20,7 @@ func TestArgEnv(t *testing.T) {
 
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-			assertEquals(t, argEnv(tt.prefix, tt.cmd, tt.arg), tt.env)
+			assertValEquals(t, argEnv(tt.prefix, tt.cmd, tt.arg), tt.env)
 		})
 	}
 }
@@ -37,7 +37,7 @@ func TestReadEnvArg(t *testing.T) {
 		defs.Arguments[0].Token: {},
 	}
 	// trivial validation that we're starting from an empty value
-	assertEquals(t, len(req.Arguments[defs.Arguments[0].Token]), 0)
+	assertValEquals(t, len(req.Arguments[defs.Arguments[0].Token]), 0)
 	// store existing value of the env. variable
 	envToken := argEnv(defs.EnvPrefix, defs.Commands[0].Token, defs.Arguments[0].Token)
 	envValue := strings.ToLower(envToken)
@@ -47,7 +47,7 @@ func TestReadEnvArg(t *testing.T) {
 	// read empty arguments values from env
 	assertError(t, req.readEnvArgs(defs), false)
 	// there should be a value we got from env. variable
-	assertEquals(t, len(req.Arguments[defs.Arguments[0].Token]), 1)
+	assertValEquals(t, len(req.Arguments[defs.Arguments[0].Token]), 1)
 	// reset env. variable value to original stored value
 	assertError(t, os.Setenv(envToken, storedEnv), false)
 }

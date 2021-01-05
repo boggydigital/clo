@@ -6,6 +6,7 @@ import (
 )
 
 func TestDefinitionsParse(t *testing.T) {
+	defs := mockDefinitions()
 	tests := []struct {
 		def      *Definitions
 		args     []string
@@ -13,13 +14,36 @@ func TestDefinitionsParse(t *testing.T) {
 		expError bool
 	}{
 		{nil, []string{}, nil, true},
+		{defs, []string{""}, &Request{
+			Flags:     []string{},
+			Command:   "",
+			Arguments: map[string][]string{},
+		}, false},
+		{defs, []string{"c1", "-a1", "value1"},
+			&Request{
+				Flags:   []string{},
+				Command: "command1",
+				Arguments: map[string][]string{
+					"argument1": {"value1"},
+				},
+			},
+			false,
+		},
+		{defs, []string{"c1", "-a1", "value-that-doesnt-exist"}, &Request{
+			Flags:   []string{},
+			Command: "command1",
+			Arguments: map[string][]string{
+				"argument1": {},
+			},
+		}, true},
+		{defs, []string{"command-that-doesnt-exist"}, nil, true},
 	}
 
 	for _, tt := range tests {
 		t.Run(strings.Join(tt.args, "-"), func(t *testing.T) {
-			_, err := tt.def.Parse(tt.args)
+			req, err := tt.def.Parse(tt.args)
 			assertError(t, err, tt.expError)
-			// TODO: verify request Equals
+			assertInterfaceEquals(t, req, tt.req)
 		})
 	}
 }

@@ -80,7 +80,7 @@ func TestRequestGetFlag(t *testing.T) {
 	}
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-			assertEquals(t, tt.req.GetFlag(tt.flag), tt.expected)
+			assertValEquals(t, tt.req.GetFlag(tt.flag), tt.expected)
 		})
 	}
 }
@@ -97,7 +97,7 @@ func TestRequestGetValue(t *testing.T) {
 	}
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-			assertEquals(t, tt.req.GetValue(tt.value), tt.expected)
+			assertValEquals(t, tt.req.GetValue(tt.value), tt.expected)
 		})
 	}
 }
@@ -114,7 +114,7 @@ func TestRequestGetValues(t *testing.T) {
 	}
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-			assertEquals(t, len(tt.req.GetValues(tt.value)), tt.expected)
+			assertValEquals(t, len(tt.req.GetValues(tt.value)), tt.expected)
 		})
 	}
 }

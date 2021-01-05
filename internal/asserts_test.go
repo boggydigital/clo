@@ -5,13 +5,13 @@ import (
 	"testing"
 )
 
-func assertEquals(t *testing.T, v1, v2 interface{}) {
+func assertValEquals(t *testing.T, v1, v2 interface{}) {
 	if v1 != v2 {
 		t.Error()
 	}
 }
 
-func assertNotEquals(t *testing.T, v1, v2 interface{}) {
+func assertValNotEquals(t *testing.T, v1, v2 interface{}) {
 	if v1 == v2 {
 		t.Error()
 	}
@@ -26,6 +26,12 @@ func assertNil(t *testing.T, v interface{}, expNil bool) {
 
 func assertError(t *testing.T, err error, expError bool) {
 	if (err != nil && !expError) || (err == nil && expError) {
+		t.Error()
+	}
+}
+
+func assertInterfaceEquals(t *testing.T, r1, r2 interface{}) {
+	if !reflect.DeepEqual(r1, r2) {
 		t.Error()
 	}
 }

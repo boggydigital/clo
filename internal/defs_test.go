@@ -137,7 +137,7 @@ func TestDefinitionsDefinedValue(t *testing.T) {
 	defs := mockDefinitions()
 	for _, tt := range mockValidityTests {
 		t.Run(strings.Join(tt.values, "-"), func(t *testing.T) {
-			assertEquals(t, defs.DefinedValue(tt.values), tt.expected)
+			assertValEquals(t, defs.DefinedValue(tt.values), tt.expected)
 		})
 	}
 }
@@ -189,7 +189,7 @@ func TestDefinitionsRequiredArgs(t *testing.T) {
 	defs.Commands[0].Arguments = append(defs.Commands[0].Arguments, "argument-that-doesnt-exist")
 	for _, tt := range tests {
 		t.Run(tt.cmd, func(t *testing.T) {
-			assertEquals(t, len(defs.RequiredArgs(tt.cmd)), tt.requiredArgs)
+			assertValEquals(t, len(defs.RequiredArgs(tt.cmd)), tt.requiredArgs)
 		})
 	}
 }
@@ -207,7 +207,7 @@ func TestDefinitionsValidArgVal(t *testing.T) {
 	defs := mockDefinitions()
 	for _, tt := range tests {
 		t.Run(fmt.Sprintf("%s-%s", tt.arg, tt.val), func(t *testing.T) {
-			assertEquals(t, defs.ValidArgVal(tt.arg, tt.val), tt.expected)
+			assertValEquals(t, defs.ValidArgVal(tt.arg, tt.val), tt.expected)
 		})
 	}
 }
