@@ -37,6 +37,16 @@ func TestDefinitionsParse(t *testing.T) {
 			},
 		}, true},
 		{defs, []string{"command-that-doesnt-exist"}, nil, true},
+		{defs, []string{"c1", "-a2", "value3", "value4"},
+			&Request{
+				Flags:   []string{},
+				Command: "command1",
+				Arguments: map[string][]string{
+					"argument2": {"value3", "value4"},
+				},
+			},
+			true,
+		},
 	}
 
 	for _, tt := range tests {

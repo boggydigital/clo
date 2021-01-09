@@ -34,14 +34,21 @@ func (def *Definitions) Parse(args []string) (*Request, error) {
 			}
 			if success {
 				matched = true
-				expandedArg, err := expandAbbr(arg, tt, def)
-				if err != nil {
-					return nil, err
-				}
-				err = req.update(expandedArg, tt, &ctx)
-				if err != nil {
-					return nil, err
-				}
+				// it's ok to ignore the error below, since we'd only return
+				// an error if CommandByAbbr/ArgumentByAbbr/FlagByAbbr
+				// for commandAbbr/argumentAbbr/flagAbbr returns nil,
+				// however we can only get here if inside match for those types
+				// the same functions returned not nil -
+				// both can't be true at the same time
+				expandedArg, _ := expandAbbr(arg, tt, def)
+				// it's ok to ignore the error below, since we'd only return
+				// error in two cases:
+				// 1) req.Command is already set - this shouldn't be
+				// possible in this flow since after matching command
+				// token or abbreviation we would progress to another type
+				// 2) if tokenType is an unsupported value, however this is
+				// not possible in this flow given the next() function
+				_ = req.update(expandedArg, tt, &ctx)
 				ctx.update(arg, tt, def)
 				expected = next(tt)
 				break
@@ -53,10 +60,11 @@ func (def *Definitions) Parse(args []string) (*Request, error) {
 	}
 
 	// read arguments that are specified as supporting env
-	// if the value has not been provided as a CLI flag
-	if err := req.readEnvArgs(def); err != nil {
-		return req, err
-	}
+	// if the value has not been provided as a CLI flag.
+	// Safely ignoring error here as well, since the only condition
+	// that would lead to an error is a nil definitions,
+	// and we've already tested that above
+	_ = req.readEnvArgs(def)
 
 	if err := req.verify(def); err != nil {
 		return req, err
