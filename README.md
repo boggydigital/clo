@@ -1,12 +1,12 @@
 ![Clo logo](clogo.png)
 
-Clo (Command line objects)
-=======================
+Clo (Command line objectives)
+=============================
 
-Clo is a Golang module to build declarative description of a CLI application flags, commands and
-arguments. Clo parses user provided application CLI parameters and returns a structured `Request`.
-Clo takes care of basic commands like `help` and `version` and makes sure the definitions you
-provide are not conflicting with each other (e.g. no two commands have the same abbreviation).
+Clo is a Golang module to build declarations of a CLI application objectives - that is flags, commands and
+arguments. Clo parses user provided application CLI input string (args) and returns a structured `Request` object.
+Clo takes care of a `help` command (perhaps more in the future) and makes sure the definitions you
+provide are not conflicting with each other (e.g. no commands share the same abbreviation).
 
 # Using clo in your app
 
@@ -17,11 +17,10 @@ it today and will update once 1.16 is released.
 
 - Run `go get github.com/boggydigital/clo`
 - In your app import `github.com/boggydgital/clo`
-- Load definitions with `LoadDefinitions`, 
 
 ## Common clo use patterns
 
-Apps that use clo might start with the following general sequence of actions:
+Apps that use clo might start with the following general sequence of actions (in the future we can provide a code generation command in clo to simplify that further):
 
 - Add a definitions file named `clo.json` in the root of your project
 - Parse `os.Args` (using default definitions) to get `Request` data with command, arguments, flags
@@ -33,10 +32,8 @@ Here is an example of a `main.go` that implements this approach (NOTE: error han
 package main
 
 import (
-	"fmt"
 	"github.com/boggydigital/clo"
 	"{your-app-module}/cmd"
-	"io/ioutil"
 	"os"
 )
 
@@ -85,7 +82,7 @@ func Dispatch(request *clo.Request) error {
 }
 ```
 
-## CLI args order expectations
+## CLI objectives order expectations
 
 App that uses clo would support the following calling convention:
 
@@ -130,9 +127,7 @@ Top level commands that allow users to control the application. Examples: `verif
 
 ### Built-in 'help' command
 
-Clo provides a built-in 'help' command, unless one already exists, provided by you. Built-in '
-help' commands uses certain conventions to avoid conflicts with user arguments and to support any
-commands you might have created. Here is what you need to know:
+Clo provides a built-in 'help' command, unless one already exists, provided by you. Built-in 'help' commands uses certain conventions to avoid conflicts with user arguments and to support any commands you might have created. Here is what you need to know:
 
 - 'help' command is added right before parsing CLI args
 - 'help' command is only added if there is not command with a token 'help' already
@@ -177,8 +172,7 @@ In addition to common schema arguments allow you to specify the following proper
   argument token can be specified once and multiple values can be provided (fixed or variable).
 - `required` - denotes a required argument that always must be present for a command.
 - `values` - all the value tokens that can be used with this argument. The list is exclusive - if
-  provided no other values would be supported. If the values are not provided, but the property is
-  included (as an empty array), than this argument takes any arbitrary value(s) from a user.
+  provided no other values would be supported.
 
 ## Working with values
 
