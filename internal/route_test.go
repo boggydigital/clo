@@ -25,7 +25,7 @@ func TestDispatch(t *testing.T) {
 			tt.writeDefs(t)
 			//writeMockDefs(tt.defs, t)
 			t.Cleanup(deleteMockDefs)
-			err := Dispatch(tt.request)
+			err := Route(tt.request)
 			assertError(t, err, tt.expError)
 		})
 	}

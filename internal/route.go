@@ -8,7 +8,7 @@ const (
 	verboseFlag         = "verbose"
 )
 
-func Dispatch(request *Request) error {
+func Route(request *Request) error {
 	if request == nil {
 		request = &Request{
 			Command: helpCommand,

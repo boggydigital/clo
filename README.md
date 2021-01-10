@@ -17,6 +17,7 @@ it today and will update once 1.16 is released.
 
 - Run `go get github.com/boggydigital/clo`
 - In your app import `github.com/boggydgital/clo`
+- Call `clo.Parse(os.Args[1:])` to get a `Request` struct you can use to route commands to handlers
 
 ## Common clo use patterns
 
@@ -24,7 +25,7 @@ Apps that use clo might start with the following general sequence of actions (in
 
 - Add a definitions file named `clo.json` in the root of your project
 - Parse `os.Args` (using default definitions) to get `Request` data with command, arguments, flags
-- Dispatch request to your commands handlers and fallback to `clo.Dispatch` for unknown commands or nil `Request`
+- Route request to your commands handlers and fallback to `clo.Route` for unknown commands or nil `Request`
 
 Here is an example of a `main.go` that implements this approach (NOTE: error handling is omitted for brevity)
 
@@ -41,18 +42,18 @@ func main() {
     // Parse `os.Args` using definitions to get `Request` data
 	req, _ := clo.Parse(os.Args[1:])
 
-    // Dispatch request to command handlers
-	cmd.Dispatch(req)
+    // Route request to command handlers
+	cmd.Route(req)
 }
 ```
 
-## Dispatching command requests and handling built-in commands
+## Routing command requests and handling built-in commands
 
 The recommended approach to handle `Request` commands, arguments and flags is to have
-a `cmd/dispatch.go` single `Dispatch` method that routes arguments, flags data to command handlers.
+a `cmd/route.go` single `Route` method that routes arguments, flags data to command handlers.
 
-In order to allow clo to handle built-in commands, in your `Dispatch` handler you need to
-send `nil` and unknown commands to `clo.Dispatch`.
+In order to allow clo to handle built-in commands, in your `Route` handler you need to
+send `nil` and unknown commands to `clo.Route`.
 
 Example:
 
@@ -63,20 +64,20 @@ import (
 	"github.com/boggydigital/clo"
 )
 
-func Dispatch(request *clo.Request) error {
+func Route(request *clo.Request) error {
 	
 	// allow clo to handle nil requests (this will show help by default)
 	if request == nil {
-		return clo.Dispatch(nil)
+		return clo.Route(nil)
 	}
 
     switch request.Command {
     // case "yourCommand":
-    // dispatch yourCommand here
+    // route yourCommand here
     // ...
 	default:
 	    // allow clo to handle unknown commands
-		return clo.Dispatch(request)
+		return clo.Route(request)
 	}
   }
 }
@@ -137,7 +138,7 @@ Clo provides a built-in 'help' command, unless one already exists, provided by y
   declared in clo.json (technically, you can use that value and if it's the only value, it'll be
   expanded)
 
-Please see [Dispatching command requests and handling built-in commands](#dispatching-command-requests-and-handling-built-in-commands) to understand what needs to be
+Please see [Routing command requests and handling built-in commands](#routing-command-requests-and-handling-built-in-commands) to understand what needs to be
 done to support 'help' command.
 
 ## Working with arguments
