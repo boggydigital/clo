@@ -14,6 +14,7 @@ func Dispatch(req *clo.Request) error {
 		return Verify(req.GetValue("path"), verbose)
 	case "generate":
 		return Generate(
+			req.GetValue("app"),
 			req.GetValues("command"),
 			req.GetValues("argument"),
 			req.GetValues("flag"))

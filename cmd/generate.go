@@ -1,11 +1,20 @@
 package cmd
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+	"github.com/boggydigital/clo/internal"
+)
 
-func Generate(commands, arguments, flags []string) error {
-	fmt.Println("generate")
-	fmt.Println("commands:", commands)
-	fmt.Println("arguments:", arguments)
-	fmt.Println("flags:", flags)
+func Generate(app string, commands, arguments, flags []string) error {
+	defs := internal.GenDefinitions(app, commands, arguments, flags)
+
+	bytes, err := json.Marshal(defs)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(string(bytes))
+
 	return nil
 }

@@ -36,6 +36,7 @@
       "hint": "generate clo.json",
       "desc": "generate clo.json with input data",
       "arguments": [
+        "app",
         "command",
         "argument",
         "flag"
@@ -53,23 +54,26 @@
       "required": true
     },
     {
+      "token": "app",
+      "hint": "application name"
+    },
+    {
       "token": "command",
-      "abbr": "c",
+      "abbr": "cmd",
       "hint": "clo.json command",
       "desc": "clo.json command to add to the definitions",
-      "required": true,
       "multiple": true
     },
     {
       "token": "argument",
-      "abbr": "a",
+      "abbr": "arg",
       "hint": "clo.json argument",
-      "desc": "clo.json argument to add to the definitions",
+      "desc": "clo.json argument to add to the definitions. Prefix with _ for Def, * for Req (in that order), suffix with ... for Mult",
       "multiple": true
     },
     {
       "token": "flag",
-      "abbr": "f",
+      "abbr": "flg",
       "hint": "clo.json flag",
       "desc": "clo.json flag to add to the definitions",
       "multiple": true
