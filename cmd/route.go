@@ -4,15 +4,21 @@ import (
 	"github.com/boggydigital/clo"
 )
 
-func Dispatch(request *clo.Request) error {
-	if request == nil {
+func Dispatch(req *clo.Request) error {
+	if req == nil {
 		return clo.Route(nil)
 	}
-	verbose := request.GetFlag("verbose")
-	switch request.Command {
+	verbose := req.GetFlag("verbose")
+	switch req.Command {
 	case "verify":
-		return Verify(request.GetValue("path"), verbose)
+		return Verify(req.GetValue("path"), verbose)
+	case "generate":
+		return Generate(
+			req.GetValue("app"),
+			req.GetValues("command"),
+			req.GetValues("argument"),
+			req.GetValues("flag"))
 	default:
-		return clo.Route(request)
+		return clo.Route(req)
 	}
 }

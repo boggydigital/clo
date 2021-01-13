@@ -29,6 +29,18 @@
           "desc": "verify provided file for common errors and display report"
         }
       ]
+    },
+    {
+      "token": "generate",
+      "abbr": "gn",
+      "hint": "generate clo.json",
+      "desc": "generate clo.json with input data",
+      "arguments": [
+        "app",
+        "command",
+        "argument",
+        "flag"
+      ]
     }
   ],
   "arguments": [
@@ -40,6 +52,31 @@
       "env": true,
       "default": true,
       "required": true
+    },
+    {
+      "token": "app",
+      "hint": "application name"
+    },
+    {
+      "token": "command",
+      "abbr": "cmd",
+      "hint": "clo.json command",
+      "desc": "clo.json command to add to the definitions",
+      "multiple": true
+    },
+    {
+      "token": "argument",
+      "abbr": "arg",
+      "hint": "clo.json argument",
+      "desc": "clo.json argument to add to the definitions. Prefix with _ for Def, * for Req (in that order), suffix with ... for Mult",
+      "multiple": true
+    },
+    {
+      "token": "flag",
+      "abbr": "flg",
+      "hint": "clo.json flag",
+      "desc": "clo.json flag to add to the definitions",
+      "multiple": true
     }
   ]
 }

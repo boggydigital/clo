@@ -158,7 +158,7 @@ func printAppUsage(defs *Definitions) {
 	if defs == nil {
 		return
 	}
-	fmt.Printf("Usage: %s command [<arguments [<values>]>] [<flags>]\n",
+	fmt.Printf("Usage: %s command [arguments [values]] [flags]\n",
 		defs.App)
 }
 
