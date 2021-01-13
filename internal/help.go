@@ -158,7 +158,7 @@ func printAppUsage(defs *Definitions) {
 	if defs == nil {
 		return
 	}
-	fmt.Printf("Usage: %s command [<--arguments [<values>]>] [<--flags>]\n",
+	fmt.Printf("Usage: %s command [<arguments [<values>]>] [<flags>]\n",
 		defs.App)
 }
 
@@ -287,24 +287,24 @@ func printArgAttrs(cmd string, arg string, defs *Definitions) {
 		return
 	}
 	attrs := make([]string, 0)
+	if ad.Abbr != "" {
+		attrs = append(attrs, fmt.Sprintf("Abbr:%s", ad.Abbr))
+	}
 	if ad.Default {
 		attrs = append(attrs, "Def")
-	}
-	if ad.Required {
-		attrs = append(attrs, "Req")
-	}
-	if ad.Multiple {
-		attrs = append(attrs, "Mult")
 	}
 	if ad.Env {
 		envToken := argEnv(defs.EnvPrefix, cmd, arg)
 		attrs = append(attrs, fmt.Sprintf("Env:%s", envToken))
 	}
-	if ad.Abbr != "" {
-		attrs = append(attrs, fmt.Sprintf("Abbr:%s", ad.Abbr))
+	if ad.Multiple {
+		attrs = append(attrs, "Mult")
+	}
+	if ad.Required {
+		attrs = append(attrs, "Req")
 	}
 	if len(attrs) > 0 {
-		fmt.Printf(" (%s)", strings.Join(attrs, ","))
+		fmt.Printf(" (%s)", strings.Join(attrs, ", "))
 	}
 }
 
@@ -321,7 +321,7 @@ func printArgValues(cmd string, arg string, defs *Definitions, verbose bool) {
 		vd := defs.DefinedValue(ad.Values)
 		valuesOrNewLine := ""
 		if !vd {
-			valuesOrNewLine = strings.Join(ad.Values, ",")
+			valuesOrNewLine = strings.Join(ad.Values, ", ")
 		}
 		fmt.Printf("  %-"+ap+"s  supported values: %s\n",
 			"",
