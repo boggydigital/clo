@@ -29,6 +29,17 @@
           "desc": "verify provided file for common errors and display report"
         }
       ]
+    },
+    {
+      "token": "generate",
+      "abbr": "gn",
+      "hint": "generate clo.json",
+      "desc": "generate clo.json with input data",
+      "arguments": [
+        "command",
+        "argument",
+        "flag"
+      ]
     }
   ],
   "arguments": [
@@ -40,6 +51,28 @@
       "env": true,
       "default": true,
       "required": true
+    },
+    {
+      "token": "command",
+      "abbr": "c",
+      "hint": "clo.json command",
+      "desc": "clo.json command to add to the definitions",
+      "required": true,
+      "multiple": true
+    },
+    {
+      "token": "argument",
+      "abbr": "a",
+      "hint": "clo.json argument",
+      "desc": "clo.json argument to add to the definitions",
+      "multiple": true
+    },
+    {
+      "token": "flag",
+      "abbr": "f",
+      "hint": "clo.json flag",
+      "desc": "clo.json flag to add to the definitions",
+      "multiple": true
     }
   ]
 }
