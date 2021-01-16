@@ -14,7 +14,6 @@ func (def *Definitions) Parse(args []string) (*Request, error) {
 	}
 
 	var req = &Request{
-		Flags:     []string{},
 		Command:   "",
 		Arguments: make(map[string][]string),
 	}
@@ -36,7 +35,7 @@ func (def *Definitions) Parse(args []string) (*Request, error) {
 				matched = true
 				// it's ok to ignore the error below, since we'd only return
 				// an error if CommandByAbbr/ArgumentByAbbr/FlagByAbbr
-				// for commandAbbr/argumentAbbr/flagAbbr returns nil,
+				// for commandAbbr/argumentAbbr returns nil,
 				// however we can only get here if inside match for those types
 				// the same functions returned not nil -
 				// both can't be true at the same time
@@ -60,7 +59,7 @@ func (def *Definitions) Parse(args []string) (*Request, error) {
 	}
 
 	// read arguments that are specified as supporting env
-	// if the value has not been provided as a CLI flag.
+	// if the value has not been provided as a CLI arg.
 	// Safely ignoring error here as well, since the only condition
 	// that would lead to an error is a nil definitions,
 	// and we've already tested that above

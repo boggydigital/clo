@@ -10,9 +10,7 @@ type Definitions struct {
 	Version   int                  `json:"version"`
 	EnvPrefix string               `json:"env-prefix,omitempty"`
 	App       string               `json:"app,omitempty"`
-	Hint      string               `json:"hint,omitempty"`
-	Desc      string               `json:"desc,omitempty"`
-	Flags     []FlagDefinition     `json:"flags,omitempty"`
+	Help      string               `json:"help,omitempty"`
 	Commands  []CommandDefinition  `json:"commands,omitempty"`
 	Arguments []ArgumentDefinition `json:"arguments,omitempty"`
 	Values    []ValueDefinition    `json:"values,omitempty"`
@@ -45,24 +43,6 @@ func Load(path string) (*Definitions, error) {
 	}
 
 	return dfs, nil
-}
-
-func (def *Definitions) FlagByToken(token string) *FlagDefinition {
-	for _, f := range def.Flags {
-		if f.Token == token {
-			return &f
-		}
-	}
-	return nil
-}
-
-func (def *Definitions) FlagByAbbr(abbr string) *FlagDefinition {
-	for _, f := range def.Flags {
-		if f.Abbr == abbr {
-			return &f
-		}
-	}
-	return nil
 }
 
 func (def *Definitions) CommandByToken(token string) *CommandDefinition {

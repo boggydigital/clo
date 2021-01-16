@@ -12,16 +12,6 @@ func TestGenCommand(t *testing.T) {
 	}
 }
 
-func TestGenFlags(t *testing.T) {
-	tests := []string{"", "f1"}
-	for _, tt := range tests {
-		t.Run(tt, func(t *testing.T) {
-			flg := genFlag(tt)
-			assertValEquals(t, flg.Token, tt)
-		})
-	}
-}
-
 func TestGenArgument(t *testing.T) {
 	tests := []struct {
 		input string
@@ -55,19 +45,18 @@ func TestGenArgument(t *testing.T) {
 
 func TestGenDefinitions(t *testing.T) {
 	tests := []struct {
-		app           string
-		cmd, arg, flg []string
+		app      string
+		cmd, arg []string
 	}{
-		{"app", []string{"c1"}, []string{"a1", "a2"}, []string{"f1", "f2", "f3"}},
-		{"app", []string{"c1", "c2", "c3"}, []string{"a1"}, []string{"f1", "f2"}},
+		{"app", []string{"c1"}, []string{"a1", "a2"}},
+		{"app", []string{"c1", "c2", "c3"}, []string{"a1"}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.app, func(t *testing.T) {
-			defs := GenDefinitions(tt.app, tt.cmd, tt.arg, tt.flg)
+			defs := GenDefinitions(tt.app, tt.cmd, tt.arg)
 			assertValEquals(t, defs.App, tt.app)
 			assertValEquals(t, len(defs.Commands), len(tt.cmd))
 			assertValEquals(t, len(defs.Arguments), len(tt.arg))
-			assertValEquals(t, len(defs.Flags), len(tt.flg))
 		})
 	}
 }

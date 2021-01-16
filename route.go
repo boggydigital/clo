@@ -2,8 +2,8 @@ package clo
 
 import "github.com/boggydigital/clo/internal"
 
-// Route Request to a function that can handle the command,
-// with the arguments, and maybe flags.
+// Route Request to a function that can handle the command
+// with the provided arguments and values.
 func Route(request *Request) error {
 	if request == nil {
 		return internal.Route(nil)

@@ -11,8 +11,7 @@ func createHelpCommandDefinition() *CommandDefinition {
 		CommonDefinition: CommonDefinition{
 			Token: "help",
 			Abbr:  "",
-			Hint:  "display help",
-			Desc:  "display help for the app or a specific command",
+			Help:  "display help",
 		},
 	}
 }
@@ -21,13 +20,10 @@ func createHelpArgumentDefinition(token string) *ArgumentDefinition {
 	return &ArgumentDefinition{
 		CommonDefinition: CommonDefinition{
 			Token: token,
-			Abbr:  "",
-			Hint:  "app command",
+			Help:  "app command",
 		},
-		Default:  true,
-		Multiple: false,
-		Required: false,
-		Values:   []string{"from:commands"},
+		Default: true,
+		Values:  []string{"from:commands"},
 	}
 }
 
@@ -131,50 +127,42 @@ func expandRefValues(args []ArgumentDefinition, commands []CommandDefinition) er
 	return nil
 }
 
-func printHelp(cmd string, defs *Definitions, verbose bool) error {
+func printHelp(cmd string, defs *Definitions) error {
 	if defs == nil {
 		return fmt.Errorf("cannot show help without definitions")
 	}
 	if cmd == "" {
-		printAppHelp(defs, verbose)
+		printAppHelp(defs)
 	} else {
-		printCmdHelp(cmd, defs, verbose)
+		printCmdHelp(cmd, defs)
 	}
 	return nil
 }
 
-func printAppIntro(defs *Definitions, verbose bool) {
+func printAppIntro(defs *Definitions) {
 	if defs == nil {
 		return
 	}
-	appDesc := defs.Hint
-	if verbose && defs.Desc != "" {
-		appDesc = defs.Desc
-	}
-	fmt.Printf("%s - %s\n", defs.App, appDesc)
+	fmt.Printf("%s - %s\n", defs.App, defs.Help)
 }
 
 func printAppUsage(defs *Definitions) {
 	if defs == nil {
 		return
 	}
-	fmt.Printf("Usage: %s command [arguments [values]] [flags]\n",
+	fmt.Printf("Usage: %s command [arguments [values]]\n",
 		defs.App)
 }
 
-func printAppCommands(defs *Definitions, verbose bool) {
+func printAppCommands(defs *Definitions) {
 	if defs == nil {
 		return
 	}
 	fmt.Println("Commands:")
 	for _, cmd := range defs.Commands {
-		cmdDesc := cmd.Hint
-		if verbose && cmd.Desc != "" {
-			cmdDesc = cmd.Desc
-		}
 		fmt.Printf("  %-"+strconv.Itoa(defs.CommandsPadding())+"s  %s",
 			cmd.Token,
-			cmdDesc)
+			cmd.Help)
 		attrs := make([]string, 0)
 		if cmd.Abbr != "" {
 			attrs = append(attrs, fmt.Sprintf("Abbr:%s", cmd.Abbr))
@@ -186,81 +174,30 @@ func printAppCommands(defs *Definitions, verbose bool) {
 	}
 }
 
-func printAppFlags(defs *Definitions, verbose bool) {
-	if defs == nil {
-		return
-	}
-	fmt.Println("Flags:")
-	for _, flg := range defs.Flags {
-		flgDesc := flg.Hint
-		if verbose && flg.Desc != "" {
-			flgDesc = flg.Desc
-		}
-		fmt.Printf("  %-"+strconv.Itoa(defs.FlagsPadding())+"s  %s",
-			flg.Token,
-			flgDesc)
-		attrs := make([]string, 0)
-		if flg.Abbr != "" {
-			attrs = append(attrs, fmt.Sprintf("Abbr:%s", flg.Abbr))
-		}
-		if len(attrs) > 0 {
-			fmt.Printf(" (%s)", strings.Join(attrs, ","))
-		}
-		fmt.Println()
-	}
-}
-
 func printAppAttrsLegend() {
-	fmt.Println("Commands, flags (attributes):")
+	fmt.Println("Commands:")
 	fmt.Printf("  %-4s  %s\n", "Abbr", "abbreviation that can be used in place of a full token")
 }
 
-func printAppMoreInfoPrompt(defs *Definitions, verbose bool) {
+func printAppMoreInfoPrompt(defs *Definitions) {
 	if defs == nil {
 		return
 	}
-	verbosePrompt := ""
-	if !verbose {
-		verbosePrompt = fmt.Sprintf(" or '%s help --verbose' for more help", defs.App)
-	}
 
-	fmt.Printf("Run '%s help [command]' for help on a specific command%s.\n",
-		defs.App,
-		verbosePrompt)
+	fmt.Printf("Run '%s help [command]' for help on a specific command.\n",
+		defs.App)
 }
 
-func printAppHelp(defs *Definitions, verbose bool) {
-	printAppIntro(defs, verbose)
+func printAppHelp(defs *Definitions) {
+	printAppIntro(defs)
 	fmt.Println()
 	printAppUsage(defs)
 	fmt.Println()
-	printAppCommands(defs, verbose)
+	printAppCommands(defs)
 	fmt.Println()
-	if defs != nil && len(defs.Flags) > 0 {
-		printAppFlags(defs, verbose)
-		fmt.Println()
-	}
-	if verbose {
-		printAppAttrsLegend()
-		fmt.Println()
-	}
-	printAppMoreInfoPrompt(defs, verbose)
-}
-
-func printExampleHelp(ex *ExampleDefinition, cmd string, defs *Definitions) {
-	if defs == nil {
-		return
-	}
-	fmt.Printf("  '%s %s", defs.App, cmd)
-	for arg, values := range ex.ArgumentsValues {
-		fmt.Printf(" --%s ", arg)
-		if len(values) == 0 {
-			fmt.Printf("<%s>", arg)
-			continue
-		}
-		fmt.Print(strings.Join(values, " "))
-	}
-	fmt.Println("':", ex.Desc)
+	printAppAttrsLegend()
+	fmt.Println()
+	printAppMoreInfoPrompt(defs)
 }
 
 func printCmdUsage(cmd string, defs *Definitions) {
@@ -308,7 +245,7 @@ func printArgAttrs(cmd string, arg string, defs *Definitions) {
 	}
 }
 
-func printArgValues(cmd string, arg string, defs *Definitions, verbose bool) {
+func printArgValues(cmd string, arg string, defs *Definitions) {
 	if defs == nil {
 		return
 	}
@@ -318,32 +255,27 @@ func printArgValues(cmd string, arg string, defs *Definitions, verbose bool) {
 	}
 	if len(ad.Values) > 0 {
 		ap := strconv.Itoa(defs.ArgumentsPadding(cmd))
-		vd := defs.DefinedValue(ad.Values)
+		dv := defs.DefinedValue(ad.Values)
 		valuesOrNewLine := ""
-		if !vd {
+		if !dv {
 			valuesOrNewLine = strings.Join(ad.Values, ", ")
 		}
 		fmt.Printf("  %-"+ap+"s  supported values: %s\n",
 			"",
 			valuesOrNewLine)
-		if vd {
+		if dv {
 			for _, vt := range ad.Values {
 				vd := defs.ValueByToken(vt)
 				if vd == nil {
 					continue
-					//return fmt.Errorf("command '%s' argument '%s' has unknown value token '%s'", cmd, arg, vt)
 				}
-				valDesc := vd.Hint
-				if verbose && vd.Desc != "" {
-					valDesc = vd.Desc
-				}
-				fmt.Printf("  %-"+ap+"s  - %s: %s\n", "", vt, valDesc)
+				fmt.Printf("  %-"+ap+"s  - %s: %s\n", "", vt, vd.Help)
 			}
 		}
 	}
 }
 
-func printCmdArgDesc(cmd string, arg string, defs *Definitions, verbose bool) {
+func printCmdArgDesc(cmd string, arg string, defs *Definitions) {
 	if defs == nil {
 		return
 	}
@@ -351,14 +283,10 @@ func printCmdArgDesc(cmd string, arg string, defs *Definitions, verbose bool) {
 	if ad == nil {
 		return
 	}
-	argDesc := ad.Hint
-	if verbose && ad.Desc != "" {
-		argDesc = ad.Desc
-	}
-	fmt.Printf("  %-"+strconv.Itoa(defs.ArgumentsPadding(cmd))+"s  %s", arg, argDesc)
+	fmt.Printf("  %-"+strconv.Itoa(defs.ArgumentsPadding(cmd))+"s  %s", arg, ad.Help)
 }
 
-func printCmdArgs(cmd string, defs *Definitions, verbose bool) {
+func printCmdArgs(cmd string, defs *Definitions) {
 	if defs == nil {
 		return
 	}
@@ -368,10 +296,10 @@ func printCmdArgs(cmd string, defs *Definitions, verbose bool) {
 	}
 	fmt.Println("Arguments:")
 	for _, arg := range cd.Arguments {
-		printCmdArgDesc(cmd, arg, defs, verbose)
+		printCmdArgDesc(cmd, arg, defs)
 		printArgAttrs(cmd, arg, defs)
 		fmt.Println()
-		printArgValues(cmd, arg, defs, verbose)
+		printArgValues(cmd, arg, defs)
 	}
 }
 
@@ -389,40 +317,10 @@ func printArgAttrsLegend() {
 		"used in place of a full token")
 }
 
-func printCmdExamples(cmd string, defs *Definitions) {
-	if defs == nil {
-		return
-	}
-	cd := defs.CommandByToken(cmd)
-	if cd == nil {
-		return
-	}
-	if len(cd.Examples) > 0 {
-		fmt.Println("Examples:")
-		for _, ex := range cd.Examples {
-			printExampleHelp(&ex, cmd, defs)
-		}
-	}
-}
-
-func printCmdMoreInfoPrompt(cmd string, defs *Definitions) {
-	if defs == nil {
-		return
-	}
-	fmt.Printf("Run '%s help %s --verbose' for more information, "+
-		"examples and arguments (attributes).\n", defs.App, cmd)
-}
-
-func printCmdHelp(cmd string, defs *Definitions, verbose bool) {
+func printCmdHelp(cmd string, defs *Definitions) {
 	printCmdUsage(cmd, defs)
 	fmt.Println()
-	printCmdArgs(cmd, defs, verbose)
+	printCmdArgs(cmd, defs)
 	fmt.Println()
-	if verbose {
-		printArgAttrsLegend()
-		fmt.Println()
-		printCmdExamples(cmd, defs)
-	} else {
-		printCmdMoreInfoPrompt(cmd, defs)
-	}
+	printArgAttrsLegend()
 }

@@ -10,16 +10,6 @@ func (def *Definitions) CommandsPadding() int {
 	return len(lToken)
 }
 
-func (def *Definitions) FlagsPadding() int {
-	lToken := ""
-	for _, flg := range def.Flags {
-		if len(flg.Token) > len(lToken) {
-			lToken = flg.Token
-		}
-	}
-	return len(lToken)
-}
-
 func (def *Definitions) ArgumentsPadding(cmd string) int {
 	lToken := ""
 	cd := def.CommandByToken(cmd)

@@ -16,31 +16,13 @@ func mockDefinitions() *Definitions {
 		Version:   1,
 		EnvPrefix: "CORRECT",
 		App:       "clo",
-		Hint:      "hint",
-		Desc:      "desc",
-		Flags: []FlagDefinition{
-			{
-				CommonDefinition: CommonDefinition{
-					Token: "flag1",
-					Abbr:  "f1",
-					Hint:  "flag1 hint",
-					Desc:  "flag1 description",
-				},
-			},
-			{
-				CommonDefinition: CommonDefinition{
-					Token: "flag2",
-					Abbr:  "f2",
-				},
-			},
-		},
+		Help:      "help",
 		Commands: []CommandDefinition{
 			{
 				CommonDefinition: CommonDefinition{
 					Token: "command1",
 					Abbr:  "c1",
-					Hint:  "command1 hint",
-					Desc:  "command1 description",
+					Help:  "command1 help",
 				},
 				Arguments: []string{
 					"argument1",
@@ -50,8 +32,7 @@ func mockDefinitions() *Definitions {
 			{
 				CommonDefinition: CommonDefinition{
 					Token: "command2",
-					Hint:  "command2 hint",
-					Desc:  "command2 description",
+					Help:  "command2 help",
 				},
 			},
 			{
@@ -66,8 +47,7 @@ func mockDefinitions() *Definitions {
 				CommonDefinition: CommonDefinition{
 					Token: "argument1",
 					Abbr:  "a1",
-					Hint:  "argument1 hint",
-					Desc:  "argument1 description",
+					Help:  "argument1 help",
 				},
 				Default:  true,
 				Multiple: true,
@@ -93,8 +73,7 @@ func mockDefinitions() *Definitions {
 			{
 				CommonDefinition: CommonDefinition{
 					Token: "value1",
-					Hint:  "value1 hint",
-					Desc:  "value1 desc",
+					Help:  "value1 help",
 				},
 			},
 		},
@@ -182,7 +161,6 @@ func mockCommandDefinition(cmd string, args []string) *CommandDefinition {
 		CommonDefinition: CommonDefinition{Token: cmd, Abbr: cmd},
 		Arguments:        args,
 	}
-	mockAddExample(&cd, args)
 	return &cd
 }
 
@@ -192,29 +170,6 @@ func mockCommandDefinitions(commands []string) []CommandDefinition {
 		comDefs = append(comDefs, *mockCommandDefinition(c, commands))
 	}
 	return comDefs
-}
-
-func mockExampleDefinition(desc string, tokens []string) *ExampleDefinition {
-	ed := &ExampleDefinition{
-		ArgumentsValues: make(map[string][]string, 0),
-		Desc:            desc,
-	}
-	for _, tt := range tokens {
-		switch tt {
-		case "empty":
-			ed.ArgumentsValues[tt] = []string{}
-		case "skip":
-			continue
-		default:
-			ed.ArgumentsValues[tt] = tokens
-		}
-	}
-	return ed
-}
-
-func mockAddExample(cd *CommandDefinition, tokens []string) {
-	desc := strings.Join(tokens, "")
-	cd.Examples = append(cd.Examples, *mockExampleDefinition(desc, tokens))
 }
 
 func mockArgumentDefinition(arg string, values []string) *ArgumentDefinition {
@@ -234,17 +189,6 @@ func mockArgumentDefinitions(args []string) []ArgumentDefinition {
 		argDefs = append(argDefs, *mockArgumentDefinition(a, args))
 	}
 	return argDefs
-}
-
-func mockFlagDefinitions(flags []string) []FlagDefinition {
-	flagDefs := make([]FlagDefinition, 0)
-	for _, f := range flags {
-		fd := FlagDefinition{
-			CommonDefinition: CommonDefinition{Token: f, Abbr: f},
-		}
-		flagDefs = append(flagDefs, fd)
-	}
-	return flagDefs
 }
 
 func mockCommandByToken(token string) *CommandDefinition {

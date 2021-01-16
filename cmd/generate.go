@@ -6,8 +6,8 @@ import (
 	"github.com/boggydigital/clo/internal"
 )
 
-func Generate(app string, commands, arguments, flags []string) error {
-	defs := internal.GenDefinitions(app, commands, arguments, flags)
+func Generate(app string, commands, arguments []string) error {
+	defs := internal.GenDefinitions(app, commands, arguments)
 
 	bytes, err := json.Marshal(defs)
 	if err != nil {

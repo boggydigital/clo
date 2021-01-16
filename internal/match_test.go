@@ -36,8 +36,6 @@ func TestMatchArgument(t *testing.T) {
 		{MatchTest{"-argument1", valueDefault, false, true}, nil, defs},
 		{MatchTest{"-argument1", valueFixed, false, true}, nil, defs},
 		{MatchTest{"-argument1", value, false, true}, nil, defs},
-		{MatchTest{"-argument1", flag, false, true}, nil, defs},
-		{MatchTest{"-argument1", flagAbbr, false, true}, nil, defs},
 		{MatchTest{"-argument1", -1, false, true}, nil, defs},
 		{MatchTest{"-argument1", math.MaxInt64, false, true}, nil, defs},
 		// should match
@@ -56,47 +54,6 @@ func TestMatchArgument(t *testing.T) {
 	}
 }
 
-func TestMatchFlag(t *testing.T) {
-	defs := mockDefinitions()
-	tests := []MatchFlagTest{
-		{MatchTest{"", flag, false, false}, nil},
-		{MatchTest{"", flagAbbr, false, false}, nil},
-		// shouldn't match
-		// - tokens that don't exist
-		{MatchTest{"-flag-that-doesnt-exist", flag, false, true}, nil},
-		{MatchTest{"-flag-that-doesnt-exist", flag, false, false}, defs},
-		{MatchTest{"--flag-that-doesnt-exist", flag, false, true}, nil},
-		{MatchTest{"--flag-that-doesnt-exist", flag, false, false}, defs},
-		{MatchTest{"-abbr-that-doesnt-exist", flagAbbr, false, true}, nil},
-		{MatchTest{"-abbr-that-doesnt-exist", flagAbbr, false, false}, defs},
-		{MatchTest{"--abbr-that-doesnt-exist", flagAbbr, false, true}, nil},
-		{MatchTest{"--abbr-that-doesnt-exist", flagAbbr, false, false}, defs},
-		// - tokenType is not flag or flagAbbr
-		{MatchTest{"-flag1", command, false, true}, defs},
-		{MatchTest{"-flag1", commandAbbr, false, true}, defs},
-		{MatchTest{"-flag1", argument, false, true}, defs},
-		{MatchTest{"-flag1", argumentAbbr, false, true}, defs},
-		{MatchTest{"-flag1", valueDefault, false, true}, defs},
-		{MatchTest{"-flag1", valueFixed, false, true}, defs},
-		{MatchTest{"-flag1", value, false, true}, defs},
-		{MatchTest{"-flag1", -1, false, true}, defs},
-		{MatchTest{"-flag1", math.MaxInt64, false, true}, defs},
-		// should match
-		// - valid args for command, no error
-		{MatchTest{"-flag1", flag, true, false}, defs},
-		{MatchTest{"--flag1", flag, true, false}, defs},
-		{MatchTest{"-f1", flagAbbr, true, false}, defs},
-		{MatchTest{"--f1", flagAbbr, true, false}, defs},
-	}
-	for _, tt := range tests {
-		t.Run(tt.token, func(t *testing.T) {
-			m, err := matchFlag(tt.token, tt.tokenType, tt.def)
-			assertValEquals(t, m, tt.expected)
-			assertError(t, err, tt.expError)
-		})
-	}
-}
-
 func TestMatchDefaultValue(t *testing.T) {
 	tests := []MatchDefaultValueTest{
 		{MatchTest{"", valueDefault, false, true}, nil, nil},
@@ -108,8 +65,6 @@ func TestMatchDefaultValue(t *testing.T) {
 		{MatchTest{"", argumentAbbr, false, false}, nil, nil},
 		{MatchTest{"", valueFixed, false, false}, nil, nil},
 		{MatchTest{"", value, false, false}, nil, nil},
-		{MatchTest{"", flag, false, false}, nil, nil},
-		{MatchTest{"", flagAbbr, false, false}, nil, nil},
 		// - ctx.Command is nil || !ctx.Argument.Default
 		{MatchTest{"", valueDefault, false, false}, &parseCtx{
 			Command:  nil,
@@ -168,8 +123,6 @@ func TestMatchValue(t *testing.T) {
 		{MatchTest{"value", commandAbbr, false, false}, mockArgumentDefinition("", []string{})},
 		{MatchTest{"value", argument, false, false}, mockArgumentDefinition("", []string{})},
 		{MatchTest{"value", argumentAbbr, false, false}, mockArgumentDefinition("", []string{})},
-		{MatchTest{"value", flag, false, false}, mockArgumentDefinition("", []string{})},
-		{MatchTest{"value", flagAbbr, false, false}, mockArgumentDefinition("", []string{})},
 	}
 	for _, tt := range tests {
 		t.Run(tt.token, func(t *testing.T) {
@@ -194,8 +147,6 @@ func TestMatch(t *testing.T) {
 		{MatchTest{"", valueDefault, false, true}, nil, nil},
 		{MatchTest{"", valueFixed, false, true}, nil, nil},
 		{MatchTest{"", value, false, true}, nil, nil},
-		{MatchTest{"", flag, false, true}, nil, nil},
-		{MatchTest{"", flagAbbr, false, true}, nil, nil},
 		{MatchTest{"", -1, false, true}, nil, nil},
 		{MatchTest{"", math.MaxInt64, false, true}, nil, nil},
 		// command token
@@ -204,18 +155,6 @@ func TestMatch(t *testing.T) {
 		// command abbr
 		{MatchTest{"c1", commandAbbr, true, false}, nil, defs},
 		{MatchTest{"c-abbr-that-doesnt-exist", commandAbbr, false, false}, nil, defs},
-		// flag token
-		{MatchTest{"-flag1", flag, true, false}, nil, defs},
-		{MatchTest{"--flag1", flag, true, false}, nil, defs},
-		{MatchTest{"flag1", flag, false, false}, nil, defs},
-		{MatchTest{"-flag-that-doesnt-exist", flag, false, false}, nil, defs},
-		{MatchTest{"--flag-that-doesnt-exist", flag, false, false}, nil, defs},
-		// flag abbr
-		{MatchTest{"-f1", flagAbbr, true, false}, nil, defs},
-		{MatchTest{"--f1", flagAbbr, true, false}, nil, defs},
-		{MatchTest{"f1", flagAbbr, false, false}, nil, defs},
-		{MatchTest{"-f-abbr-that-doesnt-exist", flagAbbr, false, false}, nil, defs},
-		{MatchTest{"--f-abbr-that-doesnt-exist", flagAbbr, false, false}, nil, defs},
 		// argument token
 		{MatchTest{"-argument1", argument, true, false}, command1ParseCtx, defs},
 		{MatchTest{"--argument1", argument, true, false}, command1ParseCtx, defs},

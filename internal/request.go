@@ -6,7 +6,6 @@ import (
 )
 
 type Request struct {
-	Flags     []string
 	Command   string
 	Arguments map[string][]string
 }
@@ -22,10 +21,6 @@ func (req *Request) update(expandedToken string, tokenType int, ctx *parseCtx) e
 		}
 		req.Command = expandedToken
 		break
-	case flagAbbr:
-		req.Flags = append(req.Flags, trimPrefix(expandedToken))
-	case flag:
-		req.Flags = append(req.Flags, trimPrefix(expandedToken))
 	case argument:
 		fallthrough
 	case argumentAbbr:
@@ -119,19 +114,7 @@ func (req *Request) verify(def *Definitions) error {
 	return nil
 }
 
-func (req *Request) GetFlag(flag string) bool {
-	if req == nil {
-		return false
-	}
-	for _, f := range req.Flags {
-		if f == flag {
-			return true
-		}
-	}
-	return false
-}
-
-func (req *Request) GetValue(arg string) string {
+func (req *Request) ArgVal(arg string) string {
 	if req == nil {
 		return ""
 	}
@@ -142,9 +125,17 @@ func (req *Request) GetValue(arg string) string {
 	return ""
 }
 
-func (req *Request) GetValues(arg string) []string {
+func (req *Request) ArgValues(arg string) []string {
 	if req == nil {
 		return []string{}
 	}
 	return req.Arguments[arg]
+}
+
+func (req *Request) Flag(arg string) bool {
+	if req == nil {
+		return false
+	}
+	_, ok := req.Arguments[arg]
+	return ok
 }

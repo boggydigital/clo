@@ -13,8 +13,6 @@ const (
 	valueDefault
 	valueFixed
 	value
-	flag
-	flagAbbr
 )
 
 // tokenString converts token type to a human readable string
@@ -34,41 +32,32 @@ func tokenString(tokenType int) string {
 		return "valueFixed"
 	case value:
 		return "value"
-	case flag:
-		return "flag"
-	case flagAbbr:
-		return "flagAbbr"
 	}
 	return "unknown"
 }
 
 // next defines possible token types that can follow a given type of token.
 // Order below assumes the following sequence of token types:
-// app command [<arguments> [<values>]] [<flags>]
+// app command [<arguments> [<values>]]
 func next(tokenType int) []int {
 	switch tokenType {
 	// commands
 	case command:
 		fallthrough
 	case commandAbbr:
-		return []int{argumentAbbr, argument, valueDefault, flagAbbr, flag}
+		return []int{argumentAbbr, argument, valueDefault}
 	// arguments
 	case argument:
 		fallthrough
 	case argumentAbbr:
-		return []int{valueFixed, argumentAbbr, argument, flagAbbr, flag, value}
+		return []int{valueFixed, argumentAbbr, argument, value}
 	// values
 	case valueFixed:
-		return []int{valueFixed, argumentAbbr, argument, flagAbbr, flag}
+		return []int{valueFixed, argumentAbbr, argument}
 	case valueDefault:
-		return []int{valueDefault, argumentAbbr, argument, flagAbbr, flag}
+		return []int{valueDefault, argumentAbbr, argument}
 	case value:
-		return []int{value, argumentAbbr, argument, flagAbbr, flag}
-	// flags
-	case flag:
-		fallthrough
-	case flagAbbr:
-		return []int{flag, flagAbbr}
+		return []int{value, argumentAbbr, argument}
 	default:
 		return []int{}
 	}
@@ -93,12 +82,6 @@ func expandAbbr(token string, tokenType int, def *Definitions) (string, error) {
 			return "", fmt.Errorf("unknown argument abbreviation: '%v'", token)
 		}
 		return ad.Token, nil
-	case flagAbbr:
-		fd := def.FlagByAbbr(trimPrefix(token))
-		if fd == nil {
-			return "", fmt.Errorf("unknown flag abbreviation: '%v'", token)
-		}
-		return fd.Token, nil
 	default:
 		return token, nil
 	}

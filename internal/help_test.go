@@ -153,7 +153,7 @@ func TestPrintHelp(t *testing.T) {
 	//}
 	for _, tt := range mockPrintCommandHelpTests {
 		t.Run(tt.token, func(t *testing.T) {
-			err := printHelp(tt.token, tt.defs, false)
+			err := printHelp(tt.token, tt.defs)
 			assertError(t, err, tt.defs == nil)
 		})
 	}
@@ -162,7 +162,7 @@ func TestPrintHelp(t *testing.T) {
 func TestPrintAppIntro(t *testing.T) {
 	for ii, dd := range mockHelpDefinitionsTests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-			printAppIntro(dd, true)
+			printAppIntro(dd)
 		})
 	}
 }
@@ -178,15 +178,7 @@ func TestPrintAppUsage(t *testing.T) {
 func TestPrintAppCommands(t *testing.T) {
 	for ii, dd := range mockHelpDefinitionsTests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-			printAppCommands(dd, true)
-		})
-	}
-}
-
-func TestPrintAppFlags(t *testing.T) {
-	for ii, dd := range mockHelpDefinitionsTests {
-		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-			printAppFlags(dd, true)
+			printAppCommands(dd)
 		})
 	}
 }
@@ -198,7 +190,7 @@ func TestPrintAppAttrsLegend(t *testing.T) {
 func TestPrintAppMoreInfoPrompt(t *testing.T) {
 	for ii, dd := range mockHelpDefinitionsTests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-			printAppMoreInfoPrompt(dd, false)
+			printAppMoreInfoPrompt(dd)
 		})
 	}
 }
@@ -206,18 +198,8 @@ func TestPrintAppMoreInfoPrompt(t *testing.T) {
 func TestPrintAppHelp(t *testing.T) {
 	for ii, dd := range mockHelpDefinitionsTests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-			printAppHelp(dd, true)
+			printAppHelp(dd)
 		})
-	}
-}
-
-func TestPrintExampleHelp(t *testing.T) {
-	for di, dd := range mockHelpDefinitionsTests {
-		for ti, tt := range mockEmptyExamplesTests {
-			t.Run(fmt.Sprintf("%d-%d", di, ti), func(t *testing.T) {
-				printExampleHelp(mockExampleDefinition("", tt.tokens), "", dd)
-			})
-		}
 	}
 }
 
@@ -240,7 +222,7 @@ func TestPrintArgAttrs(t *testing.T) {
 func TestPrintArgValues(t *testing.T) {
 	for _, tt := range mockPrintArgumentHelpTests {
 		t.Run(tt.token, func(t *testing.T) {
-			printArgValues("", tt.token, tt.defs, true)
+			printArgValues("", tt.token, tt.defs)
 		})
 	}
 }
@@ -248,7 +230,7 @@ func TestPrintArgValues(t *testing.T) {
 func TestPrintCmdArgDesc(t *testing.T) {
 	for _, tt := range mockPrintArgumentHelpTests {
 		t.Run(tt.token, func(t *testing.T) {
-			printCmdArgDesc("", tt.token, tt.defs, true)
+			printCmdArgDesc("", tt.token, tt.defs)
 		})
 	}
 }
@@ -256,7 +238,7 @@ func TestPrintCmdArgDesc(t *testing.T) {
 func TestPrintCmdArgs(t *testing.T) {
 	for _, tt := range mockPrintCommandHelpTests {
 		t.Run(tt.token, func(t *testing.T) {
-			printCmdArgs(tt.token, tt.defs, false)
+			printCmdArgs(tt.token, tt.defs)
 		})
 	}
 }
@@ -265,37 +247,10 @@ func TestPrintArgAttrsLegend(t *testing.T) {
 	printArgAttrsLegend()
 }
 
-func TestPrintCmdExamples(t *testing.T) {
-	tests := make([]TokenHelpTest, 0)
-	tests = append(tests, mockPrintCommandHelpTests...)
-	exampleDefs := mockDefinitions()
-	mockAddExample(&exampleDefs.Commands[0], []string{})
-	tests = append(tests, TokenHelpTest{
-		token: exampleDefs.Commands[0].Token,
-		defs:  exampleDefs,
-	})
-	for _, tt := range tests {
-		t.Run(tt.token, func(t *testing.T) {
-			printCmdExamples(tt.token, tt.defs)
-		})
-	}
-}
-
-func TestPrintCmdMoreInfoPrompt(t *testing.T) {
-	for _, tt := range mockPrintCommandHelpTests {
-		t.Run(tt.token, func(t *testing.T) {
-			printCmdMoreInfoPrompt(tt.token, tt.defs)
-		})
-	}
-}
-
 func TestPrintCmdHelp(t *testing.T) {
-	verbosity := []bool{true, false}
-	for _, vv := range verbosity {
-		for _, tt := range mockPrintCommandHelpTests {
-			t.Run(fmt.Sprintf("%s-%v", tt.token, vv), func(t *testing.T) {
-				printCmdHelp(tt.token, tt.defs, vv)
-			})
-		}
+	for _, tt := range mockPrintCommandHelpTests {
+		t.Run(fmt.Sprintf("%s", tt.token), func(t *testing.T) {
+			printCmdHelp(tt.token, tt.defs)
+		})
 	}
 }

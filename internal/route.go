@@ -5,7 +5,6 @@ import "fmt"
 const (
 	helpCommand         = "help"
 	helpCommandArgument = "help:command"
-	verboseFlag         = "verbose"
 )
 
 func Route(request *Request) error {
@@ -14,14 +13,13 @@ func Route(request *Request) error {
 			Command: helpCommand,
 		}
 	}
-	verbose := request.GetFlag(verboseFlag)
 	switch request.Command {
 	case helpCommand:
 		defs, err := LoadDefault()
 		if err != nil {
 			return err
 		}
-		return printHelp(request.GetValue(helpCommandArgument), defs, verbose)
+		return printHelp(request.ArgVal(helpCommandArgument), defs)
 	default:
 		return fmt.Errorf("unknown command: '%s'", request.Command)
 	}

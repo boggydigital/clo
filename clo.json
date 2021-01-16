@@ -2,44 +2,25 @@
   "version": 1,
   "env-prefix": "CLO",
   "app": "clo",
-  "hint": "declarative CLI parameters",
-  "desc": "declarative CLI commands, arguments and flags that can be verified to avoid common errors",
-  "flags": [
-    {
-      "token": "verbose",
-      "abbr": "v",
-      "hint": "show more info when available",
-      "desc": "show additional information, like examples, where available"
-    }
-  ],
+  "help": "declarative CLI parameters",
   "commands": [
     {
       "token": "verify",
       "abbr": "vf",
-      "hint": "verify provided file for common errors",
-      "desc": "verify that provided file meets expected constraints and avoids common errors",
+      "help": "verify provided file for common errors",
       "arguments": [
-        "path"
-      ],
-      "examples": [
-        {
-          "argumentsValues": {
-            "path": []
-          },
-          "desc": "verify provided file for common errors and display report"
-        }
+        "path",
+        "debug"
       ]
     },
     {
       "token": "generate",
       "abbr": "gn",
-      "hint": "generate clo.json",
-      "desc": "generate clo.json with input data",
+      "help": "generate clo.json or parts of it",
       "arguments": [
         "app",
         "command",
-        "argument",
-        "flag"
+        "argument"
       ]
     }
   ],
@@ -47,36 +28,31 @@
     {
       "token": "path",
       "abbr": "p",
-      "hint": "path to the file",
-      "desc": "absolute or relative path to the file that will be verified",
+      "help": "path to the file",
       "env": true,
       "default": true,
       "required": true
     },
     {
       "token": "app",
-      "hint": "application name"
+      "help": "application name"
     },
     {
       "token": "command",
       "abbr": "cmd",
-      "hint": "clo.json command",
-      "desc": "clo.json command to add to the definitions",
+      "help": "clo.json command",
       "multiple": true
     },
     {
       "token": "argument",
       "abbr": "arg",
-      "hint": "clo.json argument",
-      "desc": "clo.json argument to add to the definitions. Prefix with _ for Def, * for Req (in that order), suffix with ... for Mult",
+      "help": "clo.json argument",
       "multiple": true
     },
     {
-      "token": "flag",
-      "abbr": "flg",
-      "hint": "clo.json flag",
-      "desc": "clo.json flag to add to the definitions",
-      "multiple": true
+      "token": "debug",
+      "abbr": "d",
+      "help": "print debug information"
     }
   ]
 }

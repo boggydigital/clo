@@ -89,57 +89,27 @@ func TestDifferentArgAbbr(t *testing.T) {
 	}
 }
 
-func TestFlagTokensAreNotEmpty(t *testing.T) {
-	for _, tt := range mockNoEmptyTokensTests() {
-		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := flagTokensAreNotEmpty(mockFlagDefinitions(tt.tokens), false)
-			assertError(t, err, tt.expError)
-		})
-	}
-}
-
-func TestDifferentFlagTokens(t *testing.T) {
-	for _, tt := range mockDifferentTokensTests() {
-		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := differentFlagTokens(mockFlagDefinitions(tt.tokens), false)
-			assertError(t, err, tt.expError)
-		})
-	}
-}
-
-func TestDifferentFlagAbbr(t *testing.T) {
-	for _, tt := range mockDifferentTokensTests() {
-		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := differentFlagAbbr(mockFlagDefinitions(tt.tokens), false)
-			assertError(t, err, tt.expError)
-		})
-	}
-}
-
 func TestDifferentAbbr(t *testing.T) {
 	tests := []struct {
 		commands  []string
 		arguments []string
-		flags     []string
 		expError  bool
 	}{
-		{nil, nil, nil, false},
-		{[]string{}, []string{}, []string{}, false},
-		{[]string{"1"}, []string{"2"}, []string{"3"}, false},
-		{[]string{"1"}, []string{"2"}, []string{"3"}, false},
-		{[]string{"1", "2"}, []string{"2"}, []string{"3"}, true},
-		{[]string{"1"}, []string{"2", "1"}, []string{"3"}, true},
-		{[]string{"1"}, []string{"2"}, []string{"1", "3"}, true},
+		{nil, nil, false},
+		{[]string{}, []string{}, false},
+		{[]string{"1"}, []string{"2"}, false},
+		{[]string{"1"}, []string{"2"}, false},
+		{[]string{"1", "2"}, []string{"2"}, true},
+		{[]string{"1"}, []string{"2", "1"}, true},
 	}
 	for _, tt := range tests {
 		name := strings.Join(tt.commands, "-") + "-" +
-			strings.Join(tt.arguments, "-") + "-" +
-			strings.Join(tt.flags, "-")
+			strings.Join(tt.arguments, "-")
 		t.Run(name, func(t *testing.T) {
 			err := differentAbbr(
 				mockCommandDefinitions(tt.commands),
 				mockArgumentDefinitions(tt.arguments),
-				mockFlagDefinitions(tt.flags), false)
+				false)
 			assertError(t, err, tt.expError)
 		})
 	}
@@ -217,75 +187,6 @@ func TestDifferentArgValues(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
 			err := differentArgValues(mockArgumentDefinitions(tt.tokens), false)
-			assertError(t, err, tt.expError)
-		})
-	}
-}
-
-func TestExamplesDescAreNotEmpty(t *testing.T) {
-	for _, tt := range mockExamplesTests {
-		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := examplesDescAreNotEmpty(mockCommandDefinitions(tt.tokens), false)
-			assertError(t, err, tt.expError)
-		})
-	}
-}
-
-func TestExamplesArgumentsAreNotEmpty(t *testing.T) {
-	for _, tt := range mockExamplesTests {
-		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := examplesArgumentsAreNotEmpty(mockCommandDefinitions(tt.tokens), false)
-			assertError(t, err, tt.expError)
-		})
-	}
-}
-
-func TestExamplesHaveArgsValues(t *testing.T) {
-	for _, tt := range mockEmptyExamplesTests {
-		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := examplesHaveArgsValues(mockCommandDefinitions(tt.tokens), false)
-			assertError(t, err, tt.expError)
-		})
-	}
-}
-
-func TestExamplesArgumentsAreValid(t *testing.T) {
-	for _, tt := range mockExamplesTests {
-		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := examplesArgumentsAreValid(mockCommandDefinitions(tt.tokens), mockArgByToken, false)
-			assertError(t, err, tt.expError)
-		})
-	}
-}
-
-func TestCmdExampleHasValidValues(t *testing.T) {
-	tests := []struct {
-		argValues map[string][]string
-		expError  bool
-	}{
-		{nil, false},
-		{map[string][]string{}, false},
-		{map[string][]string{"a": {"1", "2"}}, false},
-		{map[string][]string{"a": {"invalid"}}, true},
-	}
-	for ii, tt := range tests {
-		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-			err := cmdExampleHasValidValues("", tt.argValues, mockValidArgVal, 0)
-			assertError(t, err, tt.expError)
-		})
-	}
-}
-
-func TestExamplesHaveValidValues(t *testing.T) {
-	tests := []TokensTest{
-		{nil, false},
-		{[]string{}, false},
-		{[]string{"1", "2"}, false},
-		{[]string{"invalid"}, true},
-	}
-	for _, tt := range tests {
-		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := examplesHaveValidValues(mockCommandDefinitions(tt.tokens), mockValidArgVal, false)
 			assertError(t, err, tt.expError)
 		})
 	}

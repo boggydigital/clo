@@ -2,8 +2,7 @@ package internal
 
 type CommandDefinition struct {
 	CommonDefinition
-	Arguments []string            `json:"arguments,omitempty"`
-	Examples  []ExampleDefinition `json:"examples,omitempty"`
+	Arguments []string `json:"arguments,omitempty"`
 }
 
 func (cmd *CommandDefinition) ValidArg(arg string) bool {

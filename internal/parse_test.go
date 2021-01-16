@@ -15,13 +15,11 @@ func TestDefinitionsParse(t *testing.T) {
 	}{
 		{nil, []string{}, nil, true},
 		{defs, []string{""}, &Request{
-			Flags:     []string{},
 			Command:   "",
 			Arguments: map[string][]string{},
 		}, false},
 		{defs, []string{"c1", "-a1", "value1"},
 			&Request{
-				Flags:   []string{},
 				Command: "command1",
 				Arguments: map[string][]string{
 					"argument1": {"value1"},
@@ -30,7 +28,6 @@ func TestDefinitionsParse(t *testing.T) {
 			false,
 		},
 		{defs, []string{"c1", "-a1", "value-that-doesnt-exist"}, &Request{
-			Flags:   []string{},
 			Command: "command1",
 			Arguments: map[string][]string{
 				"argument1": {},
@@ -39,7 +36,6 @@ func TestDefinitionsParse(t *testing.T) {
 		{defs, []string{"command-that-doesnt-exist"}, nil, true},
 		{defs, []string{"c1", "-a2", "value3", "value4"},
 			&Request{
-				Flags:   []string{},
 				Command: "command1",
 				Arguments: map[string][]string{
 					"argument2": {"value3", "value4"},

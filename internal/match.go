@@ -48,28 +48,6 @@ func matchArgument(token string, tokenType int, cmdCtx *CommandDefinition, def *
 	return false, fmt.Errorf("argument '%v' is not supported by command '%v'", ad.Token, cmdCtx.Token)
 }
 
-// matchesFlag determines if a token matches flag (either in normal or abbreviated form)
-func matchFlag(token string, tokenType int, def *Definitions) (bool, error) {
-	// flag is expected to be prefixed with a single or double dash, if it's not -
-	// there is no reason to perform further match checks
-	if !hasPrefix(token) {
-		return false, nil
-	}
-
-	if def == nil {
-		return false, fmt.Errorf("cannot match flag with nil definitions")
-	}
-	// check if flag matches a token or abbreviation
-	switch tokenType {
-	case flag:
-		return def.FlagByToken(trimPrefix(token)) != nil, nil
-	case flagAbbr:
-		return def.FlagByAbbr(trimPrefix(token)) != nil, nil
-	default:
-		return false, fmt.Errorf("type '%v' cannot be used for flag matches", tokenString(tokenType))
-	}
-}
-
 func matchDefaultValue(token string, tokenType int, ctx *parseCtx, def *Definitions) (bool, error) {
 
 	if tokenType != valueDefault {
@@ -151,10 +129,6 @@ func match(token string, tokenType int, ctx *parseCtx, def *Definitions) (bool, 
 		return def.CommandByToken(token) != nil, nil
 	case commandAbbr:
 		return def.CommandByAbbr(token) != nil, nil
-	case flag:
-		fallthrough
-	case flagAbbr:
-		return matchFlag(token, tokenType, def)
 	case argument:
 		fallthrough
 	case argumentAbbr:

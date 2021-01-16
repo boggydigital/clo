@@ -11,7 +11,7 @@ const (
 	multipleSuffix = "..."
 )
 
-func GenDefinitions(app string, commands, arguments, flags []string) *Definitions {
+func GenDefinitions(app string, commands, arguments []string) *Definitions {
 	defs := &Definitions{
 		Version:   1,
 		EnvPrefix: strings.ToUpper(app),
@@ -19,8 +19,7 @@ func GenDefinitions(app string, commands, arguments, flags []string) *Definition
 	}
 
 	if app != "" {
-		defs.Hint = fmt.Sprintf("%s hint", app)
-		defs.Desc = fmt.Sprintf("%s description", app)
+		defs.Help = fmt.Sprintf("%s help", app)
 	}
 
 	for _, c := range commands {
@@ -29,9 +28,6 @@ func GenDefinitions(app string, commands, arguments, flags []string) *Definition
 	for _, a := range arguments {
 		defs.Arguments = append(defs.Arguments, *genArgument(a))
 	}
-	for _, f := range flags {
-		defs.Flags = append(defs.Flags, *genFlag(f))
-	}
 	return defs
 }
 
@@ -39,8 +35,7 @@ func genCommand(cmd string) *CommandDefinition {
 	return &CommandDefinition{
 		CommonDefinition: CommonDefinition{
 			Token: cmd,
-			Hint:  fmt.Sprintf("%s hint", cmd),
-			Desc:  fmt.Sprintf("%s description", cmd),
+			Help:  fmt.Sprintf("%s help", cmd),
 		},
 		Arguments: []string{},
 	}
@@ -67,18 +62,7 @@ func genArgument(arg string) *ArgumentDefinition {
 	}
 
 	ad.Token = arg
-	ad.Hint = fmt.Sprintf("%s hint", arg)
-	ad.Desc = fmt.Sprintf("%s description", arg)
+	ad.Help = fmt.Sprintf("%s help", arg)
 
 	return ad
-}
-
-func genFlag(flag string) *FlagDefinition {
-	return &FlagDefinition{
-		CommonDefinition: CommonDefinition{
-			Token: flag,
-			Hint:  fmt.Sprintf("%s hint", flag),
-			Desc:  fmt.Sprintf("%s description", flag),
-		},
-	}
 }

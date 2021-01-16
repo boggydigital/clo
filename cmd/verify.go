@@ -5,14 +5,14 @@ import (
 	"github.com/boggydigital/clo"
 )
 
-func Verify(path string, verbose bool) error {
+func Verify(path string, debug bool) error {
 
-	defs, err := clo.LoadDefinitions(path, verbose)
+	defs, err := clo.LoadDefinitions(path)
 	if err != nil {
 		return err
 	}
 
-	errors := defs.Verify(verbose)
+	errors := defs.Verify(debug)
 	if len(errors) > 0 {
 		fmt.Printf("Following errors were found in %s:\n", path)
 		for _, err := range errors {

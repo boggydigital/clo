@@ -17,8 +17,6 @@ func TestTokenString(t *testing.T) {
 		{valueDefault, "valueDefault"},
 		{valueFixed, "valueFixed"},
 		{value, "value"},
-		{flag, "flag"},
-		{flagAbbr, "flagAbbr"},
 		{-1, "unknown"},
 		{math.MaxInt64, "unknown"},
 	}
@@ -36,15 +34,13 @@ func TestNext(t *testing.T) {
 		tokenType int
 		nextLen   int
 	}{
-		{command, 5},
-		{commandAbbr, 5},
-		{argument, 6},
-		{argumentAbbr, 6},
-		{valueFixed, 5},
-		{valueDefault, 5},
-		{value, 5},
-		{flag, 2},
-		{flagAbbr, 2},
+		{command, 3},
+		{commandAbbr, 3},
+		{argument, 4},
+		{argumentAbbr, 4},
+		{valueFixed, 3},
+		{valueDefault, 3},
+		{value, 3},
 		{-1, 0},
 		{math.MaxInt64, 0},
 	}
@@ -71,14 +67,11 @@ func TestExpandAbbr(t *testing.T) {
 		{"command-abbr-that-doesnt-exist", "", commandAbbr, true},
 		{"a1", "argument1", argumentAbbr, false},
 		{"argument-abbr-that-doesnt-exist", "", argumentAbbr, true},
-		{"f1", "flag1", flagAbbr, false},
-		{"flag-abbr-that-doesnt-exist", "", flagAbbr, true},
 		{"c", "c", command, false},
 		{"a", "a", argument, false},
 		{"vd", "vd", valueDefault, false},
 		{"vf", "vf", valueFixed, false},
 		{"v", "v", value, false},
-		{"f", "f", flag, false},
 	}
 	defs := mockDefinitions()
 	for _, tt := range tests {

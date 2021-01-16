@@ -2,9 +2,16 @@
 
 ## Changes
 
-- parsing sequence should be expressed in groups, not individual tokens. This would make progression clear, as well as allow to add things like "default command" more easily
+- ~~Roll back the version to v0.5.0-beta~~
+- ~~remove examples~~
+- ~~remove hint/desc - only leave help~~
+- ~~remove flags~~
+
+- parsing sequence should be expressed in groups, not individual tokens. This would make progression clear, as well as allow adding things like "default command" more easily
 - arguments should be "default" for a command, remove property on argument
 - arguments should be "required" by a command, remove property on argument
+- remove values
+- simplify value tokens to just one type "value"
 
 ## New
 

@@ -16,8 +16,6 @@ func TestRequestUpdate(t *testing.T) {
 		{"", commandAbbr, nil, false},
 		{"command", command, nil, false},
 		{"command-overwrite", command, nil, true},
-		{"flag", flagAbbr, nil, false},
-		{"flag", flag, nil, false},
 		{"arg", argument, nil, false},
 		{"arg", argumentAbbr, nil, false},
 		{"vd", valueDefault, mockParseCtx("", "arg"), false},
@@ -68,24 +66,7 @@ func TestRequestVerify(t *testing.T) {
 	}
 }
 
-func TestRequestGetFlag(t *testing.T) {
-	tests := []struct {
-		req      *Request
-		flag     string
-		expected bool
-	}{
-		{nil, "", false},
-		{&Request{Flags: []string{"1", "2"}}, "1", true},
-		{&Request{Flags: []string{"1", "2"}}, "3", false},
-	}
-	for ii, tt := range tests {
-		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-			assertValEquals(t, tt.req.GetFlag(tt.flag), tt.expected)
-		})
-	}
-}
-
-func TestRequestGetValue(t *testing.T) {
+func TestRequestFirstValue(t *testing.T) {
 	tests := []struct {
 		req      *Request
 		value    string
@@ -97,7 +78,7 @@ func TestRequestGetValue(t *testing.T) {
 	}
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-			assertValEquals(t, tt.req.GetValue(tt.value), tt.expected)
+			assertValEquals(t, tt.req.ArgVal(tt.value), tt.expected)
 		})
 	}
 }
@@ -114,7 +95,25 @@ func TestRequestGetValues(t *testing.T) {
 	}
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-			assertValEquals(t, len(tt.req.GetValues(tt.value)), tt.expected)
+			assertValEquals(t, len(tt.req.ArgValues(tt.value)), tt.expected)
+		})
+	}
+}
+
+func TestRequestGetFlag(t *testing.T) {
+	tests := []struct {
+		req      *Request
+		value    string
+		expected bool
+	}{
+		{nil, "", false},
+		{&Request{Arguments: map[string][]string{"1": {"3"}, "2": {}}}, "1", true},
+		{&Request{Arguments: map[string][]string{"1": {"3"}, "2": {}}}, "2", true},
+		{&Request{Arguments: map[string][]string{"1": {"3"}, "2": {}}}, "3", false},
+	}
+	for ii, tt := range tests {
+		t.Run(strconv.Itoa(ii), func(t *testing.T) {
+			assertValEquals(t, tt.req.Flag(tt.value), tt.expected)
 		})
 	}
 }

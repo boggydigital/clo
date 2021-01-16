@@ -63,26 +63,6 @@ func TestDefinitionsLoadErrors(t *testing.T) {
 	}
 }
 
-func TestDefinitionsFlagByToken(t *testing.T) {
-	defs := mockDefinitions()
-	for _, tt := range mockByTokenAbbrTests("flag") {
-		t.Run(tt.token, func(t *testing.T) {
-			fd := defs.FlagByToken(tt.token)
-			assertNil(t, fd, tt.expNil)
-		})
-	}
-}
-
-func TestDefinitionsFlagByAbbr(t *testing.T) {
-	defs := mockDefinitions()
-	for _, tt := range mockByTokenAbbrTests("f") {
-		t.Run(tt.token, func(t *testing.T) {
-			fd := defs.FlagByAbbr(tt.token)
-			assertNil(t, fd, tt.expNil)
-		})
-	}
-}
-
 func TestDefinitionsCommandByToken(t *testing.T) {
 	defs := mockDefinitions()
 	for _, tt := range mockByTokenAbbrTests("command") {

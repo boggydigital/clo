@@ -3,8 +3,8 @@
 Clo (Command line objectives)
 =============================
 
-Clo is a Golang module to build declarations of a CLI application objectives - that is flags, commands and
-arguments. Clo parses user provided application CLI input string (args) and returns a structured `Request` object.
+Clo is a Golang module to build declarations of a CLI application objectives -  commands and
+arguments with values. Clo parses user provided application CLI input string (args) and returns a structured `Request` object.
 Clo takes care of a `help` command (perhaps more in the future) and makes sure the definitions you
 provide are not conflicting with each other (e.g. no commands share the same abbreviation).
 
@@ -24,7 +24,7 @@ it today and will update once 1.16 is released.
 Apps that use clo might start with the following general sequence of actions (in the future we can provide a code generation command in clo to simplify that further):
 
 - Add a definitions file named `clo.json` in the root of your project
-- Parse `os.Args` (using default definitions) to get `Request` data with command, arguments, flags
+- Parse `os.Args` (using default definitions) to get `Request` data with command, arguments
 - Route request to your commands handlers and fallback to `clo.Route` for unknown commands or nil `Request`
 
 Here is an example of a `main.go` that implements this approach (NOTE: error handling is omitted for brevity)
@@ -49,8 +49,8 @@ func main() {
 
 ## Routing command requests and handling built-in commands
 
-The recommended approach to handle `Request` commands, arguments and flags is to have
-a `cmd/route.go` single `Route` method that routes arguments, flags data to command handlers.
+The recommended approach to handle `Request` commands, arguments is to have
+a `cmd/route.go` single `Route` method that routes arguments data to command handlers.
 
 In order to allow clo to handle built-in commands, in your `Route` handler you need to
 send `nil` and unknown commands to `clo.Route`.
@@ -87,31 +87,29 @@ func Route(request *clo.Request) error {
 
 App that uses clo would support the following calling convention:
 
-`app <command> [<args>] [<flags>]`
+`app command [args [values]]`
 
-When specifying arguments and flags `--` and `-` can be used interchangeably: `--verbose` is the
-same `-v` and `--v` and `-verbose`.
+When specifying arguments `--` and `-` can be used interchangeably: `--debug` is the
+same `-d` and `--d` and `-debug`.
 
 # Clo technical details
 
 ## Understanding common schema
 
 Clo operates on a command line parameters array that excludes application executable name. Key
-entities in clo are commands, arguments, values and flags. When defining those entities you can
+entities in clo are commands, arguments, values. When defining those entities you can
 use the following properties:
 
-- `token` - (string) a single word that is mapped to this flag (`verbose`).
+- `token` - (string) a single word that is mapped to this element (`run`).
 - `abbreviation` - (string, optional) short form of a command that can be used instead of the
-  token (`v`).
-- `hint` - (string, optional) _short_ description of the flag.
-- `description` - (string, optional) full and helpful description of the flag.
+  token (`r`).
+- `help` - (string, optional) _short_ description of the element.
 
 Clo definitions file has additional properties that can be specified:
 
 - `version` - (number) version of the definitions file format (1 is the latest right now)
 - `env-prefix` - (string, optional) this prefix will be added to environment variables keys.
-- `hint` - short application description
-- `desc` - verbose application description
+- `help` - short application description
 
 ## Working with commands
 
@@ -120,11 +118,6 @@ Top level commands that allow users to control the application. Examples: `verif
 ### Commands schema extensions
 
 - `arguments` - (optional) all argument tokens that apply to this command.
-- `examples`: (optional)
-    - `argumentsValues` - map of an arguments, each with a set of values that are used in this
-      example. Argument key should be one of the values in the `arguments` definitions. If an
-      argument has defined values - values for that key should be subset of defined values.
-    - `description` - (optional) description of this example
 
 ### Built-in 'help' command
 
@@ -177,19 +170,13 @@ In addition to common schema arguments allow you to specify the following proper
 
 ## Working with values
 
-When fixed values are defined for arguments, you can also specify the common schema values for hints
-and descriptions. Abbreviations are not supported for values - they'll be ignored if present.
-
-## Working with flags
-
-Flags allow creating application level hints or controls that apply to most or all commands,
-generically. All flags are optional. Examples: `verbose`.
+When fixed values are defined for arguments, you can also specify the common schema value for help. Abbreviations are not supported for values - they'll be ignored if present.
 
 # Clo app
 
 clo app can be used to validate definitions file:
 
-`clo verify [--path] <path-to-definitions.json> [--verbose]`
+`clo verify [--path] <path-to-definitions.json> [--debug]`
 
 Command details:
 
@@ -198,7 +185,4 @@ Command details:
 Argument details:
 
 - `path` - (default, required) location of the definitions file to verify.
-
-Flag details:
-
-- `verbose` - display validation information as it happens.
+- `debug` - print detailed information on each verification test
