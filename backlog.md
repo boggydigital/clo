@@ -10,8 +10,7 @@
 - ~~arguments should be "default" for a command, remove property on argument~~
 - ~~arguments should be "required" by a command, remove property on argument~~
 - ~~simplify value tokens to just one type "value"~~
-  
-- parsing sequence should be expressed in groups, not individual tokens. This would make progression clear, as well as allow adding things like "default command" more easily
+- ~~parsing sequence should be expressed in groups, not individual tokens. This would make progression clear, as well as allow adding things like "default command" more easily~~
 
 ## New
 

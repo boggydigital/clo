@@ -1,7 +1,5 @@
 package internal
 
-import "fmt"
-
 // this set of constants enumerates all distinct token types
 const (
 	command = iota
@@ -59,21 +57,21 @@ func first() []int {
 	return []int{command}
 }
 
-func expandAbbr(token string, tokenType int, def *Definitions) (string, error) {
+func expandAbbr(token string, tokenType int, def *Definitions) string {
 	switch tokenType {
 	case command:
 		cd := def.CommandByAbbr(token)
 		if cd == nil {
-			return "", fmt.Errorf("unknown command abbreviation: '%v'", token)
+			return token
 		}
-		return cd.Token, nil
+		return cd.Token
 	case argument:
 		ad := def.ArgByAbbr(trimPrefix(token))
 		if ad == nil {
-			return "", fmt.Errorf("unknown argument abbreviation: '%v'", token)
+			return token
 		}
-		return ad.Token, nil
+		return ad.Token
 	default:
-		return token, nil
+		return token
 	}
 }

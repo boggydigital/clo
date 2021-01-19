@@ -33,13 +33,7 @@ func (def *Definitions) Parse(args []string) (*Request, error) {
 			}
 			if success {
 				matched = true
-				// it's ok to ignore the error below, since we'd only return
-				// an error if CommandByAbbr/ArgumentByAbbr/FlagByAbbr
-				// for commandAbbr/argumentAbbr returns nil,
-				// however we can only get here if inside match for those types
-				// the same functions returned not nil -
-				// both can't be true at the same time
-				expandedArg, _ := expandAbbr(arg, tt, def)
+				expandedArg := expandAbbr(arg, tt, def)
 				// it's ok to ignore the error below, since we'd only return
 				// error in two cases:
 				// 1) req.Command is already set - this shouldn't be

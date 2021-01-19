@@ -3,6 +3,7 @@
   "env-prefix": "CLO",
   "app": "clo",
   "help": "declarative CLI parameters",
+  "default_command": "verify",
   "commands": [
     {
       "token": "verify",

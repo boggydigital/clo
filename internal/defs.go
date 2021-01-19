@@ -7,12 +7,13 @@ import (
 )
 
 type Definitions struct {
-	Version   int                  `json:"version"`
-	EnvPrefix string               `json:"env-prefix,omitempty"`
-	App       string               `json:"app,omitempty"`
-	Help      string               `json:"help,omitempty"`
-	Commands  []CommandDefinition  `json:"commands,omitempty"`
-	Arguments []ArgumentDefinition `json:"arguments,omitempty"`
+	Version        int                  `json:"version"`
+	EnvPrefix      string               `json:"env-prefix,omitempty"`
+	App            string               `json:"app,omitempty"`
+	Help           string               `json:"help,omitempty"`
+	DefaultCommand string               `json:"default_command,omitempty"`
+	Commands       []CommandDefinition  `json:"commands,omitempty"`
+	Arguments      []ArgumentDefinition `json:"arguments,omitempty"`
 }
 
 func LoadDefault() (*Definitions, error) {
