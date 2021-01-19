@@ -18,9 +18,7 @@ func TestRequestUpdate(t *testing.T) {
 		{"command-overwrite", command, nil, true},
 		{"arg", argument, nil, false},
 		{"arg", argumentAbbr, nil, false},
-		{"vd", valueDefault, mockParseCtx("", "arg"), false},
 		{"v", value, mockParseCtx("", "arg"), false},
-		{"vf", valueFixed, mockParseCtx("", "arg"), false},
 		{"", -1, nil, true},
 		{"", math.MaxInt64, nil, true},
 	}

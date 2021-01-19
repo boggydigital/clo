@@ -28,11 +28,11 @@ func (req *Request) update(expandedToken string, tokenType int, ctx *parseCtx) e
 		if req.Arguments[arg] == nil {
 			req.Arguments[arg] = []string{}
 		}
-	case valueDefault:
-		fallthrough
+	//case valueDefault:
+	//	fallthrough
 	case value:
-		fallthrough
-	case valueFixed:
+		//	fallthrough
+		//case valueFixed:
 		argCtx := ctx.Argument.Token
 		req.Arguments[argCtx] = append(req.Arguments[argCtx], expandedToken)
 	default:

@@ -14,8 +14,6 @@ func TestTokenString(t *testing.T) {
 		{commandAbbr, "commandAbbr"},
 		{argument, "argument"},
 		{argumentAbbr, "argumentAbbr"},
-		{valueDefault, "valueDefault"},
-		{valueFixed, "valueFixed"},
 		{value, "value"},
 		{-1, "unknown"},
 		{math.MaxInt64, "unknown"},
@@ -36,10 +34,8 @@ func TestNext(t *testing.T) {
 	}{
 		{command, 3},
 		{commandAbbr, 3},
-		{argument, 4},
-		{argumentAbbr, 4},
-		{valueFixed, 3},
-		{valueDefault, 3},
+		{argument, 3},
+		{argumentAbbr, 3},
 		{value, 3},
 		{-1, 0},
 		{math.MaxInt64, 0},
@@ -69,8 +65,6 @@ func TestExpandAbbr(t *testing.T) {
 		{"argument-abbr-that-doesnt-exist", "", argumentAbbr, true},
 		{"c", "c", command, false},
 		{"a", "a", argument, false},
-		{"vd", "vd", valueDefault, false},
-		{"vf", "vf", valueFixed, false},
 		{"v", "v", value, false},
 	}
 	defs := mockDefinitions()

@@ -10,8 +10,8 @@ const (
 	commandAbbr
 	argument
 	argumentAbbr
-	valueDefault
-	valueFixed
+	//valueDefault
+	//valueFixed
 	value
 )
 
@@ -26,10 +26,10 @@ func tokenString(tokenType int) string {
 		return "argument"
 	case argumentAbbr:
 		return "argumentAbbr"
-	case valueDefault:
-		return "valueDefault"
-	case valueFixed:
-		return "valueFixed"
+	//case valueDefault:
+	//	return "valueDefault"
+	//case valueFixed:
+	//	return "valueFixed"
 	case value:
 		return "value"
 	}
@@ -41,23 +41,16 @@ func tokenString(tokenType int) string {
 // app command [<arguments> [<values>]]
 func next(tokenType int) []int {
 	switch tokenType {
-	// commands
 	case command:
 		fallthrough
 	case commandAbbr:
-		return []int{argumentAbbr, argument, valueDefault}
-	// arguments
+		return []int{argumentAbbr, argument, value}
 	case argument:
 		fallthrough
 	case argumentAbbr:
-		return []int{valueFixed, argumentAbbr, argument, value}
-	// values
-	case valueFixed:
-		return []int{valueFixed, argumentAbbr, argument}
-	case valueDefault:
-		return []int{valueDefault, argumentAbbr, argument}
-	case value:
 		return []int{value, argumentAbbr, argument}
+	case value:
+		return []int{argumentAbbr, argument, value}
 	default:
 		return []int{}
 	}

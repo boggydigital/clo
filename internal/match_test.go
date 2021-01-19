@@ -33,8 +33,6 @@ func TestMatchArgument(t *testing.T) {
 		// - tokenType is not argument or argumentAbbr
 		{MatchTest{"-argument1", command, false, true}, nil, defs},
 		{MatchTest{"-argument1", commandAbbr, false, true}, nil, defs},
-		{MatchTest{"-argument1", valueDefault, false, true}, nil, defs},
-		{MatchTest{"-argument1", valueFixed, false, true}, nil, defs},
 		{MatchTest{"-argument1", value, false, true}, nil, defs},
 		{MatchTest{"-argument1", -1, false, true}, nil, defs},
 		{MatchTest{"-argument1", math.MaxInt64, false, true}, nil, defs},
@@ -54,46 +52,46 @@ func TestMatchArgument(t *testing.T) {
 	}
 }
 
-func TestMatchDefaultValue(t *testing.T) {
-	tests := []MatchDefaultValueTest{
-		{MatchTest{"", valueDefault, false, true}, nil, nil},
-		// shouldn't match
-		// - tokenType is not valueDefault
-		{MatchTest{"", command, false, false}, nil, nil},
-		{MatchTest{"", commandAbbr, false, false}, nil, nil},
-		{MatchTest{"", argument, false, false}, nil, nil},
-		{MatchTest{"", argumentAbbr, false, false}, nil, nil},
-		{MatchTest{"", valueFixed, false, false}, nil, nil},
-		{MatchTest{"", value, false, false}, nil, nil},
-		// - ctx.Command is nil || !ctx.Argument.Default
-		{MatchTest{"", valueDefault, false, true}, &parseCtx{
-			Command:  nil,
-			Argument: nil,
-		}, nil},
-		// - nil definitions
-		{MatchTest{"", valueDefault, false, true}, &parseCtx{
-			Command:  mockCommandDefinition("command1", []string{}),
-			Argument: mockArgumentDefinition("default1", []string{}),
-		}, nil},
-		// - not a matching value for the argument
-		{MatchTest{"value-that-doesnt-exist", valueDefault, false, true}, &parseCtx{
-			Command:  mockCommandDefinition("command1", []string{"argument1"}),
-			Argument: nil,
-		}, mockDefinitions()},
-		// should match
-		//{MatchTest{"value1", valueDefault, true, false}, &parseCtx{
-		//	Command:  mockCommandDefinition("command1", []string{"argument1"}),
-		//	Argument: nil,
-		//}, mockDefinitions()},
-	}
-	for _, tt := range tests {
-		t.Run(tt.token, func(t *testing.T) {
-			m, err := matchDefaultValue(tt.token, tt.tokenType, tt.ctx, tt.def)
-			assertValEquals(t, m, tt.expected)
-			assertError(t, err, tt.expError)
-		})
-	}
-}
+//func TestMatchDefaultValue(t *testing.T) {
+//	tests := []MatchDefaultValueTest{
+//		{MatchTest{"", valueDefault, false, true}, nil, nil},
+//		// shouldn't match
+//		// - tokenType is not valueDefault
+//		{MatchTest{"", command, false, false}, nil, nil},
+//		{MatchTest{"", commandAbbr, false, false}, nil, nil},
+//		{MatchTest{"", argument, false, false}, nil, nil},
+//		{MatchTest{"", argumentAbbr, false, false}, nil, nil},
+//		{MatchTest{"", valueFixed, false, false}, nil, nil},
+//		{MatchTest{"", value, false, false}, nil, nil},
+//		// - ctx.Command is nil || !ctx.Argument.Default
+//		{MatchTest{"", valueDefault, false, true}, &parseCtx{
+//			Command:  nil,
+//			Argument: nil,
+//		}, nil},
+//		// - nil definitions
+//		{MatchTest{"", valueDefault, false, true}, &parseCtx{
+//			Command:  mockCommandDefinition("command1", []string{}),
+//			Argument: mockArgumentDefinition("default1", []string{}),
+//		}, nil},
+//		// - not a matching value for the argument
+//		{MatchTest{"value-that-doesnt-exist", valueDefault, false, true}, &parseCtx{
+//			Command:  mockCommandDefinition("command1", []string{"argument1"}),
+//			Argument: nil,
+//		}, mockDefinitions()},
+//		// should match
+//		//{MatchTest{"value1", valueDefault, true, false}, &parseCtx{
+//		//	Command:  mockCommandDefinition("command1", []string{"argument1"}),
+//		//	Argument: nil,
+//		//}, mockDefinitions()},
+//	}
+//	for _, tt := range tests {
+//		t.Run(tt.token, func(t *testing.T) {
+//			m, err := matchDefaultValue(tt.token, tt.tokenType, tt.ctx, tt.def)
+//			assertValEquals(t, m, tt.expected)
+//			assertError(t, err, tt.expError)
+//		})
+//	}
+//}
 
 func TestMatchValue(t *testing.T) {
 	tests := []MatchValueTest{
@@ -101,15 +99,6 @@ func TestMatchValue(t *testing.T) {
 		{MatchTest{"", value, false, true}, nil},
 		// hasPrefix
 		{MatchTest{"-", value, false, false}, mockArgumentDefinition("", []string{})},
-		// tokenType == valueDefault
-		//{MatchTest{"value-that-doesnt-exist", valueDefault, false, false}, mockArgumentDefinition("", []string{"value1", "value2"})},
-		//{MatchTest{"any-value", valueDefault, false, false}, mockArgumentDefinition("", []string{""})},
-		{MatchTest{"value1", valueDefault, true, false}, mockArgumentDefinition("default", []string{"value1", "value2"})},
-		{MatchTest{"any-value", valueDefault, true, false}, mockArgumentDefinition("default", []string{})},
-		// tokenType == valueFixed
-		{MatchTest{"value1", valueFixed, true, false}, mockArgumentDefinition("", []string{"value1", "value2"})},
-		{MatchTest{"value-that-doesnt-exist", valueFixed, false, true}, mockArgumentDefinition("", []string{"value1", "value2"})},
-		{MatchTest{"any-value", valueFixed, false, false}, mockArgumentDefinition("", []string{})},
 		// tokenType == value
 		{MatchTest{"value1", value, true, false}, mockArgumentDefinition("", []string{"value1", "value2"})},
 		{MatchTest{"value-that-doesnt-exist", value, false, false}, mockArgumentDefinition("", []string{"value1", "value2"})},
@@ -140,8 +129,6 @@ func TestMatch(t *testing.T) {
 		{MatchTest{"", commandAbbr, false, true}, nil, nil},
 		{MatchTest{"", argument, false, true}, nil, nil},
 		{MatchTest{"", argumentAbbr, false, true}, nil, nil},
-		{MatchTest{"", valueDefault, false, true}, nil, nil},
-		{MatchTest{"", valueFixed, false, true}, nil, nil},
 		{MatchTest{"", value, false, true}, nil, nil},
 		{MatchTest{"", -1, false, true}, nil, nil},
 		{MatchTest{"", math.MaxInt64, false, true}, nil, nil},
@@ -169,16 +156,6 @@ func TestMatch(t *testing.T) {
 		{MatchTest{"-value1", value, false, false}, argument1ParseCtx, defs},
 		{MatchTest{"any-value", value, false, false}, argument1ParseCtx, defs},
 		{MatchTest{"-value1", value, false, false}, argument3ParseCtx, defs},
-		// valueFixed
-		{MatchTest{"value1", valueFixed, true, false}, argument1ParseCtx, defs},
-		{MatchTest{"any-value", valueFixed, false, false}, argument3ParseCtx, defs},
-		{MatchTest{"-value1", valueFixed, false, false}, argument1ParseCtx, defs},
-		{MatchTest{"any-value", valueFixed, false, true}, argument1ParseCtx, defs},
-		{MatchTest{"-value1", valueFixed, false, false}, argument3ParseCtx, defs},
-		// valueDefault
-		{MatchTest{"value1", valueDefault, true, false}, command1ParseCtx, defs},
-		{MatchTest{"any-value", valueDefault, false, true}, command1ParseCtx, defs},
-		{MatchTest{"-value1", valueDefault, false, false}, command1ParseCtx, defs},
 		// invalid token types
 		{MatchTest{"", -1, false, true}, nil, defs},
 		{MatchTest{"", math.MaxInt64, false, true}, nil, defs},

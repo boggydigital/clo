@@ -48,33 +48,33 @@ func matchArgument(token string, tokenType int, cmdCtx *CommandDefinition, def *
 	return false, fmt.Errorf("argument '%v' is not supported by command '%v'", ad.Token, cmdCtx.Token)
 }
 
-func matchDefaultValue(token string, tokenType int, ctx *parseCtx, def *Definitions) (bool, error) {
-
-	if tokenType != valueDefault {
-		return false, nil
-	}
-
-	if ctx == nil {
-		return false, fmt.Errorf("cannot match default value with nil context")
-	}
-	if ctx.Command == nil {
-		return false, fmt.Errorf("cannot match default value with nil ctx.Command")
-	}
-
-	if def == nil {
-		return false, fmt.Errorf("cannot match default value with nil definitions")
-	}
-	// TODO: verify not nil
-	defArg := def.ArgByToken(ctx.Command.DefaultArgument)
-
-	m, err := matchValue(token, tokenType, defArg)
-
-	if m && err == nil {
-		ctx.Argument = defArg
-	}
-
-	return m, err
-}
+//func matchDefaultValue(token string, tokenType int, ctx *parseCtx, def *Definitions) (bool, error) {
+//
+//	if tokenType != valueDefault {
+//		return false, nil
+//	}
+//
+//	if ctx == nil {
+//		return false, fmt.Errorf("cannot match default value with nil context")
+//	}
+//	if ctx.Command == nil {
+//		return false, fmt.Errorf("cannot match default value with nil ctx.Command")
+//	}
+//
+//	if def == nil {
+//		return false, fmt.Errorf("cannot match default value with nil definitions")
+//	}
+//	// TODO: verify not nil
+//	defArg := def.ArgByToken(ctx.Command.DefaultArgument)
+//
+//	m, err := matchValue(token, tokenType, defArg)
+//
+//	if m && err == nil {
+//		ctx.Argument = defArg
+//	}
+//
+//	return m, err
+//}
 
 func matchValue(token string, tokenType int, arg *ArgumentDefinition) (bool, error) {
 	if arg == nil {
@@ -85,25 +85,25 @@ func matchValue(token string, tokenType int, arg *ArgumentDefinition) (bool, err
 		return false, nil
 	}
 
-	if tokenType == valueDefault {
-		tokenType = value
-		if len(arg.Values) > 0 {
-			tokenType = valueFixed
-		}
-	}
+	//if tokenType == valueDefault {
+	//	tokenType = value
+	//	if len(arg.Values) > 0 {
+	//		tokenType = valueFixed
+	//	}
+	//}
 
 	switch tokenType {
-	case valueFixed:
-		if arg.ValidValue(token) {
-			return true, nil
-		} else {
-			if len(arg.Values) > 0 {
-				// check for sequence break (another argument) before verifying a fixed value
-				return false, fmt.Errorf("unsupported value '%v' for an argument '%v'", token, arg.Token)
-			} else {
-				return false, nil
-			}
-		}
+	//case valueFixed:
+	//	if arg.ValidValue(token) {
+	//		return true, nil
+	//	} else {
+	//		if len(arg.Values) > 0 {
+	//			// check for sequence break (another argument) before verifying a fixed value
+	//			return false, fmt.Errorf("unsupported value '%v' for an argument '%v'", token, arg.Token)
+	//		} else {
+	//			return false, nil
+	//		}
+	//	}
 	case value:
 		if len(arg.Values) == 0 {
 			return true, nil
@@ -130,11 +130,16 @@ func match(token string, tokenType int, ctx *parseCtx, def *Definitions) (bool, 
 		fallthrough
 	case argumentAbbr:
 		return matchArgument(token, tokenType, ctx.Command, def)
-	case valueDefault:
-		return matchDefaultValue(token, tokenType, ctx, def)
-	case valueFixed:
-		fallthrough
+	//case valueDefault:
+	//	return matchDefaultValue(token, tokenType, ctx, def)
+	//case valueFixed:
+	//	fallthrough
 	case value:
+		if ctx.Argument == nil {
+			if ctx.Command != nil && ctx.Command.DefaultArgument != "" {
+				ctx.Argument = def.ArgByToken(ctx.Command.DefaultArgument)
+			}
+		}
 		return matchValue(token, tokenType, ctx.Argument)
 	default:
 		return false, fmt.Errorf(
