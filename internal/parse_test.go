@@ -13,11 +13,11 @@ func TestDefinitionsParse(t *testing.T) {
 		req      *Request
 		expError bool
 	}{
-		{nil, []string{}, nil, true},
-		{defs, []string{""}, &Request{
-			Command:   "",
-			Arguments: map[string][]string{},
-		}, false},
+		//{nil, []string{}, nil, true},
+		//{defs, []string{""}, &Request{
+		//	Command:   "",
+		//	Arguments: map[string][]string{},
+		//}, false},
 		{defs, []string{"c1", "-a1", "value1"},
 			&Request{
 				Command: "command1",

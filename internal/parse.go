@@ -48,7 +48,7 @@ func (def *Definitions) Parse(args []string) (*Request, error) {
 				// 2) if tokenType is an unsupported value, however this is
 				// not possible in this flow given the next() function
 				_ = req.update(expandedArg, tt, &ctx)
-				ctx.update(arg, tt, def)
+				ctx.update(expandedArg, tt, def)
 				expected = next(tt)
 				break
 			}

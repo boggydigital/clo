@@ -5,6 +5,29 @@ import (
 	"fmt"
 )
 
+func matchCommand(token string, tokenType int, def *Definitions) (bool, error) {
+	if def == nil {
+		return false, fmt.Errorf("cannot match argument with nil definitions")
+	}
+	var cd *CommandDefinition
+	switch tokenType {
+	case command:
+		cd = def.CommandByToken(token)
+		if cd == nil {
+			cd = def.CommandByAbbr(token)
+		}
+	default:
+		return false, fmt.Errorf("type '%v' cannot be used for command matches", tokenString(tokenType))
+	}
+
+	if cd == nil {
+		return false, nil
+	}
+
+	return true, nil
+
+}
+
 // matchesArgument determines if an arg token matches argument (either in normal or
 // abbreviated form) for a given command
 func matchArgument(token string, tokenType int, cmdCtx *CommandDefinition, def *Definitions) (bool, error) {
@@ -23,8 +46,10 @@ func matchArgument(token string, tokenType int, cmdCtx *CommandDefinition, def *
 	switch tokenType {
 	case argument:
 		ad = def.ArgByToken(trimPrefix(token))
-	case argumentAbbr:
-		ad = def.ArgByAbbr(trimPrefix(token))
+		if ad == nil {
+			ad = def.ArgByAbbr(trimPrefix(token))
+		}
+	//case argumentAbbr:
 	default:
 		return false, fmt.Errorf("type '%v' cannot be used for argument matches", tokenString(tokenType))
 	}
@@ -123,12 +148,12 @@ func match(token string, tokenType int, ctx *parseCtx, def *Definitions) (bool, 
 	}
 	switch tokenType {
 	case command:
-		return def.CommandByToken(token) != nil, nil
-	case commandAbbr:
-		return def.CommandByAbbr(token) != nil, nil
+		return matchCommand(token, tokenType, def)
+	//case commandAbbr:
+	//	return def.CommandByAbbr(token) != nil, nil
 	case argument:
-		fallthrough
-	case argumentAbbr:
+		//	fallthrough
+		//case argumentAbbr:
 		return matchArgument(token, tokenType, ctx.Command, def)
 	//case valueDefault:
 	//	return matchDefaultValue(token, tokenType, ctx, def)

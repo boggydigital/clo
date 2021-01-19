@@ -1,15 +1,13 @@
 package internal
 
-import (
-	"fmt"
-)
+import "fmt"
 
 // this set of constants enumerates all distinct token types
 const (
 	command = iota
-	commandAbbr
+	//commandAbbr
 	argument
-	argumentAbbr
+	//argumentAbbr
 	//valueDefault
 	//valueFixed
 	value
@@ -20,12 +18,12 @@ func tokenString(tokenType int) string {
 	switch tokenType {
 	case command:
 		return "command"
-	case commandAbbr:
-		return "commandAbbr"
+	//case commandAbbr:
+	//	return "commandAbbr"
 	case argument:
 		return "argument"
-	case argumentAbbr:
-		return "argumentAbbr"
+	//case argumentAbbr:
+	//	return "argumentAbbr"
 	//case valueDefault:
 	//	return "valueDefault"
 	//case valueFixed:
@@ -43,14 +41,14 @@ func next(tokenType int) []int {
 	switch tokenType {
 	case command:
 		fallthrough
-	case commandAbbr:
-		return []int{argumentAbbr, argument, value}
+	//case commandAbbr:
+	//	return []int{argumentAbbr, argument, value}
 	case argument:
-		fallthrough
-	case argumentAbbr:
-		return []int{value, argumentAbbr, argument}
+		//	fallthrough
+		//case argumentAbbr:
+		return []int{argument, value}
 	case value:
-		return []int{argumentAbbr, argument, value}
+		return []int{argument, value}
 	default:
 		return []int{}
 	}
@@ -58,18 +56,18 @@ func next(tokenType int) []int {
 
 // first
 func first() []int {
-	return []int{command, commandAbbr}
+	return []int{command}
 }
 
 func expandAbbr(token string, tokenType int, def *Definitions) (string, error) {
 	switch tokenType {
-	case commandAbbr:
+	case command:
 		cd := def.CommandByAbbr(token)
 		if cd == nil {
 			return "", fmt.Errorf("unknown command abbreviation: '%v'", token)
 		}
 		return cd.Token, nil
-	case argumentAbbr:
+	case argument:
 		ad := def.ArgByAbbr(trimPrefix(token))
 		if ad == nil {
 			return "", fmt.Errorf("unknown argument abbreviation: '%v'", token)

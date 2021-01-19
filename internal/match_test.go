@@ -9,30 +9,29 @@ func TestMatchArgument(t *testing.T) {
 	defs := mockDefinitions()
 	tests := []MatchArgumentTest{
 		{MatchTest{"", argument, false, false}, nil, nil},
-		{MatchTest{"", argumentAbbr, false, false}, nil, nil},
 		// shouldn't match
 		// - tokens that don't exist
 		{MatchTest{"-argument-that-doesnt-exist", argument, false, true}, nil, nil},
 		{MatchTest{"-argument-that-doesnt-exist", argument, false, false}, nil, defs},
 		{MatchTest{"--argument-that-doesnt-exist", argument, false, true}, nil, nil},
 		{MatchTest{"--argument-that-doesnt-exist", argument, false, false}, nil, defs},
-		{MatchTest{"-abbr-that-doesnt-exist", argumentAbbr, false, true}, nil, nil},
-		{MatchTest{"-abbr-that-doesnt-exist", argumentAbbr, false, false}, nil, defs},
-		{MatchTest{"--abbr-that-doesnt-exist", argumentAbbr, false, true}, nil, nil},
-		{MatchTest{"--abbr-that-doesnt-exist", argumentAbbr, false, false}, nil, defs},
+		{MatchTest{"-abbr-that-doesnt-exist", argument, false, true}, nil, nil},
+		{MatchTest{"-abbr-that-doesnt-exist", argument, false, false}, nil, defs},
+		{MatchTest{"--abbr-that-doesnt-exist", argument, false, true}, nil, nil},
+		{MatchTest{"--abbr-that-doesnt-exist", argument, false, false}, nil, defs},
 		// - tokens that exist, but are not valid
 		{MatchTest{"-argument1", argument, false, true}, mockCommandDefinition("", []string{"not-argument1"}), defs},
 		{MatchTest{"--argument1", argument, false, true}, mockCommandDefinition("", []string{"not-argument1"}), defs},
-		{MatchTest{"-a1", argumentAbbr, false, true}, mockCommandDefinition("", []string{"not-argument1"}), defs},
-		{MatchTest{"--a1", argumentAbbr, false, true}, mockCommandDefinition("", []string{"not-argument1"}), defs},
+		{MatchTest{"-a1", argument, false, true}, mockCommandDefinition("", []string{"not-argument1"}), defs},
+		{MatchTest{"--a1", argument, false, true}, mockCommandDefinition("", []string{"not-argument1"}), defs},
 		// - nil command context, so can't validate
 		{MatchTest{"-argument1", argument, false, true}, nil, defs},
 		{MatchTest{"--argument1", argument, false, true}, nil, defs},
-		{MatchTest{"-a1", argumentAbbr, false, true}, nil, defs},
-		{MatchTest{"--a1", argumentAbbr, false, true}, nil, defs},
+		{MatchTest{"-a1", argument, false, true}, nil, defs},
+		{MatchTest{"--a1", argument, false, true}, nil, defs},
 		// - tokenType is not argument or argumentAbbr
 		{MatchTest{"-argument1", command, false, true}, nil, defs},
-		{MatchTest{"-argument1", commandAbbr, false, true}, nil, defs},
+		{MatchTest{"-argument1", command, false, true}, nil, defs},
 		{MatchTest{"-argument1", value, false, true}, nil, defs},
 		{MatchTest{"-argument1", -1, false, true}, nil, defs},
 		{MatchTest{"-argument1", math.MaxInt64, false, true}, nil, defs},
@@ -40,8 +39,8 @@ func TestMatchArgument(t *testing.T) {
 		// - valid args for command, no error
 		{MatchTest{"-argument1", argument, true, false}, mockCommandDefinition("", []string{"argument1"}), defs},
 		{MatchTest{"--argument1", argument, true, false}, mockCommandDefinition("", []string{"argument1"}), defs},
-		{MatchTest{"-a1", argumentAbbr, true, false}, mockCommandDefinition("", []string{"argument1"}), defs},
-		{MatchTest{"--a1", argumentAbbr, true, false}, mockCommandDefinition("", []string{"argument1"}), defs},
+		{MatchTest{"-a1", argument, true, false}, mockCommandDefinition("", []string{"argument1"}), defs},
+		{MatchTest{"--a1", argument, true, false}, mockCommandDefinition("", []string{"argument1"}), defs},
 	}
 	for _, tt := range tests {
 		t.Run(tt.token, func(t *testing.T) {
@@ -105,9 +104,7 @@ func TestMatchValue(t *testing.T) {
 		{MatchTest{"any-value", value, true, false}, mockArgumentDefinition("", []string{})},
 		// other token types
 		{MatchTest{"value", command, false, false}, mockArgumentDefinition("", []string{})},
-		{MatchTest{"value", commandAbbr, false, false}, mockArgumentDefinition("", []string{})},
 		{MatchTest{"value", argument, false, false}, mockArgumentDefinition("", []string{})},
-		{MatchTest{"value", argumentAbbr, false, false}, mockArgumentDefinition("", []string{})},
 	}
 	for _, tt := range tests {
 		t.Run(tt.token, func(t *testing.T) {
@@ -126,9 +123,7 @@ func TestMatch(t *testing.T) {
 	tests := []MatchDefaultValueTest{
 		// def == nil
 		{MatchTest{"", command, false, true}, nil, nil},
-		{MatchTest{"", commandAbbr, false, true}, nil, nil},
 		{MatchTest{"", argument, false, true}, nil, nil},
-		{MatchTest{"", argumentAbbr, false, true}, nil, nil},
 		{MatchTest{"", value, false, true}, nil, nil},
 		{MatchTest{"", -1, false, true}, nil, nil},
 		{MatchTest{"", math.MaxInt64, false, true}, nil, nil},
@@ -136,8 +131,8 @@ func TestMatch(t *testing.T) {
 		{MatchTest{"command1", command, true, false}, nil, defs},
 		{MatchTest{"command-that-doesnt-exist", command, false, false}, nil, defs},
 		// command abbr
-		{MatchTest{"c1", commandAbbr, true, false}, nil, defs},
-		{MatchTest{"c-abbr-that-doesnt-exist", commandAbbr, false, false}, nil, defs},
+		{MatchTest{"c1", command, true, false}, nil, defs},
+		{MatchTest{"c-abbr-that-doesnt-exist", command, false, false}, nil, defs},
 		// argument token
 		{MatchTest{"-argument1", argument, true, false}, command1ParseCtx, defs},
 		{MatchTest{"--argument1", argument, true, false}, command1ParseCtx, defs},
@@ -145,11 +140,11 @@ func TestMatch(t *testing.T) {
 		{MatchTest{"-argument-that-doesnt-exist", argument, false, false}, command1ParseCtx, defs},
 		{MatchTest{"--argument-that-doesnt-exist", argument, false, false}, command1ParseCtx, defs},
 		// argument abbr
-		{MatchTest{"-a1", argumentAbbr, true, false}, command1ParseCtx, defs},
-		{MatchTest{"--a1", argumentAbbr, true, false}, command1ParseCtx, defs},
-		{MatchTest{"a1", argumentAbbr, false, false}, command1ParseCtx, defs},
-		{MatchTest{"-a-abbr-that-doesnt-exist", argumentAbbr, false, false}, command1ParseCtx, defs},
-		{MatchTest{"--a-abbr-that-doesnt-exist", argumentAbbr, false, false}, command1ParseCtx, defs},
+		{MatchTest{"-a1", argument, true, false}, command1ParseCtx, defs},
+		{MatchTest{"--a1", argument, true, false}, command1ParseCtx, defs},
+		{MatchTest{"a1", argument, false, false}, command1ParseCtx, defs},
+		{MatchTest{"-a-abbr-that-doesnt-exist", argument, false, false}, command1ParseCtx, defs},
+		{MatchTest{"--a-abbr-that-doesnt-exist", argument, false, false}, command1ParseCtx, defs},
 		// value
 		{MatchTest{"value1", value, true, false}, argument1ParseCtx, defs},
 		{MatchTest{"any-value", value, true, false}, argument3ParseCtx, defs},

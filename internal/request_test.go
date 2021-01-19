@@ -13,11 +13,10 @@ func TestRequestUpdate(t *testing.T) {
 		ctx       *parseCtx
 		expError  bool
 	}{
-		{"", commandAbbr, nil, false},
+		{"", command, nil, false},
 		{"command", command, nil, false},
 		{"command-overwrite", command, nil, true},
 		{"arg", argument, nil, false},
-		{"arg", argumentAbbr, nil, false},
 		{"v", value, mockParseCtx("", "arg"), false},
 		{"", -1, nil, true},
 		{"", math.MaxInt64, nil, true},

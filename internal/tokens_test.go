@@ -11,9 +11,7 @@ func TestTokenString(t *testing.T) {
 		tokenStr  string
 	}{
 		{command, "command"},
-		{commandAbbr, "commandAbbr"},
 		{argument, "argument"},
-		{argumentAbbr, "argumentAbbr"},
 		{value, "value"},
 		{-1, "unknown"},
 		{math.MaxInt64, "unknown"},
@@ -32,11 +30,9 @@ func TestNext(t *testing.T) {
 		tokenType int
 		nextLen   int
 	}{
-		{command, 3},
-		{commandAbbr, 3},
-		{argument, 3},
-		{argumentAbbr, 3},
-		{value, 3},
+		{command, 2},
+		{argument, 2},
+		{value, 2},
 		{-1, 0},
 		{math.MaxInt64, 0},
 	}
@@ -49,7 +45,7 @@ func TestNext(t *testing.T) {
 }
 
 func TestFirst(t *testing.T) {
-	assertValEquals(t, len(first()), 2)
+	assertValEquals(t, len(first()), 1)
 }
 
 func TestExpandAbbr(t *testing.T) {
@@ -59,19 +55,21 @@ func TestExpandAbbr(t *testing.T) {
 		tokenType int
 		expError  bool
 	}{
-		{"c1", "command1", commandAbbr, false},
-		{"command-abbr-that-doesnt-exist", "", commandAbbr, true},
-		{"a1", "argument1", argumentAbbr, false},
-		{"argument-abbr-that-doesnt-exist", "", argumentAbbr, true},
-		{"c", "c", command, false},
-		{"a", "a", argument, false},
+		{"c1", "command1", command, false},
+		{"command-abbr-that-doesnt-exist", "", command, true},
+		{"a1", "argument1", argument, false},
+		{"argument-abbr-that-doesnt-exist", "", argument, true},
+		{"c", "c", command, true},
+		{"a", "a", argument, true},
 		{"v", "v", value, false},
 	}
 	defs := mockDefinitions()
 	for _, tt := range tests {
 		t.Run(tt.token, func(t *testing.T) {
 			expToken, err := expandAbbr(tt.token, tt.tokenType, defs)
-			assertValEquals(t, expToken, tt.expToken)
+			if err == nil {
+				assertValEquals(t, expToken, tt.expToken)
+			}
 			assertError(t, err, tt.expError)
 		})
 	}

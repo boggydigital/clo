@@ -13,8 +13,8 @@ type Request struct {
 func (req *Request) update(expandedToken string, tokenType int, ctx *parseCtx) error {
 
 	switch tokenType {
-	case commandAbbr:
-		fallthrough
+	//case commandAbbr:
+	//	fallthrough
 	case command:
 		if req.Command != "" {
 			return errors.New("request already has a command specified")
@@ -22,8 +22,8 @@ func (req *Request) update(expandedToken string, tokenType int, ctx *parseCtx) e
 		req.Command = expandedToken
 		break
 	case argument:
-		fallthrough
-	case argumentAbbr:
+		//	fallthrough
+		//case argumentAbbr:
 		arg := trimPrefix(expandedToken)
 		if req.Arguments[arg] == nil {
 			req.Arguments[arg] = []string{}

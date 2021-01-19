@@ -12,13 +12,13 @@ func TestParseCtxUpdate(t *testing.T) {
 		argNilExp bool
 	}{
 		{"command-token-that-doesnt-exist", command, true, true},
-		{"command-abbr-that-doesnt-exist", commandAbbr, true, true},
+		{"command-abbr-that-doesnt-exist", command, true, true},
 		{"--arg-token-that-doesnt-exist", argument, true, true},
-		{"--arg-abbr-that-doesnt-exist", argumentAbbr, true, true},
+		{"--arg-abbr-that-doesnt-exist", argument, true, true},
 		{"command1", command, false, true},
-		{"c1", commandAbbr, false, true},
-		{"--argument1", argument, false, false},
-		{"--a1", argumentAbbr, false, false},
+		{"c1", command, true, true},
+		{"--argument1", argument, true, false},
+		{"--a1", argument, true, true},
 	}
 	pCtx, defs := parseCtx{}, mockDefinitions()
 	for _, tt := range tests {
