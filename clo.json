@@ -11,7 +11,9 @@
       "arguments": [
         "path",
         "debug"
-      ]
+      ],
+      "default_argument": "path",
+      "required_arguments": ["path"]
     },
     {
       "token": "generate",
@@ -29,9 +31,7 @@
       "token": "path",
       "abbr": "p",
       "help": "path to the file",
-      "env": true,
-      "default": true,
-      "required": true
+      "env": true
     },
     {
       "token": "app",

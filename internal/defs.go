@@ -80,43 +80,6 @@ func (def *Definitions) ArgByAbbr(abbr string) *ArgumentDefinition {
 	return nil
 }
 
-func (def *Definitions) DefaultArg(cmd *CommandDefinition) *ArgumentDefinition {
-	if cmd == nil {
-		return nil
-	}
-	for _, arg := range cmd.Arguments {
-		ad := def.ArgByToken(arg)
-		if ad == nil {
-			continue
-		}
-		if ad.Default {
-			return ad
-		}
-	}
-	return nil
-}
-
-func (def *Definitions) RequiredArgs(cmd string) []string {
-	required := make([]string, 0)
-
-	command := def.CommandByToken(cmd)
-	if command == nil {
-		return required
-	}
-
-	for _, at := range command.Arguments {
-		arg := def.ArgByToken(at)
-		if arg == nil {
-			continue
-		}
-		if arg.Required {
-			required = append(required, arg.Token)
-		}
-	}
-
-	return required
-}
-
 func (def *Definitions) ValidArgVal(arg string, val string) bool {
 	if arg == "" {
 		return false

@@ -3,7 +3,6 @@ package internal
 import (
 	"fmt"
 	"strconv"
-	"strings"
 	"testing"
 )
 
@@ -103,25 +102,6 @@ func TestDefinitionsArgByAbbr(t *testing.T) {
 	}
 }
 
-func TestDefinitionsValueByToken(t *testing.T) {
-	defs := mockDefinitions()
-	for _, tt := range mockByTokenAbbrTests("value") {
-		t.Run(tt.token, func(t *testing.T) {
-			cd := defs.ValueByToken(tt.token)
-			assertNil(t, cd, tt.expNil)
-		})
-	}
-}
-
-func TestDefinitionsDefinedValue(t *testing.T) {
-	defs := mockDefinitions()
-	for _, tt := range mockValidityTests {
-		t.Run(strings.Join(tt.values, "-"), func(t *testing.T) {
-			assertValEquals(t, defs.DefinedValue(tt.values), tt.expected)
-		})
-	}
-}
-
 func TestDefinitionsDefaultArg(t *testing.T) {
 	defs := mockDefinitions()
 	tests := []struct {
@@ -150,8 +130,10 @@ func TestDefinitionsDefaultArg(t *testing.T) {
 			if tt.validCmd && tt.args != nil {
 				tt.cmd.Arguments = tt.args
 			}
-			ad := defs.DefaultArg(tt.cmd)
-			assertNil(t, ad, tt.expNil)
+			if tt.cmd != nil {
+				ad := defs.ArgByToken(tt.cmd.DefaultArgument)
+				assertNil(t, ad, tt.expNil)
+			}
 		})
 	}
 }
@@ -169,7 +151,10 @@ func TestDefinitionsRequiredArgs(t *testing.T) {
 	defs.Commands[0].Arguments = append(defs.Commands[0].Arguments, "argument-that-doesnt-exist")
 	for _, tt := range tests {
 		t.Run(tt.cmd, func(t *testing.T) {
-			assertValEquals(t, len(defs.RequiredArgs(tt.cmd)), tt.requiredArgs)
+			cd := defs.CommandByToken(tt.cmd)
+			if cd != nil {
+				assertValEquals(t, len(cd.RequiredArguments), tt.requiredArgs)
+			}
 		})
 	}
 }

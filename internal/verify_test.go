@@ -158,25 +158,6 @@ func TestDifferentArgsCmd(t *testing.T) {
 	}
 }
 
-func TestSingleDefaultArgPerCmd(t *testing.T) {
-	tests := []TokensTest{
-		{nil, false},
-		{[]string{}, false},
-		{[]string{"1", "2", "3"}, false},
-		{[]string{"default1", "default2"}, true},
-		{[]string{"default1", "", "default2"}, true},
-	}
-	for _, tt := range tests {
-		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := singleDefaultArgPerCmd(
-				mockCommandDefinitions(tt.tokens),
-				mockArgByToken,
-				false)
-			assertError(t, err, tt.expError)
-		})
-	}
-}
-
 func TestDifferentArgValues(t *testing.T) {
 	tests := []TokensTest{
 		{nil, false},

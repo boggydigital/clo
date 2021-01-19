@@ -16,28 +16,16 @@ func TestGenArgument(t *testing.T) {
 	tests := []struct {
 		input string
 		token string
-		def   bool
-		req   bool
 		mult  bool
 	}{
-		{"", "", false, false, false},
-		{"a1", "a1", false, false, false},
-		{"_a1", "a1", true, false, false},
-		{"_*a1", "a1", true, true, false},
-		{"*a1", "a1", false, true, false},
-		{"*_a1", "_a1", false, true, false},
-		{"a1...", "a1", false, false, true},
-		{"_a1...", "a1", true, false, true},
-		{"_*a1...", "a1", true, true, true},
-		{"*a1...", "a1", false, true, true},
-		{"*_a1...", "_a1", false, true, true},
+		{"", "", false},
+		{"a1", "a1", false},
+		{"a1...", "a1", true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.input, func(t *testing.T) {
 			arg := genArgument(tt.input)
 			assertValEquals(t, arg.Token, tt.token)
-			assertValEquals(t, arg.Default, tt.def)
-			assertValEquals(t, arg.Required, tt.req)
 			assertValEquals(t, arg.Multiple, tt.mult)
 		})
 	}

@@ -6,8 +6,8 @@ import (
 )
 
 const (
-	requiredPrefix = "*"
-	defaultPrefix  = "_"
+	//requiredPrefix = "*"
+	//defaultPrefix  = "_"
 	multipleSuffix = "..."
 )
 
@@ -46,15 +46,15 @@ func genArgument(arg string) *ArgumentDefinition {
 		CommonDefinition: CommonDefinition{},
 	}
 
-	if strings.HasPrefix(arg, defaultPrefix) {
-		ad.Default = true
-		arg = strings.TrimPrefix(arg, defaultPrefix)
-	}
-
-	if strings.HasPrefix(arg, requiredPrefix) {
-		ad.Required = true
-		arg = strings.TrimPrefix(arg, requiredPrefix)
-	}
+	//if strings.HasPrefix(arg, defaultPrefix) {
+	//	ad.Default = true
+	//	arg = strings.TrimPrefix(arg, defaultPrefix)
+	//}
+	//
+	//if strings.HasPrefix(arg, requiredPrefix) {
+	//	ad.Required = true
+	//	arg = strings.TrimPrefix(arg, requiredPrefix)
+	//}
 
 	if strings.HasSuffix(arg, multipleSuffix) {
 		ad.Multiple = true

@@ -52,7 +52,13 @@ func (req *Request) commandHasRequiredArgs(def *Definitions) error {
 		return errors.New("cannot verify required argument using nil request")
 	}
 
-	requiredArgs := def.RequiredArgs(req.Command)
+	// TODO: verify not nil
+	cd := def.CommandByToken(req.Command)
+	if cd == nil {
+		return nil
+	}
+
+	requiredArgs := cd.RequiredArguments
 	for _, ra := range requiredArgs {
 		matched := false
 		for arg, values := range req.Arguments {

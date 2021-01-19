@@ -22,8 +22,7 @@ func createHelpArgumentDefinition(token string) *ArgumentDefinition {
 			Token: token,
 			Help:  "app command",
 		},
-		Default: true,
-		Values:  []string{"from:commands"},
+		Values: []string{"from:commands"},
 	}
 }
 
@@ -227,18 +226,12 @@ func printArgAttrs(cmd string, arg string, defs *Definitions) {
 	if ad.Abbr != "" {
 		attrs = append(attrs, fmt.Sprintf("Abbr:%s", ad.Abbr))
 	}
-	if ad.Default {
-		attrs = append(attrs, "Def")
-	}
 	if ad.Env {
 		envToken := argEnv(defs.EnvPrefix, cmd, arg)
 		attrs = append(attrs, fmt.Sprintf("Env:%s", envToken))
 	}
 	if ad.Multiple {
 		attrs = append(attrs, "Mult")
-	}
-	if ad.Required {
-		attrs = append(attrs, "Req")
 	}
 	if len(attrs) > 0 {
 		fmt.Printf(" (%s)", strings.Join(attrs, ", "))

@@ -57,15 +57,15 @@ func matchDefaultValue(token string, tokenType int, ctx *parseCtx, def *Definiti
 	if ctx == nil {
 		return false, fmt.Errorf("cannot match default value with nil context")
 	}
-	if ctx.Command == nil ||
-		(ctx.Argument != nil && !ctx.Argument.Default) {
-		return false, nil
+	if ctx.Command == nil {
+		return false, fmt.Errorf("cannot match default value with nil ctx.Command")
 	}
 
 	if def == nil {
 		return false, fmt.Errorf("cannot match default value with nil definitions")
 	}
-	defArg := def.DefaultArg(ctx.Command)
+	// TODO: verify not nil
+	defArg := def.ArgByToken(ctx.Command.DefaultArgument)
 
 	m, err := matchValue(token, tokenType, defArg)
 
@@ -86,9 +86,6 @@ func matchValue(token string, tokenType int, arg *ArgumentDefinition) (bool, err
 	}
 
 	if tokenType == valueDefault {
-		if !arg.Default {
-			return false, nil
-		}
 		tokenType = value
 		if len(arg.Values) > 0 {
 			tokenType = valueFixed

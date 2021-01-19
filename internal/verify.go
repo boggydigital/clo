@@ -184,32 +184,6 @@ func differentArgsCmd(commands []CommandDefinition, v bool) error {
 	return nil
 }
 
-func singleDefaultArgPerCmd(
-	commands []CommandDefinition,
-	argByToken func(string) *ArgumentDefinition,
-	v bool) error {
-	msg := "no more than one default argument"
-	for _, cmd := range commands {
-		d := ""
-		for _, at := range cmd.Arguments {
-			arg := argByToken(at)
-			if arg == nil {
-				continue
-			}
-			if !arg.Default {
-				continue
-			}
-			if d != "" {
-				vFail(msg, v)
-				return fmt.Errorf("'%s' has more than one default argument: '%s' and '%s'", cmd.Token, arg.Token, d)
-			}
-			d = arg.Token
-		}
-	}
-	vPass(msg, v)
-	return nil
-}
-
 func differentArgValues(args []ArgumentDefinition, v bool) error {
 	msg := "no duplicate values in arguments"
 	for _, a := range args {
@@ -245,7 +219,6 @@ func (def *Definitions) Verify(debug bool) []error {
 	// arguments
 	errors = appendError(errors, commandsValidArgs(def.Commands, def.ArgByToken, debug))
 	errors = appendError(errors, allUsedArgs(def.Commands, def.Arguments, debug))
-	errors = appendError(errors, singleDefaultArgPerCmd(def.Commands, def.ArgByToken, debug))
 	errors = appendError(errors, differentArgsCmd(def.Commands, debug))
 	errors = appendError(errors, differentArgValues(def.Arguments, debug))
 

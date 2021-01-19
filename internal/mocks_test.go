@@ -28,6 +28,8 @@ func mockDefinitions() *Definitions {
 					"argument1",
 					"argument2",
 				},
+				DefaultArgument:   "argument1",
+				RequiredArguments: []string{"argument1"},
 			},
 			{
 				CommonDefinition: CommonDefinition{
@@ -49,9 +51,7 @@ func mockDefinitions() *Definitions {
 					Abbr:  "a1",
 					Help:  "argument1 help",
 				},
-				Default:  true,
 				Multiple: true,
-				Required: true,
 				Values:   []string{"value1", "value2"},
 			},
 			{
@@ -67,14 +67,6 @@ func mockDefinitions() *Definitions {
 					Abbr:  "a3",
 				},
 				Env: true,
-			},
-		},
-		Values: []ValueDefinition{
-			{
-				CommonDefinition: CommonDefinition{
-					Token: "value1",
-					Help:  "value1 help",
-				},
 			},
 		},
 	}
@@ -177,9 +169,6 @@ func mockArgumentDefinition(arg string, values []string) *ArgumentDefinition {
 		CommonDefinition: CommonDefinition{Token: arg, Abbr: arg},
 		Values:           values,
 	}
-	if strings.HasPrefix(arg, "default") {
-		ad.Default = true
-	}
 	return &ad
 }
 
@@ -213,13 +202,6 @@ func mockCommandByAbbr(token string) *CommandDefinition {
 }
 
 func mockArgByToken(token string) *ArgumentDefinition {
-	if strings.HasPrefix(token, "default") {
-		// default arguments
-		arg := mockArgumentDefinition(token, nil)
-		arg.Default = true
-		return arg
-	}
-
 	switch token {
 	case "":
 		return nil
