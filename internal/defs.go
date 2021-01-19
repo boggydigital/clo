@@ -13,7 +13,6 @@ type Definitions struct {
 	Help      string               `json:"help,omitempty"`
 	Commands  []CommandDefinition  `json:"commands,omitempty"`
 	Arguments []ArgumentDefinition `json:"arguments,omitempty"`
-	Values    []ValueDefinition    `json:"values,omitempty"`
 }
 
 func LoadDefault() (*Definitions, error) {
@@ -79,29 +78,6 @@ func (def *Definitions) ArgByAbbr(abbr string) *ArgumentDefinition {
 		}
 	}
 	return nil
-}
-
-func (def *Definitions) ValueByToken(val string) *ValueDefinition {
-	for _, v := range def.Values {
-		if v.Token == val {
-			return &v
-		}
-	}
-	return nil
-}
-
-func (def *Definitions) DefinedValue(values []string) bool {
-	if values == nil ||
-		len(values) == 0 {
-		return false
-	}
-	for _, vt := range values {
-		vd := def.ValueByToken(vt)
-		if vd != nil {
-			return true
-		}
-	}
-	return false
 }
 
 func (def *Definitions) DefaultArg(cmd *CommandDefinition) *ArgumentDefinition {

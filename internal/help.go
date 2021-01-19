@@ -255,23 +255,9 @@ func printArgValues(cmd string, arg string, defs *Definitions) {
 	}
 	if len(ad.Values) > 0 {
 		ap := strconv.Itoa(defs.ArgumentsPadding(cmd))
-		dv := defs.DefinedValue(ad.Values)
-		valuesOrNewLine := ""
-		if !dv {
-			valuesOrNewLine = strings.Join(ad.Values, ", ")
-		}
 		fmt.Printf("  %-"+ap+"s  supported values: %s\n",
 			"",
-			valuesOrNewLine)
-		if dv {
-			for _, vt := range ad.Values {
-				vd := defs.ValueByToken(vt)
-				if vd == nil {
-					continue
-				}
-				fmt.Printf("  %-"+ap+"s  - %s: %s\n", "", vt, vd.Help)
-			}
-		}
+			strings.Join(ad.Values, ", "))
 	}
 }
 
