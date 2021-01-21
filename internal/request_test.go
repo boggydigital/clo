@@ -10,23 +10,22 @@ func TestRequestUpdate(t *testing.T) {
 	tests := []struct {
 		token     string
 		tokenType int
-		ctx       *parseCtx
 		expError  bool
 	}{
-		{"", command, nil, false},
-		{"command", command, nil, false},
-		{"command-overwrite", command, nil, true},
-		{"arg", argument, nil, false},
-		{"v", value, mockParseCtx("", "arg"), false},
-		{"", -1, nil, true},
-		{"", math.MaxInt64, nil, true},
+		{"", command, false},
+		{"command", command, false},
+		{"command-overwrite", command, true},
+		{"arg", argument, false},
+		//{"v", value, mockParseCtx("", "arg"), false},
+		{"", -1, true},
+		{"", math.MaxInt64, true},
 	}
 	req := Request{
 		Arguments: map[string][]string{},
 	}
 	for _, tt := range tests {
 		t.Run(tt.token, func(t *testing.T) {
-			err := req.update(tt.token, tt.tokenType, tt.ctx)
+			err := req.update(tt.token, tt.tokenType)
 			assertError(t, err, tt.expError)
 		})
 	}

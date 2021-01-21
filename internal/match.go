@@ -30,7 +30,7 @@ func matchCommand(token string, tokenType int, def *Definitions) (bool, error) {
 
 // matchesArgument determines if an arg token matches argument (either in normal or
 // abbreviated form) for a given command
-func matchArgument(token string, tokenType int, cmdCtx *CommandDefinition, def *Definitions) (bool, error) {
+func matchArgument(token string, tokenType int, cmd string, def *Definitions) (bool, error) {
 	// argument is expected to be prefixed with a single or double dash, if it's not -
 	// there is no reason to perform further match checks
 	if !hasPrefix(token) {
@@ -59,18 +59,19 @@ func matchArgument(token string, tokenType int, cmdCtx *CommandDefinition, def *
 		return false, nil
 	}
 
-	if cmdCtx == nil {
+	cd := def.CommandByToken(cmd)
+	if cd == nil {
 		return false, fmt.Errorf("cannot validate argument in the context of nil command")
 	}
 
 	// however if the argument matched token, we need to check if it's one of the supported values
 	// for a command context
-	if cmdCtx.ValidArg(ad.Token) {
+	if cd.ValidArg(ad.Token) {
 		return true, nil
 	}
 
 	// report if it's a valid argument, but is not supported for a command context
-	return false, fmt.Errorf("argument '%v' is not supported by command '%v'", ad.Token, cmdCtx.Token)
+	return false, fmt.Errorf("argument '%v' is not supported by command '%v'", ad.Token, cmd)
 }
 
 //func matchDefaultValue(token string, tokenType int, ctx *parseCtx, def *Definitions) (bool, error) {
@@ -103,7 +104,7 @@ func matchArgument(token string, tokenType int, cmdCtx *CommandDefinition, def *
 
 func matchValue(token string, tokenType int, arg *ArgumentDefinition) (bool, error) {
 	if arg == nil {
-		return false, errors.New("can't confirm a match for a value that is missing an argument context")
+		return false, errors.New("can't confirm a match for a value that is missing argument context")
 	}
 
 	if hasPrefix(token) {
@@ -142,30 +143,42 @@ func matchValue(token string, tokenType int, arg *ArgumentDefinition) (bool, err
 
 // match a token to a given token type, in the context of existing
 // command, argument (applicable to tokens.argument and tokens.value, tokens.valueFixed, tokens.valueDefault)
-func match(token string, tokenType int, ctx *parseCtx, def *Definitions) (bool, error) {
+func match(token string, tokenType int, req *Request, def *Definitions) (bool, error) {
 	if def == nil {
 		return false, fmt.Errorf("cannot match token with nil definitions")
 	}
 	switch tokenType {
 	case command:
 		return matchCommand(token, tokenType, def)
-	//case commandAbbr:
-	//	return def.CommandByAbbr(token) != nil, nil
 	case argument:
-		//	fallthrough
-		//case argumentAbbr:
-		return matchArgument(token, tokenType, ctx.Command, def)
-	//case valueDefault:
-	//	return matchDefaultValue(token, tokenType, ctx, def)
-	//case valueFixed:
-	//	fallthrough
+		return matchArgument(token, tokenType, req.Command, def)
 	case value:
-		if ctx.Argument == nil {
-			if ctx.Command != nil && ctx.Command.DefaultArgument != "" {
-				ctx.Argument = def.ArgByToken(ctx.Command.DefaultArgument)
+		if !req.hasArguments() {
+			if req.Command != "" {
+				cd := def.CommandByToken(req.Command)
+				if cd != nil && cd.DefaultArgument != "" {
+					err := req.update(cd.DefaultArgument, argument)
+					if err != nil {
+						return false, err
+					}
+				} else {
+					return false, fmt.Errorf("cannot match value for missing argument")
+				}
+			} else {
+				return false, fmt.Errorf("cannot match value for missing command")
 			}
 		}
-		return matchValue(token, tokenType, ctx.Argument)
+
+		arg := req.lastArgument()
+		if arg == "" {
+			return false, fmt.Errorf("cannot match value for missing argument")
+		}
+		ad := def.ArgByToken(arg)
+		if ad == nil {
+			return false, fmt.Errorf("cannot match vlaue for nil argument")
+		}
+
+		return matchValue(token, tokenType, ad)
 	default:
 		return false, fmt.Errorf(
 			"cannot confirm match for a token '%v' of type '%v'",

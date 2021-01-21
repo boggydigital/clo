@@ -19,7 +19,6 @@ func (def *Definitions) Parse(args []string) (*Request, error) {
 	}
 
 	var expected = first()
-	var ctx parseCtx
 
 	for _, arg := range args {
 		if arg == "" {
@@ -27,7 +26,7 @@ func (def *Definitions) Parse(args []string) (*Request, error) {
 		}
 		matched := false
 		for _, tt := range expected {
-			success, err := match(arg, tt, &ctx, def)
+			success, err := match(arg, tt, req, def)
 			if err != nil {
 				return req, err
 			}
@@ -41,8 +40,7 @@ func (def *Definitions) Parse(args []string) (*Request, error) {
 				// token or abbreviation we would progress to another type
 				// 2) if tokenType is an unsupported value, however this is
 				// not possible in this flow given the next() function
-				_ = req.update(expandedArg, tt, &ctx)
-				ctx.update(expandedArg, tt, def)
+				_ = req.update(expandedArg, tt)
 				expected = next(tt)
 				break
 			}

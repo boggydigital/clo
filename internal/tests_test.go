@@ -41,13 +41,13 @@ type MatchFlagTest struct {
 
 type MatchArgumentTest struct {
 	MatchTest
-	cmd *CommandDefinition
+	cmd string
 	def *Definitions
 }
 
 type MatchDefaultValueTest struct {
 	MatchTest
-	ctx *parseCtx
+	req *Request
 	def *Definitions
 }
 

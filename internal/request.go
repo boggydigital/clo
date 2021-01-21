@@ -10,11 +10,27 @@ type Request struct {
 	Arguments map[string][]string
 }
 
-func (req *Request) update(expandedToken string, tokenType int, ctx *parseCtx) error {
+func (req *Request) hasArguments() bool {
+	return req != nil && len(req.Arguments) > 0
+}
+
+func (req *Request) lastArgument() string {
+	if req == nil {
+		return ""
+	}
+	if len(req.Arguments) == 0 {
+		return ""
+	}
+	keys := make([]string, 0, len(req.Arguments))
+	for k := range req.Arguments {
+		keys = append(keys, k)
+	}
+	return keys[len(keys)-1]
+}
+
+func (req *Request) update(expandedToken string, tokenType int) error {
 
 	switch tokenType {
-	//case commandAbbr:
-	//	fallthrough
 	case command:
 		if req.Command != "" {
 			return errors.New("request already has a command specified")
@@ -22,8 +38,6 @@ func (req *Request) update(expandedToken string, tokenType int, ctx *parseCtx) e
 		req.Command = expandedToken
 		break
 	case argument:
-		//	fallthrough
-		//case argumentAbbr:
 		arg := trimPrefix(expandedToken)
 		if req.Arguments[arg] == nil {
 			req.Arguments[arg] = []string{}
@@ -31,10 +45,11 @@ func (req *Request) update(expandedToken string, tokenType int, ctx *parseCtx) e
 	//case valueDefault:
 	//	fallthrough
 	case value:
-		//	fallthrough
-		//case valueFixed:
-		argCtx := ctx.Argument.Token
-		req.Arguments[argCtx] = append(req.Arguments[argCtx], expandedToken)
+		lastKey := req.lastArgument()
+		if lastKey == "" {
+			return fmt.Errorf("cannot update value for a request with no arguments")
+		}
+		req.Arguments[lastKey] = append(req.Arguments[lastKey], expandedToken)
 	default:
 		return fmt.Errorf(
 			"cannot update request for a token '%v' of type '%v'",

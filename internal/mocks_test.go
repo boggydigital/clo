@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"strings"
 	"testing"
 )
 
@@ -220,18 +219,4 @@ func mockArgByTokenNoHelp(token string) *ArgumentDefinition {
 
 func mockArgByAbbr(token string) *ArgumentDefinition {
 	return mockArgByToken(token)
-}
-
-func mockValidArgVal(arg, val string) bool {
-	if strings.HasPrefix(val, "invalid") {
-		return false
-	}
-	return true
-}
-
-func mockParseCtx(cmd, arg string) *parseCtx {
-	return &parseCtx{
-		Command:  mockCommandDefinition(cmd, []string{arg}),
-		Argument: mockArgumentDefinition(arg, nil),
-	}
 }
