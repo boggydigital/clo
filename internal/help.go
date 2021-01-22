@@ -10,7 +10,6 @@ func createHelpCommandDefinition() *CommandDefinition {
 	return &CommandDefinition{
 		CommonDefinition: CommonDefinition{
 			Token: "help",
-			Abbr:  "",
 			Help:  "display help",
 		},
 	}
@@ -26,21 +25,7 @@ func createHelpArgumentDefinition(token string) *ArgumentDefinition {
 	}
 }
 
-func addCommandAbbr(abbr string, cd *CommandDefinition, cmdByAbbr func(string) *CommandDefinition) {
-	cmd := cmdByAbbr(abbr)
-	if cmd == nil && cd != nil {
-		cd.Abbr = abbr
-	}
-}
-
-func addArgAbbr(abbr string, ad *ArgumentDefinition, argByAbbr func(string) *ArgumentDefinition) {
-	arg := argByAbbr(abbr)
-	if arg == nil && ad != nil {
-		ad.Abbr = abbr
-	}
-}
-
-func addHelpCommand(token, abbr string, cmdByToken, cmdByArg func(string) *CommandDefinition) *CommandDefinition {
+func addHelpCommand(token string, cmdByToken func(string) *CommandDefinition) *CommandDefinition {
 	if cmdByToken == nil {
 		return nil
 	}
@@ -51,12 +36,11 @@ func addHelpCommand(token, abbr string, cmdByToken, cmdByArg func(string) *Comma
 	}
 
 	helpCmd = createHelpCommandDefinition()
-	addCommandAbbr(abbr, helpCmd, cmdByArg)
 
 	return helpCmd
 }
 
-func addHelpCommandArgument(token, abbr string, argByToken, argByAbbr func(string) *ArgumentDefinition) (*ArgumentDefinition, error) {
+func addHelpCommandArgument(token string, argByToken func(string) *ArgumentDefinition) (*ArgumentDefinition, error) {
 	if argByToken == nil {
 		return nil, nil
 	}
@@ -67,7 +51,6 @@ func addHelpCommandArgument(token, abbr string, argByToken, argByAbbr func(strin
 	}
 
 	helpCmdArg = createHelpArgumentDefinition(token)
-	addArgAbbr(abbr, helpCmdArg, argByAbbr)
 
 	return helpCmdArg, nil
 }
@@ -79,18 +62,16 @@ func tryAddHelpCommand(def *Definitions) error {
 
 	const (
 		cmdToken = "help"
-		cmdAbbr  = "h"
 		argToken = "help:command"
-		argAbbr  = "c"
 	)
 
-	addedHelpCmd := addHelpCommand(cmdToken, cmdAbbr, def.CommandByToken, def.CommandByAbbr)
+	addedHelpCmd := addHelpCommand(cmdToken, def.CommandByToken)
 	if addedHelpCmd == nil {
 		// don't return error as we're assuming author knows what they're doing
 		return nil
 	}
 
-	helpCmdArg, err := addHelpCommandArgument(argToken, argAbbr, def.ArgByToken, def.ArgByAbbr)
+	helpCmdArg, err := addHelpCommandArgument(argToken, def.ArgByToken)
 	if err != nil {
 		return err
 	}
@@ -99,7 +80,7 @@ func tryAddHelpCommand(def *Definitions) error {
 		def.Arguments = append(def.Arguments, *helpCmdArg)
 	}
 
-	addedHelpCmd.Arguments = []string{argToken}
+	addedHelpCmd.Arguments = []string{decorateDefault(argToken)}
 	def.Commands = append(def.Commands, *addedHelpCmd)
 
 	return nil
@@ -162,13 +143,6 @@ func printAppCommands(defs *Definitions) {
 		fmt.Printf("  %-"+strconv.Itoa(defs.CommandsPadding())+"s  %s",
 			cmd.Token,
 			cmd.Help)
-		attrs := make([]string, 0)
-		if cmd.Abbr != "" {
-			attrs = append(attrs, fmt.Sprintf("Abbr:%s", cmd.Abbr))
-		}
-		if len(attrs) > 0 {
-			fmt.Printf(" (%s)", strings.Join(attrs, ","))
-		}
 		fmt.Println()
 	}
 }
@@ -223,9 +197,6 @@ func printArgAttrs(cmd string, arg string, defs *Definitions) {
 		return
 	}
 	attrs := make([]string, 0)
-	if ad.Abbr != "" {
-		attrs = append(attrs, fmt.Sprintf("Abbr:%s", ad.Abbr))
-	}
 	if ad.Env {
 		envToken := argEnv(defs.EnvPrefix, cmd, arg)
 		attrs = append(attrs, fmt.Sprintf("Env:%s", envToken))
@@ -282,24 +253,24 @@ func printCmdArgs(cmd string, defs *Definitions) {
 	}
 }
 
-func printArgAttrsLegend() {
-	fmt.Println("Arguments (attributes):")
-	fmt.Printf("  %-4s  %s\n", "Def", "default argument - value(s) can be provided right "+
-		"after a command without an argument token")
-	fmt.Printf("  %-4s  %s\n", "Mult", "supports multiple values, that can be provided "+
-		"in sequence or each with an argument token")
-	fmt.Printf("  %-4s  %s\n", "Req", "required argument - app cannot "+
-		"meaningfully run without a value")
-	fmt.Printf("  %-4s  %s\n", "Env", "value can be provided with an "+
-		"environment variable specified above")
-	fmt.Printf("  %-4s  %s\n", "Abbr", "argument abbreviation that can be "+
-		"used in place of a full token")
-}
+//func printArgAttrsLegend() {
+//	fmt.Println("Arguments (attributes):")
+//	fmt.Printf("  %-4s  %s\n", "Def", "default argument - value(s) can be provided right "+
+//		"after a command without an argument token")
+//	fmt.Printf("  %-4s  %s\n", "Mult", "supports multiple values, that can be provided "+
+//		"in sequence or each with an argument token")
+//	fmt.Printf("  %-4s  %s\n", "Req", "required argument - app cannot "+
+//		"meaningfully run without a value")
+//	fmt.Printf("  %-4s  %s\n", "Env", "value can be provided with an "+
+//		"environment variable specified above")
+//	fmt.Printf("  %-4s  %s\n", "Abbr", "argument abbreviation that can be "+
+//		"used in place of a full token")
+//}
 
 func printCmdHelp(cmd string, defs *Definitions) {
 	printCmdUsage(cmd, defs)
 	fmt.Println()
 	printCmdArgs(cmd, defs)
 	fmt.Println()
-	printArgAttrsLegend()
+	//printArgAttrsLegend()
 }

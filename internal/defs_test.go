@@ -72,15 +72,15 @@ func TestDefinitionsCommandByToken(t *testing.T) {
 	}
 }
 
-func TestDefinitionsCommandByAbbr(t *testing.T) {
-	defs := mockDefinitions()
-	for _, tt := range mockByTokenAbbrTests("c") {
-		t.Run(tt.token, func(t *testing.T) {
-			cd := defs.CommandByAbbr(tt.token)
-			assertNil(t, cd, tt.expNil)
-		})
-	}
-}
+//func TestDefinitionsCommandByAbbr(t *testing.T) {
+//	defs := mockDefinitions()
+//	for _, tt := range mockByTokenAbbrTests("c") {
+//		t.Run(tt.token, func(t *testing.T) {
+//			cd := defs.CommandByAbbr(tt.token)
+//			assertNil(t, cd, tt.expNil)
+//		})
+//	}
+//}
 
 func TestDefinitionsArgByToken(t *testing.T) {
 	defs := mockDefinitions()
@@ -92,15 +92,15 @@ func TestDefinitionsArgByToken(t *testing.T) {
 	}
 }
 
-func TestDefinitionsArgByAbbr(t *testing.T) {
-	defs := mockDefinitions()
-	for _, tt := range mockByTokenAbbrTests("a") {
-		t.Run(tt.token, func(t *testing.T) {
-			cd := defs.ArgByAbbr(tt.token)
-			assertNil(t, cd, tt.expNil)
-		})
-	}
-}
+//func TestDefinitionsArgByAbbr(t *testing.T) {
+//	defs := mockDefinitions()
+//	for _, tt := range mockByTokenAbbrTests("a") {
+//		t.Run(tt.token, func(t *testing.T) {
+//			cd := defs.ArgByAbbr(tt.token)
+//			assertNil(t, cd, tt.expNil)
+//		})
+//	}
+//}
 
 func TestDefinitionsDefaultArg(t *testing.T) {
 	defs := mockDefinitions()
@@ -131,7 +131,7 @@ func TestDefinitionsDefaultArg(t *testing.T) {
 				tt.cmd.Arguments = tt.args
 			}
 			if tt.cmd != nil {
-				ad := defs.ArgByToken(tt.cmd.DefaultArgument)
+				ad := defs.ArgByToken(tt.cmd.defaultArgument)
 				assertNil(t, ad, tt.expNil)
 			}
 		})
@@ -153,7 +153,7 @@ func TestDefinitionsRequiredArgs(t *testing.T) {
 		t.Run(tt.cmd, func(t *testing.T) {
 			cd := defs.CommandByToken(tt.cmd)
 			if cd != nil {
-				assertValEquals(t, len(cd.RequiredArguments), tt.requiredArgs)
+				assertValEquals(t, len(cd.requiredArguments), tt.requiredArgs)
 			}
 		})
 	}
@@ -161,18 +161,23 @@ func TestDefinitionsRequiredArgs(t *testing.T) {
 
 func TestDefinitionsValidArgVal(t *testing.T) {
 	tests := []struct {
-		arg      string
-		val      string
-		expected bool
+		arg    string
+		val    string
+		expNil bool
+		expVal bool
 	}{
-		{"", "", false},
-		{"argument-that-doesnt-exist", "", false},
-		{"argument1", "value1", true},
+		{"", "", true, false},
+		{"argument-that-doesnt-exist", "", true, false},
+		{"argument1", "value1", false, true},
 	}
 	defs := mockDefinitions()
 	for _, tt := range tests {
 		t.Run(fmt.Sprintf("%s-%s", tt.arg, tt.val), func(t *testing.T) {
-			assertValEquals(t, defs.ValidArgVal(tt.arg, tt.val), tt.expected)
+			ad := defs.ArgByToken(tt.arg)
+			assertNil(t, ad, tt.expNil)
+			if ad != nil {
+				assertValEquals(t, ad.ValidValue(tt.val), tt.expVal)
+			}
 		})
 	}
 }

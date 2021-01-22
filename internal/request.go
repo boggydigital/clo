@@ -73,8 +73,7 @@ func (req *Request) commandHasRequiredArgs(def *Definitions) error {
 		return nil
 	}
 
-	requiredArgs := cd.RequiredArguments
-	for _, ra := range requiredArgs {
+	for _, ra := range cd.requiredArguments {
 		matched := false
 		for arg, values := range req.Arguments {
 			if ra == arg {

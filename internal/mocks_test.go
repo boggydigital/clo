@@ -20,15 +20,14 @@ func mockDefinitions() *Definitions {
 			{
 				CommonDefinition: CommonDefinition{
 					Token: "command1",
-					Abbr:  "c1",
 					Help:  "command1 help",
 				},
 				Arguments: []string{
 					"argument1",
 					"argument2",
 				},
-				DefaultArgument:   "argument1",
-				RequiredArguments: []string{"argument1"},
+				defaultArgument:   "argument1",
+				requiredArguments: []string{"argument1"},
 			},
 			{
 				CommonDefinition: CommonDefinition{
@@ -47,7 +46,6 @@ func mockDefinitions() *Definitions {
 			{
 				CommonDefinition: CommonDefinition{
 					Token: "argument1",
-					Abbr:  "a1",
 					Help:  "argument1 help",
 				},
 				Multiple: true,
@@ -56,14 +54,12 @@ func mockDefinitions() *Definitions {
 			{
 				CommonDefinition: CommonDefinition{
 					Token: "argument2",
-					Abbr:  "a2",
 				},
 				Values: []string{"value3", "value4"},
 			},
 			{
 				CommonDefinition: CommonDefinition{
 					Token: "argument3",
-					Abbr:  "a3",
 				},
 				Env: true,
 			},
@@ -149,7 +145,7 @@ func setupEmptyMockDefs(t *testing.T) {
 
 func mockCommandDefinition(cmd string, args []string) *CommandDefinition {
 	cd := CommandDefinition{
-		CommonDefinition: CommonDefinition{Token: cmd, Abbr: cmd},
+		CommonDefinition: CommonDefinition{Token: cmd},
 		Arguments:        args,
 	}
 	return &cd
@@ -165,7 +161,7 @@ func mockCommandDefinitions(commands []string) []CommandDefinition {
 
 func mockArgumentDefinition(arg string, values []string) *ArgumentDefinition {
 	ad := ArgumentDefinition{
-		CommonDefinition: CommonDefinition{Token: arg, Abbr: arg},
+		CommonDefinition: CommonDefinition{Token: arg},
 		Values:           values,
 	}
 	return &ad

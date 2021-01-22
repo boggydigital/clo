@@ -18,26 +18,26 @@ func TestDefinitionsParse(t *testing.T) {
 		//	Command:   "",
 		//	Arguments: map[string][]string{},
 		//}, false},
-		{defs, []string{"c1", "-a1", "value1"},
-			&Request{
-				Command: "command1",
-				Arguments: map[string][]string{
-					"argument1": {"value1"},
-				},
-			},
-			false,
-		},
-		{defs, []string{"c1", "-a1", "value-that-doesnt-exist"}, nil, true},
+		//{defs, []string{"c1", "-a1", "value1"},
+		//	&Request{
+		//		Command: "command1",
+		//		Arguments: map[string][]string{
+		//			"argument1": {"value1"},
+		//		},
+		//	},
+		//	false,
+		//},
+		//{defs, []string{"c1", "-a1", "value-that-doesnt-exist"}, nil, true},
 		{defs, []string{"command-that-doesnt-exist"}, nil, true},
-		{defs, []string{"c1", "-a2", "value3", "value4"},
-			&Request{
-				Command: "command1",
-				Arguments: map[string][]string{
-					"argument2": {"value3", "value4"},
-				},
-			},
-			true,
-		},
+		//{defs, []string{"c1", "-a2", "value3", "value4"},
+		//	&Request{
+		//		Command: "command1",
+		//		Arguments: map[string][]string{
+		//			"argument2": {"value3", "value4"},
+		//		},
+		//	},
+		//	true,
+		//},
 	}
 
 	for _, tt := range tests {

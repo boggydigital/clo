@@ -13,9 +13,6 @@ func matchCommand(token string, tokenType int, def *Definitions) (bool, error) {
 	switch tokenType {
 	case command:
 		cd = def.CommandByToken(token)
-		if cd == nil {
-			cd = def.CommandByAbbr(token)
-		}
 	default:
 		return false, fmt.Errorf("type '%v' cannot be used for command matches", tokenString(tokenType))
 	}
@@ -46,9 +43,6 @@ func matchArgument(token string, tokenType int, cmd string, def *Definitions) (b
 	switch tokenType {
 	case argument:
 		ad = def.ArgByToken(trimPrefix(token))
-		if ad == nil {
-			ad = def.ArgByAbbr(trimPrefix(token))
-		}
 	//case argumentAbbr:
 	default:
 		return false, fmt.Errorf("type '%v' cannot be used for argument matches", tokenString(tokenType))
@@ -156,8 +150,8 @@ func match(token string, tokenType int, req *Request, def *Definitions) (bool, e
 		if !req.hasArguments() {
 			if req.Command != "" {
 				cd := def.CommandByToken(req.Command)
-				if cd != nil && cd.DefaultArgument != "" {
-					err := req.update(cd.DefaultArgument, argument)
+				if cd != nil && cd.defaultArgument != "" {
+					err := req.update(cd.defaultArgument, argument)
 					if err != nil {
 						return false, err
 					}

@@ -48,25 +48,25 @@ func TestFirst(t *testing.T) {
 	assertValEquals(t, len(first()), 1)
 }
 
-func TestExpandAbbr(t *testing.T) {
-	tests := []struct {
-		token     string
-		expToken  string
-		tokenType int
-	}{
-		{"c1", "command1", command},
-		{"command-abbr-that-doesnt-exist", "command-abbr-that-doesnt-exist", command},
-		{"a1", "argument1", argument},
-		{"argument-abbr-that-doesnt-exist", "argument-abbr-that-doesnt-exist", argument},
-		{"c", "c", command},
-		{"a", "a", argument},
-		{"v", "v", value},
-	}
-	defs := mockDefinitions()
-	for _, tt := range tests {
-		t.Run(tt.token, func(t *testing.T) {
-			expToken := expandAbbr(tt.token, tt.tokenType, defs)
-			assertValEquals(t, expToken, tt.expToken)
-		})
-	}
-}
+//func TestExpandAbbr(t *testing.T) {
+//	tests := []struct {
+//		token     string
+//		expToken  string
+//		tokenType int
+//	}{
+//		{"c1", "command1", command},
+//		{"command-abbr-that-doesnt-exist", "command-abbr-that-doesnt-exist", command},
+//		{"a1", "argument1", argument},
+//		{"argument-abbr-that-doesnt-exist", "argument-abbr-that-doesnt-exist", argument},
+//		{"c", "c", command},
+//		{"a", "a", argument},
+//		{"v", "v", value},
+//	}
+//	defs := mockDefinitions()
+//	for _, tt := range tests {
+//		t.Run(tt.token, func(t *testing.T) {
+//			expToken := expandAbbr(tt.token, tt.tokenType, defs)
+//			assertValEquals(t, expToken, tt.expToken)
+//		})
+//	}
+//}

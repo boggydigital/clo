@@ -32,7 +32,7 @@ func (def *Definitions) Parse(args []string) (*Request, error) {
 			}
 			if success {
 				matched = true
-				expandedArg := expandAbbr(arg, tt, def)
+				//expandedArg := expandAbbr(arg, tt, def)
 				// it's ok to ignore the error below, since we'd only return
 				// error in two cases:
 				// 1) req.Command is already set - this shouldn't be
@@ -40,7 +40,7 @@ func (def *Definitions) Parse(args []string) (*Request, error) {
 				// token or abbreviation we would progress to another type
 				// 2) if tokenType is an unsupported value, however this is
 				// not possible in this flow given the next() function
-				_ = req.update(expandedArg, tt)
+				_ = req.update(arg, tt)
 				expected = next(tt)
 				break
 			}

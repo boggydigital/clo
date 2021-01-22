@@ -14,47 +14,47 @@ func TestCreateHelpArgumentDefinition(t *testing.T) {
 	assertNil(t, createHelpArgumentDefinition(""), false)
 }
 
-func TestAddCommandAbbr(t *testing.T) {
-	tests := []struct {
-		token string
-		cmd   *CommandDefinition
-	}{
-		{"", nil},
-		{"", mockCommandDefinition("c", nil)},
-	}
-	for _, tt := range tests {
-		t.Run(tt.token, func(t *testing.T) {
-			if tt.cmd != nil {
-				assertValNotEquals(t, tt.cmd.Abbr, tt.token)
-			}
-			addCommandAbbr(tt.token, tt.cmd, mockCommandByAbbr)
-			if tt.cmd != nil {
-				assertValEquals(t, tt.cmd.Abbr, tt.token)
-			}
-		})
-	}
-}
+//func TestAddCommandAbbr(t *testing.T) {
+//	tests := []struct {
+//		token string
+//		cmd   *CommandDefinition
+//	}{
+//		{"", nil},
+//		{"", mockCommandDefinition("c", nil)},
+//	}
+//	for _, tt := range tests {
+//		t.Run(tt.token, func(t *testing.T) {
+//			if tt.cmd != nil {
+//				assertValNotEquals(t, tt.cmd.Abbr, tt.token)
+//			}
+//			addCommandAbbr(tt.token, tt.cmd, mockCommandByAbbr)
+//			if tt.cmd != nil {
+//				assertValEquals(t, tt.cmd.Abbr, tt.token)
+//			}
+//		})
+//	}
+//}
 
-func TestAddArgAbbr(t *testing.T) {
-	tests := []struct {
-		token string
-		arg   *ArgumentDefinition
-	}{
-		{"", nil},
-		{"", mockArgumentDefinition("a", nil)},
-	}
-	for _, tt := range tests {
-		t.Run(tt.token, func(t *testing.T) {
-			if tt.arg != nil {
-				assertValNotEquals(t, tt.arg.Abbr, tt.token)
-			}
-			addArgAbbr(tt.token, tt.arg, mockArgByAbbr)
-			if tt.arg != nil {
-				assertValEquals(t, tt.arg.Abbr, tt.token)
-			}
-		})
-	}
-}
+//func TestAddArgAbbr(t *testing.T) {
+//	tests := []struct {
+//		token string
+//		arg   *ArgumentDefinition
+//	}{
+//		{"", nil},
+//		{"", mockArgumentDefinition("a", nil)},
+//	}
+//	for _, tt := range tests {
+//		t.Run(tt.token, func(t *testing.T) {
+//			if tt.arg != nil {
+//				assertValNotEquals(t, tt.arg.Abbr, tt.token)
+//			}
+//			addArgAbbr(tt.token, tt.arg, mockArgByAbbr)
+//			if tt.arg != nil {
+//				assertValEquals(t, tt.arg.Abbr, tt.token)
+//			}
+//		})
+//	}
+//}
 
 func TestAddHelpCommand(t *testing.T) {
 	tests := []struct {
@@ -69,7 +69,7 @@ func TestAddHelpCommand(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.token, func(t *testing.T) {
-			cmd := addHelpCommand(tt.token, "", tt.cmdByToken, mockCommandByAbbr)
+			cmd := addHelpCommand(tt.token, tt.cmdByToken)
 			assertNil(t, cmd, tt.expNil)
 			if cmd != nil {
 				assertValEquals(t, cmd.Token, tt.token)
@@ -92,7 +92,7 @@ func TestAddHelpCommandArgument(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.token, func(t *testing.T) {
-			arg, err := addHelpCommandArgument(tt.token, "", tt.argByToken, mockArgByAbbr)
+			arg, err := addHelpCommandArgument(tt.token, tt.argByToken)
 			assertNil(t, arg, tt.expNil)
 			assertError(t, err, tt.expError)
 			if arg != nil {
@@ -243,9 +243,9 @@ func TestPrintCmdArgs(t *testing.T) {
 	}
 }
 
-func TestPrintArgAttrsLegend(t *testing.T) {
-	printArgAttrsLegend()
-}
+//func TestPrintArgAttrsLegend(t *testing.T) {
+//	printArgAttrsLegend()
+//}
 
 func TestPrintCmdHelp(t *testing.T) {
 	for _, tt := range mockPrintCommandHelpTests {

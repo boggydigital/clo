@@ -53,14 +53,14 @@ func TestDifferentCmdTokens(t *testing.T) {
 	}
 }
 
-func TestDifferentCmdAbbr(t *testing.T) {
-	for _, tt := range mockDifferentTokensTests() {
-		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := differentCmdAbbr(mockCommandDefinitions(tt.tokens), false)
-			assertError(t, err, tt.expError)
-		})
-	}
-}
+//func TestDifferentCmdAbbr(t *testing.T) {
+//	for _, tt := range mockDifferentTokensTests() {
+//		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
+//			err := differentCmdAbbr(mockCommandDefinitions(tt.tokens), false)
+//			assertError(t, err, tt.expError)
+//		})
+//	}
+//}
 
 func TestArgTokensAreNotEmpty(t *testing.T) {
 	for _, tt := range mockNoEmptyTokensTests() {
@@ -80,40 +80,40 @@ func TestDifferentArgTokens(t *testing.T) {
 	}
 }
 
-func TestDifferentArgAbbr(t *testing.T) {
-	for _, tt := range mockDifferentTokensTests() {
-		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := differentArgAbbr(mockArgumentDefinitions(tt.tokens), false)
-			assertError(t, err, tt.expError)
-		})
-	}
-}
+//func TestDifferentArgAbbr(t *testing.T) {
+//	for _, tt := range mockDifferentTokensTests() {
+//		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
+//			err := differentArgAbbr(mockArgumentDefinitions(tt.tokens), false)
+//			assertError(t, err, tt.expError)
+//		})
+//	}
+//}
 
-func TestDifferentAbbr(t *testing.T) {
-	tests := []struct {
-		commands  []string
-		arguments []string
-		expError  bool
-	}{
-		{nil, nil, false},
-		{[]string{}, []string{}, false},
-		{[]string{"1"}, []string{"2"}, false},
-		{[]string{"1"}, []string{"2"}, false},
-		{[]string{"1", "2"}, []string{"2"}, true},
-		{[]string{"1"}, []string{"2", "1"}, true},
-	}
-	for _, tt := range tests {
-		name := strings.Join(tt.commands, "-") + "-" +
-			strings.Join(tt.arguments, "-")
-		t.Run(name, func(t *testing.T) {
-			err := differentAbbr(
-				mockCommandDefinitions(tt.commands),
-				mockArgumentDefinitions(tt.arguments),
-				false)
-			assertError(t, err, tt.expError)
-		})
-	}
-}
+//func TestDifferentAbbr(t *testing.T) {
+//	tests := []struct {
+//		commands  []string
+//		arguments []string
+//		expError  bool
+//	}{
+//		{nil, nil, false},
+//		{[]string{}, []string{}, false},
+//		{[]string{"1"}, []string{"2"}, false},
+//		{[]string{"1"}, []string{"2"}, false},
+//		{[]string{"1", "2"}, []string{"2"}, true},
+//		{[]string{"1"}, []string{"2", "1"}, true},
+//	}
+//	for _, tt := range tests {
+//		name := strings.Join(tt.commands, "-") + "-" +
+//			strings.Join(tt.arguments, "-")
+//		t.Run(name, func(t *testing.T) {
+//			err := differentAbbr(
+//				mockCommandDefinitions(tt.commands),
+//				mockArgumentDefinitions(tt.arguments),
+//				false)
+//			assertError(t, err, tt.expError)
+//		})
+//	}
+//}
 
 func TestCommandsValidArgs(t *testing.T) {
 	for _, tt := range mockNoEmptyTokensTests() {

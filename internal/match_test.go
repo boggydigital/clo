@@ -22,13 +22,9 @@ func TestMatchArgument(t *testing.T) {
 		// - tokens that exist, but are not valid
 		{MatchTest{"-argument1", argument, false, true}, "", defs},
 		{MatchTest{"--argument1", argument, false, true}, "", defs},
-		{MatchTest{"-a1", argument, false, true}, "", defs},
-		{MatchTest{"--a1", argument, false, true}, "", defs},
 		// - nil command context, so can't validate
 		{MatchTest{"-argument1", argument, false, true}, "", defs},
 		{MatchTest{"--argument1", argument, false, true}, "", defs},
-		{MatchTest{"-a1", argument, false, true}, "", defs},
-		{MatchTest{"--a1", argument, false, true}, "", defs},
 		// - tokenType is not argument or argumentAbbr
 		{MatchTest{"-argument1", command, false, true}, "", defs},
 		{MatchTest{"-argument1", command, false, true}, "", defs},
@@ -39,8 +35,6 @@ func TestMatchArgument(t *testing.T) {
 		// - valid args for command, no error
 		{MatchTest{"-argument1", argument, true, false}, defs.Commands[0].Token, defs},
 		{MatchTest{"--argument1", argument, true, false}, defs.Commands[0].Token, defs},
-		{MatchTest{"-a1", argument, true, false}, defs.Commands[0].Token, defs},
-		{MatchTest{"--a1", argument, true, false}, defs.Commands[0].Token, defs},
 	}
 	for _, tt := range tests {
 		t.Run(tt.token, func(t *testing.T) {
@@ -131,7 +125,6 @@ func TestMatch(t *testing.T) {
 		{MatchTest{"command1", command, true, false}, nil, defs},
 		{MatchTest{"command-that-doesnt-exist", command, false, false}, nil, defs},
 		// command abbr
-		{MatchTest{"c1", command, true, false}, nil, defs},
 		{MatchTest{"c-abbr-that-doesnt-exist", command, false, false}, nil, defs},
 		// argument token
 		{MatchTest{"-argument1", argument, true, false}, command1Request, defs},
@@ -140,9 +133,6 @@ func TestMatch(t *testing.T) {
 		{MatchTest{"-argument-that-doesnt-exist", argument, false, false}, command1Request, defs},
 		{MatchTest{"--argument-that-doesnt-exist", argument, false, false}, command1Request, defs},
 		// argument abbr
-		{MatchTest{"-a1", argument, true, false}, command1Request, defs},
-		{MatchTest{"--a1", argument, true, false}, command1Request, defs},
-		{MatchTest{"a1", argument, false, false}, command1Request, defs},
 		{MatchTest{"-a-abbr-that-doesnt-exist", argument, false, false}, command1Request, defs},
 		{MatchTest{"--a-abbr-that-doesnt-exist", argument, false, false}, command1Request, defs},
 		// value

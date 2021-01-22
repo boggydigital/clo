@@ -54,19 +54,19 @@ func differentCmdTokens(commands []CommandDefinition, debug bool) error {
 	return nil
 }
 
-func differentCmdAbbr(commands []CommandDefinition, debug bool) error {
-	msg := "command abbreviations are different"
-	dupeCmd := make([]string, 0)
-	for _, c := range commands {
-		dupeCmd = append(dupeCmd, c.Abbr)
-	}
-	if df := firstDupe(dupeCmd); df != "" {
-		vFail(msg, debug)
-		return fmt.Errorf("commands have duplicate abbreviation: '%v'", df)
-	}
-	vPass(msg, debug)
-	return nil
-}
+//func differentCmdAbbr(commands []CommandDefinition, debug bool) error {
+//	msg := "command abbreviations are different"
+//	dupeCmd := make([]string, 0)
+//	for _, c := range commands {
+//		dupeCmd = append(dupeCmd, c.Abbr)
+//	}
+//	if df := firstDupe(dupeCmd); df != "" {
+//		vFail(msg, debug)
+//		return fmt.Errorf("commands have duplicate abbreviation: '%v'", df)
+//	}
+//	vPass(msg, debug)
+//	return nil
+//}
 
 func argTokensAreNotEmpty(args []ArgumentDefinition, debug bool) error {
 	msg := "argument tokens are not empty"
@@ -94,40 +94,40 @@ func differentArgTokens(args []ArgumentDefinition, debug bool) error {
 	return nil
 }
 
-func differentArgAbbr(args []ArgumentDefinition, debug bool) error {
-	msg := "argument abbreviations are different"
-	dupeArgs := make([]string, 0)
-	for _, a := range args {
-		dupeArgs = append(dupeArgs, a.Abbr)
-	}
-	if df := firstDupe(dupeArgs); df != "" {
-		vFail(msg, debug)
-		return fmt.Errorf("arguments have duplicate abbreviation: '%v'", df)
-	}
-	vPass(msg, debug)
-	return nil
-}
+//func differentArgAbbr(args []ArgumentDefinition, debug bool) error {
+//	msg := "argument abbreviations are different"
+//	dupeArgs := make([]string, 0)
+//	for _, a := range args {
+//		dupeArgs = append(dupeArgs, a.Abbr)
+//	}
+//	if df := firstDupe(dupeArgs); df != "" {
+//		vFail(msg, debug)
+//		return fmt.Errorf("arguments have duplicate abbreviation: '%v'", df)
+//	}
+//	vPass(msg, debug)
+//	return nil
+//}
 
-func differentAbbr(
-	commands []CommandDefinition,
-	args []ArgumentDefinition,
-	v bool) error {
-	msg := "all abbreviations are different"
-	abbr := make([]string, 0)
-
-	for _, c := range commands {
-		abbr = append(abbr, c.Abbr)
-	}
-	for _, a := range args {
-		abbr = append(abbr, a.Abbr)
-	}
-	if da := firstDupe(abbr); da != "" {
-		vFail(msg, v)
-		return fmt.Errorf("same abbreviation for a command, argument: '%v'", da)
-	}
-	vPass(msg, v)
-	return nil
-}
+//func differentAbbr(
+//	commands []CommandDefinition,
+//	args []ArgumentDefinition,
+//	v bool) error {
+//	msg := "all abbreviations are different"
+//	abbr := make([]string, 0)
+//
+//	for _, c := range commands {
+//		abbr = append(abbr, c.Abbr)
+//	}
+//	for _, a := range args {
+//		abbr = append(abbr, a.Abbr)
+//	}
+//	if da := firstDupe(abbr); da != "" {
+//		vFail(msg, v)
+//		return fmt.Errorf("same abbreviation for a command, argument: '%v'", da)
+//	}
+//	vPass(msg, v)
+//	return nil
+//}
 
 func commandsValidArgs(
 	commands []CommandDefinition,
@@ -210,11 +210,11 @@ func (def *Definitions) Verify(debug bool) []error {
 	// tokens and abbreviations
 	errors = appendError(errors, cmdTokensAreNotEmpty(def.Commands, debug))
 	errors = appendError(errors, differentCmdTokens(def.Commands, debug))
-	errors = appendError(errors, differentCmdAbbr(def.Commands, debug))
+	//errors = appendError(errors, differentCmdAbbr(def.Commands, debug))
 	errors = appendError(errors, argTokensAreNotEmpty(def.Arguments, debug))
 	errors = appendError(errors, differentArgTokens(def.Arguments, debug))
-	errors = appendError(errors, differentArgAbbr(def.Arguments, debug))
-	errors = appendError(errors, differentAbbr(def.Commands, def.Arguments, debug))
+	//errors = appendError(errors, differentArgAbbr(def.Arguments, debug))
+	//errors = appendError(errors, differentAbbr(def.Commands, def.Arguments, debug))
 
 	// arguments
 	errors = appendError(errors, commandsValidArgs(def.Commands, def.ArgByToken, debug))

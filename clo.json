@@ -7,18 +7,14 @@
   "commands": [
     {
       "token": "verify",
-      "abbr": "vf",
       "help": "verify provided file for common errors",
       "arguments": [
-        "path",
+        "_path!",
         "debug"
-      ],
-      "default_argument": "path",
-      "required_arguments": ["path"]
+      ]
     },
     {
       "token": "generate",
-      "abbr": "gn",
       "help": "generate clo.json or parts of it",
       "arguments": [
         "app",
@@ -30,7 +26,6 @@
   "arguments": [
     {
       "token": "path",
-      "abbr": "p",
       "help": "path to the file",
       "env": true
     },
@@ -40,19 +35,16 @@
     },
     {
       "token": "command",
-      "abbr": "cmd",
       "help": "clo.json command",
       "multiple": true
     },
     {
       "token": "argument",
-      "abbr": "arg",
       "help": "clo.json argument",
       "multiple": true
     },
     {
       "token": "debug",
-      "abbr": "d",
       "help": "print debug information"
     }
   ]

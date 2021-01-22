@@ -57,21 +57,21 @@ func first() []int {
 	return []int{command}
 }
 
-func expandAbbr(token string, tokenType int, def *Definitions) string {
-	switch tokenType {
-	case command:
-		cd := def.CommandByAbbr(token)
-		if cd == nil {
-			return token
-		}
-		return cd.Token
-	case argument:
-		ad := def.ArgByAbbr(trimPrefix(token))
-		if ad == nil {
-			return token
-		}
-		return ad.Token
-	default:
-		return token
-	}
-}
+//func expandAbbr(token string, tokenType int, def *Definitions) string {
+//	switch tokenType {
+//	case command:
+//		cd := def.CommandByAbbr(token)
+//		if cd == nil {
+//			return token
+//		}
+//		return cd.Token
+//	case argument:
+//		ad := def.ArgByAbbr(trimPrefix(token))
+//		if ad == nil {
+//			return token
+//		}
+//		return ad.Token
+//	default:
+//		return token
+//	}
+//}

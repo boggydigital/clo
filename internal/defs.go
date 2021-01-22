@@ -38,8 +38,15 @@ func Load(path string) (*Definitions, error) {
 		log.Println("error adding help command:", err.Error())
 	}
 
-	if err := expandRefValues(dfs.Arguments, dfs.Commands); err != nil {
-		return nil, err
+	for i, _ := range dfs.Commands {
+		e := dfs.Commands[i].setDefaultRequired()
+		if e != nil {
+			return dfs, e
+		}
+	}
+
+	if e := expandRefValues(dfs.Arguments, dfs.Commands); e != nil {
+		return nil, e
 	}
 
 	return dfs, nil
@@ -54,27 +61,9 @@ func (def *Definitions) CommandByToken(token string) *CommandDefinition {
 	return nil
 }
 
-func (def *Definitions) CommandByAbbr(abbr string) *CommandDefinition {
-	for _, c := range def.Commands {
-		if c.Abbr == abbr {
-			return &c
-		}
-	}
-	return nil
-}
-
 func (def *Definitions) ArgByToken(token string) *ArgumentDefinition {
 	for _, a := range def.Arguments {
 		if a.Token == token {
-			return &a
-		}
-	}
-	return nil
-}
-
-func (def *Definitions) ArgByAbbr(abbr string) *ArgumentDefinition {
-	for _, a := range def.Arguments {
-		if a.Abbr == abbr {
 			return &a
 		}
 	}

@@ -1,7 +1,13 @@
 package internal
 
 import (
+	"fmt"
 	"strings"
+)
+
+const (
+	defaultPrefix  = "_"
+	requiredSuffix = "!"
 )
 
 func hasPrefix(token string) bool {
@@ -18,4 +24,12 @@ func trimPrefix(token string) string {
 		pfx = "-"
 	}
 	return strings.TrimPrefix(token, pfx)
+}
+
+func trimArgument(arg string) string {
+	return strings.Trim(arg, defaultPrefix+requiredSuffix)
+}
+
+func decorateDefault(arg string) string {
+	return fmt.Sprintf("%s%s", defaultPrefix, arg)
 }
