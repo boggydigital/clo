@@ -12,7 +12,7 @@ func addHelpCmd(def *Definitions) {
 
 	commands := make([]string, 0, len(def.Cmd))
 	for c, _ := range def.Cmd {
-		commands = append(commands, c)
+		commands = append(commands, trimAttrs(c))
 	}
 
 	if _, ok := def.Cmd["help"]; !ok {
