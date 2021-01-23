@@ -3,17 +3,13 @@ package internal
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
+	"strings"
 )
 
 type Definitions struct {
-	Version        int                  `json:"version"`
-	EnvPrefix      string               `json:"env-prefix,omitempty"`
-	App            string               `json:"app,omitempty"`
-	Help           string               `json:"help,omitempty"`
-	DefaultCommand string               `json:"default_command,omitempty"`
-	Commands       []CommandDefinition  `json:"commands,omitempty"`
-	Arguments      []ArgumentDefinition `json:"arguments,omitempty"`
+	Version int                 `json:"version"`
+	Cmd     map[string][]string `json:"cmd"`
+	Help    map[string]string   `json:"help"`
 }
 
 func LoadDefault() (*Definitions, error) {
@@ -27,56 +23,69 @@ func Load(path string) (*Definitions, error) {
 		return nil, err
 	}
 
-	var dfs *Definitions
+	var def *Definitions
 
-	if err := json.Unmarshal(bytes, &dfs); err != nil {
-		return nil, err
-	}
-
-	if err := tryAddHelpCommand(dfs); err != nil {
-		// adding help is not considered fatal error, inform, continue
-		log.Println("error adding help command:", err.Error())
-	}
-
-	for i, _ := range dfs.Commands {
-		e := dfs.Commands[i].setDefaultRequired()
-		if e != nil {
-			return dfs, e
-		}
-	}
-
-	if e := expandRefValues(dfs.Arguments, dfs.Commands); e != nil {
+	if e := json.Unmarshal(bytes, &def); e != nil {
 		return nil, e
 	}
 
-	return dfs, nil
+	addHelpCmd(def)
+
+	return def, nil
 }
 
-func (def *Definitions) CommandByToken(token string) *CommandDefinition {
-	for _, c := range def.Commands {
-		if c.Token == token {
-			return &c
+func (def *Definitions) validCmd(c string) string {
+	if def == nil {
+		return ""
+	}
+
+	for cmd := range def.Cmd {
+		if strings.HasPrefix(cmd, c) {
+			return cmd
 		}
 	}
-	return nil
+
+	return ""
 }
 
-func (def *Definitions) ArgByToken(token string) *ArgumentDefinition {
-	for _, a := range def.Arguments {
-		if a.Token == token {
-			return &a
+func (def *Definitions) validCmdArg(c, a string) (string, string) {
+	if def == nil {
+		return "", ""
+	}
+
+	cmd := def.validCmd(c)
+	if cmd == "" {
+		return cmd, ""
+	}
+
+	for _, arg := range def.Cmd[cmd] {
+		if strings.HasPrefix(arg, a) {
+			return cmd, arg
 		}
 	}
-	return nil
+
+	return cmd, ""
 }
 
-func (def *Definitions) ValidArgVal(arg string, val string) bool {
+func (def *Definitions) validCmdArgVal(c, a, v string) (string, string, string) {
+	if def == nil {
+		return "", "", ""
+	}
+
+	cmd, arg := def.validCmdArg(c, a)
 	if arg == "" {
-		return false
+		return cmd, arg, ""
 	}
-	ad := def.ArgByToken(arg)
-	if ad == nil {
-		return false
+
+	// argValues
+	if hasArgValues(arg) {
+		asv, values := argValues(arg)
+		for _, val := range values {
+			if strings.HasPrefix(val, v) {
+				return cmd, asv, val
+			}
+		}
 	}
-	return ad.ValidValue(val)
+
+	return cmd, arg, ""
 }

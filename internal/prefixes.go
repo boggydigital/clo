@@ -1,35 +1,41 @@
 package internal
 
 import (
-	"fmt"
 	"strings"
 )
 
 const (
-	defaultPrefix  = "_"
-	requiredSuffix = "!"
+	argPfx       = "-"
+	argDblPfx    = "--"
+	argValuesSep = "="
+	valuesSep    = ","
 )
 
-func hasPrefix(token string) bool {
-	// not testing for strings.HasPrefix(token, "--"), since it'll match this case as well
-	return strings.HasPrefix(token, "-")
-
+func isArg(token string) bool {
+	return strings.HasPrefix(token, argPfx)
 }
 
-func trimPrefix(token string) string {
+func hasArgValues(token string) bool {
+	return strings.Contains(token, argValuesSep)
+}
+
+func argValues(token string) (string, []string) {
+	if !hasArgValues(token) {
+		return token, []string{}
+	}
+	argVal := strings.Split(token, argValuesSep)
+	if len(argVal) > 1 {
+		return argVal[0], strings.Split(argVal[len(argVal)-1], valuesSep)
+	}
+	return token, []string{}
+}
+
+func trimArgPrefix(token string) string {
 	pfx := ""
-	if strings.HasPrefix(token, "--") {
-		pfx = "--"
-	} else if strings.HasPrefix(token, "-") {
-		pfx = "-"
+	if strings.HasPrefix(token, argDblPfx) {
+		pfx = argDblPfx
+	} else if strings.HasPrefix(token, argPfx) {
+		pfx = argPfx
 	}
 	return strings.TrimPrefix(token, pfx)
-}
-
-func trimArgument(arg string) string {
-	return strings.Trim(arg, defaultPrefix+requiredSuffix)
-}
-
-func decorateDefault(arg string) string {
-	return fmt.Sprintf("%s%s", defaultPrefix, arg)
 }

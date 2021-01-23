@@ -2,7 +2,6 @@ package internal
 
 import (
 	"fmt"
-	"os"
 	"strings"
 )
 
@@ -31,21 +30,21 @@ func (req *Request) readEnvArgs(def *Definitions) error {
 		return fmt.Errorf("cannot fill args from env using nil definitions")
 	}
 
-	for _, arg := range def.Arguments {
-		if !arg.Env {
-			continue
-		}
-
-		envKey := argEnv(def.EnvPrefix, req.Command, arg.Token)
-		envVal := os.Getenv(envKey)
-
-		// only add value from environmental variable if it's the only value
-		if envVal != "" &&
-			(req.Arguments[arg.Token] == nil ||
-				len(req.Arguments[arg.Token]) == 0) {
-			req.Arguments[arg.Token] = append(req.Arguments[arg.Token], envVal)
-		}
-	}
+	//for _, arg := range def.Arguments {
+	//	if !arg.Env {
+	//		continue
+	//	}
+	//
+	//	envKey := argEnv(def.EnvPrefix, req.Command, arg.Token)
+	//	envVal := os.Getenv(envKey)
+	//
+	//	// only add value from environmental variable if it's the only value
+	//	if envVal != "" &&
+	//		(req.Arguments[arg.Token] == nil ||
+	//			len(req.Arguments[arg.Token]) == 0) {
+	//		req.Arguments[arg.Token] = append(req.Arguments[arg.Token], envVal)
+	//	}
+	//}
 
 	return nil
 }

@@ -1,51 +1,16 @@
 {
   "version": 1,
-  "env-prefix": "CLO",
-  "app": "clo",
-  "help": "declarative CLI parameters",
-  "default_command": "verify",
-  "commands": [
-    {
-      "token": "verify",
-      "help": "verify provided file for common errors",
-      "arguments": [
-        "_path!",
-        "debug"
-      ]
-    },
-    {
-      "token": "generate",
-      "help": "generate clo.json or parts of it",
-      "arguments": [
-        "app",
-        "command",
-        "argument"
-      ]
-    }
-  ],
-  "arguments": [
-    {
-      "token": "path",
-      "help": "path to the file",
-      "env": true
-    },
-    {
-      "token": "app",
-      "help": "application name"
-    },
-    {
-      "token": "command",
-      "help": "clo.json command",
-      "multiple": true
-    },
-    {
-      "token": "argument",
-      "help": "clo.json argument",
-      "multiple": true
-    },
-    {
-      "token": "debug",
-      "help": "print debug information"
-    }
-  ]
+  "cmd": {
+    "verify_": ["path_$!", "debug"],
+    "generate": ["command...", "argument..."]
+  },
+  "help": {
+    "app": "declarative CLI parameters",
+    "verify": "verify provided file for common errors",
+    "generate": "generate clo.json or parts of it",
+    "verify:path": "path to the file",
+    "generate:command": "clo.json command",
+    "generate:argument": "clo.json argument",
+    "debug": "print debug information"
+  }
 }

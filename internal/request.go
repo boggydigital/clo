@@ -38,7 +38,7 @@ func (req *Request) update(expandedToken string, tokenType int) error {
 		req.Command = expandedToken
 		break
 	case argument:
-		arg := trimPrefix(expandedToken)
+		arg := trimArgPrefix(expandedToken)
 		if req.Arguments[arg] == nil {
 			req.Arguments[arg] = []string{}
 		}
@@ -66,28 +66,28 @@ func (req *Request) commandHasRequiredArgs(def *Definitions) error {
 	if req == nil {
 		return errors.New("cannot verify required argument using nil request")
 	}
-
-	// TODO: verify not nil
-	cd := def.CommandByToken(req.Command)
-	if cd == nil {
-		return nil
-	}
-
-	for _, ra := range cd.requiredArguments {
-		matched := false
-		for arg, values := range req.Arguments {
-			if ra == arg {
-				if len(values) == 0 {
-					return fmt.Errorf("required argument '%v' is missing values", ra)
-				}
-				matched = true
-				break
-			}
-		}
-		if !matched {
-			return fmt.Errorf("required argument '%v' is missing for the command '%v'", ra, req.Command)
-		}
-	}
+	//
+	//// TODO: verify not nil
+	//cd := def.CommandByToken(req.Command)
+	//if cd == nil {
+	//	return nil
+	//}
+	//
+	//for _, ra := range cd.requiredArguments {
+	//	matched := false
+	//	for arg, values := range req.Arguments {
+	//		if ra == arg {
+	//			if len(values) == 0 {
+	//				return fmt.Errorf("required argument '%v' is missing values", ra)
+	//			}
+	//			matched = true
+	//			break
+	//		}
+	//	}
+	//	if !matched {
+	//		return fmt.Errorf("required argument '%v' is missing for the command '%v'", ra, req.Command)
+	//	}
+	//}
 	return nil
 }
 
@@ -99,18 +99,18 @@ func (req *Request) argumentsMultipleValues(def *Definitions) error {
 		return errors.New("cannot verify nil request for required arguments")
 	}
 
-	for arg, values := range req.Arguments {
-		if arg == "" {
-			continue
-		}
-		ad := def.ArgByToken(arg)
-		if ad == nil {
-			continue
-		}
-		if !ad.Multiple && len(values) > 1 {
-			return fmt.Errorf("argument '%v' has multiple values, supports no more than one", arg)
-		}
-	}
+	//for arg, values := range req.Arguments {
+	//	if arg == "" {
+	//		continue
+	//	}
+	//	ad := def.ArgByToken(arg)
+	//	if ad == nil {
+	//		continue
+	//	}
+	//	if !ad.Multiple && len(values) > 1 {
+	//		return fmt.Errorf("argument '%v' has multiple values, supports no more than one", arg)
+	//	}
+	//}
 
 	return nil
 }

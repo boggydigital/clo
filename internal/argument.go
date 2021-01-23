@@ -1,7 +1,6 @@
 package internal
 
 type ArgumentDefinition struct {
-	CommonDefinition
 	Env      bool     `json:"env,omitempty"`
 	Multiple bool     `json:"multiple,omitempty"`
 	Values   []string `json:"values,omitempty"`
