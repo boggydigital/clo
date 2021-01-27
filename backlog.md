@@ -13,20 +13,24 @@
 - ~~parsing sequence should be expressed in groups, not individual tokens. This would make progression clear, as well as allow adding things like "default command" more easily~~
 - ~~deprecate parseCtx, use request for that~~
 - ~~make default and required unexported and add convenience shortcuts _, ! for default and required~~
+- ~~deprecate abbreviations using StartsWith~~
+- ~~consider $, ... for env, multiple for arguments like _, ! for commands~~
+- ~~consider = to specify argument values (values can follow same _ convention for default)~~
+- ~~consider maps for commands and arguments to less verbose~~
+- ~~default command for an app (e.g. "glo 123" -> "glo convert -g 123") - when matching argument~~
+
+## Cuts
+
+- argument "excludes" property - list argument tokens that can't be included with this argument (e.g. username / username-file): decided that this likely can happen on the app level
+- arguments that are required for some arg-values? E.g. username/password for fetch-type = account-product: decided that this can happen on the app level
 
 ## Changes
 
-- deprecate abbreviations using StartsWith
-- consider $, ... for env, multiple for arguments like _, ! for commands
-- consider = to specify argument values (values can follow same _ convention for default)
-- consider maps for commands and arguments to less verbose
-- default command for an app (e.g. "glo 123" -> "glo convert -g 123") - when matching argument 
-- default argument values - when none are specified (can be generated as "arg=value")
-- argument "excludes" property - list argument tokens that can't be included with this argument (e.g. username / username-file)
-- arguments that are required for some arg-values? E.g. username/password for fetch-type = account-product
+- default argument values - when none are specified (can be generated as "arg=value!")
 
 ## Follow-up
 
 - help command review
 - review and update unit tests based on the new logic
-- update documentation and "generate"
+- update documentation
+- update "generate"
