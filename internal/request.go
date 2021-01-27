@@ -28,32 +28,59 @@ func (req *Request) lastArgument() string {
 	return keys[len(keys)-1]
 }
 
-func (req *Request) update(expandedToken string, tokenType int) error {
+func (req *Request) setDefaultContext(tokenType int, def *Definitions) error {
+	switch tokenType {
+	case argument:
+		if req.Command == "" {
+			dc := def.defaultCommand()
+			if dc != "" {
+				return req.update(trimAttrs(dc), command)
+			}
+		}
+	case value:
+		if req.lastArgument() == "" {
+			da := def.defaultArgument(req.Command)
+			if da != "" {
+				return req.update(trimAttrs(da), argument)
+			}
+		}
+	}
+	return nil
+}
 
+func (req *Request) wasUpdated(tokenType int) bool {
+	switch tokenType {
+	case command:
+		return req.Command != ""
+	case argument:
+		return req.lastArgument() != ""
+	}
+	return false
+}
+
+func (req *Request) update(token string, tokenType int) error {
 	switch tokenType {
 	case command:
 		if req.Command != "" {
 			return errors.New("request already has a command specified")
 		}
-		req.Command = expandedToken
+		req.Command = token
 		break
 	case argument:
-		arg := trimArgPrefix(expandedToken)
+		arg := trimArgPrefix(token)
 		if req.Arguments[arg] == nil {
 			req.Arguments[arg] = []string{}
 		}
-	//case valueDefault:
-	//	fallthrough
 	case value:
 		lastKey := req.lastArgument()
 		if lastKey == "" {
 			return fmt.Errorf("cannot update value for a request with no arguments")
 		}
-		req.Arguments[lastKey] = append(req.Arguments[lastKey], expandedToken)
+		req.Arguments[lastKey] = append(req.Arguments[lastKey], token)
 	default:
 		return fmt.Errorf(
 			"cannot update request for a token '%v' of type '%v'",
-			expandedToken,
+			token,
 			tokenString(tokenType))
 	}
 	return nil
@@ -61,33 +88,27 @@ func (req *Request) update(expandedToken string, tokenType int) error {
 
 func (req *Request) commandHasRequiredArgs(def *Definitions) error {
 	if def == nil {
-		return errors.New("cannot verify required argument using nil definitions")
+		return errors.New("cannot verify required arguments using nil definitions")
 	}
 	if req == nil {
-		return errors.New("cannot verify required argument using nil request")
+		return errors.New("cannot verify required arguments using nil request")
 	}
-	//
-	//// TODO: verify not nil
-	//cd := def.CommandByToken(req.Command)
-	//if cd == nil {
-	//	return nil
-	//}
-	//
-	//for _, ra := range cd.requiredArguments {
-	//	matched := false
-	//	for arg, values := range req.Arguments {
-	//		if ra == arg {
-	//			if len(values) == 0 {
-	//				return fmt.Errorf("required argument '%v' is missing values", ra)
-	//			}
-	//			matched = true
-	//			break
-	//		}
-	//	}
-	//	if !matched {
-	//		return fmt.Errorf("required argument '%v' is missing for the command '%v'", ra, req.Command)
-	//	}
-	//}
+
+	dc := def.definedCmd(req.Command)
+	if dc == "" {
+		return fmt.Errorf("cannot verify required arguments without a command")
+	}
+
+	for _, arg := range def.Cmd[dc] {
+		if !isRequired(arg) {
+			continue
+		}
+
+		tArg := trimAttrs(arg)
+		if _, ok := req.Arguments[tArg]; !ok {
+			return fmt.Errorf("required argument '%v' is missing for the command '%v'", tArg, req.Command)
+		}
+	}
 	return nil
 }
 
@@ -99,18 +120,20 @@ func (req *Request) argumentsMultipleValues(def *Definitions) error {
 		return errors.New("cannot verify nil request for required arguments")
 	}
 
-	//for arg, values := range req.Arguments {
-	//	if arg == "" {
-	//		continue
-	//	}
-	//	ad := def.ArgByToken(arg)
-	//	if ad == nil {
-	//		continue
-	//	}
-	//	if !ad.Multiple && len(values) > 1 {
-	//		return fmt.Errorf("argument '%v' has multiple values, supports no more than one", arg)
-	//	}
-	//}
+	for arg, values := range req.Arguments {
+		if arg == "" {
+			continue
+		}
+
+		_, da := def.definedCmdArg(req.Command, arg)
+		if da == "" {
+			continue
+		}
+
+		if !isMultiple(da) && len(values) > 1 {
+			return fmt.Errorf("argument '%v' has multiple values, supports no more than one", arg)
+		}
+	}
 
 	return nil
 }

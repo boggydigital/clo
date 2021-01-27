@@ -27,5 +27,8 @@ func isEnv(token string) bool {
 }
 
 func trimAttrs(token string) string {
+	if hasArgValues(token) {
+		token = strings.Split(token, argValuesSep)[0]
+	}
 	return strings.Trim(token, attrs)
 }

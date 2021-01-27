@@ -34,7 +34,7 @@ func Load(path string) (*Definitions, error) {
 	return def, nil
 }
 
-func (def *Definitions) validCmd(c string) string {
+func (def *Definitions) definedCmd(c string) string {
 	if def == nil {
 		return ""
 	}
@@ -48,12 +48,12 @@ func (def *Definitions) validCmd(c string) string {
 	return ""
 }
 
-func (def *Definitions) validCmdArg(c, a string) (string, string) {
+func (def *Definitions) definedCmdArg(c, a string) (string, string) {
 	if def == nil {
 		return "", ""
 	}
 
-	cmd := def.validCmd(c)
+	cmd := def.definedCmd(c)
 	if cmd == "" {
 		return cmd, ""
 	}
@@ -67,12 +67,12 @@ func (def *Definitions) validCmdArg(c, a string) (string, string) {
 	return cmd, ""
 }
 
-func (def *Definitions) validCmdArgVal(c, a, v string) (string, string, string) {
+func (def *Definitions) definedCmdArgVal(c, a, v string) (string, string, string) {
 	if def == nil {
 		return "", "", ""
 	}
 
-	cmd, arg := def.validCmdArg(c, a)
+	cmd, arg := def.definedCmdArg(c, a)
 	if arg == "" {
 		return cmd, arg, ""
 	}
@@ -87,5 +87,36 @@ func (def *Definitions) validCmdArgVal(c, a, v string) (string, string, string) 
 		}
 	}
 
-	return cmd, arg, ""
+	return cmd, arg, v
+}
+
+func (def *Definitions) defaultCommand() string {
+	if def == nil {
+		return ""
+	}
+	for c := range def.Cmd {
+		if isDefault(c) {
+			return c
+		}
+	}
+	return ""
+}
+
+func (def *Definitions) defaultArgument(cmd string) string {
+	if def == nil {
+		return ""
+	}
+
+	dc := def.definedCmd(cmd)
+	for c, args := range def.Cmd {
+		if c != dc {
+			continue
+		}
+		for _, arg := range args {
+			if isDefault(arg) {
+				return arg
+			}
+		}
+	}
+	return ""
 }

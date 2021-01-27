@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestHasPrefix(t *testing.T) {
+func TestIsArg(t *testing.T) {
 	tests := []struct {
 		token    string
 		expected bool
@@ -18,12 +18,12 @@ func TestHasPrefix(t *testing.T) {
 
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-			assertValEquals(t, hasPrefix(tt.token), tt.expected)
+			assertValEquals(t, isArg(tt.token), tt.expected)
 		})
 	}
 }
 
-func TestTrimPrefix(t *testing.T) {
+func TestTrimArgPrefix(t *testing.T) {
 	token := "token"
 	tests := []struct {
 		token    string
@@ -36,7 +36,7 @@ func TestTrimPrefix(t *testing.T) {
 
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-			assertValEquals(t, trimPrefix(tt.token), tt.expected)
+			assertValEquals(t, trimArgPrefix(tt.token), tt.expected)
 		})
 	}
 }

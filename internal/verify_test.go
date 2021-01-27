@@ -3,7 +3,6 @@ package internal
 import (
 	"errors"
 	"strconv"
-	"strings"
 	"testing"
 )
 
@@ -35,23 +34,23 @@ func TestVPass(t *testing.T) {
 	vPass("", true)
 }
 
-func TestCmdTokensAreNotEmpty(t *testing.T) {
-	for _, tt := range mockNoEmptyTokensTests() {
-		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := cmdTokensAreNotEmpty(mockCommandDefinitions(tt.tokens), false)
-			assertError(t, err, tt.expError)
-		})
-	}
-}
+//func TestCmdTokensAreNotEmpty(t *testing.T) {
+//	for _, tt := range mockNoEmptyTokensTests() {
+//		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
+//			err := cmdTokensAreNotEmpty(mockCommandDefinitions(tt.tokens), false)
+//			assertError(t, err, tt.expError)
+//		})
+//	}
+//}
 
-func TestDifferentCmdTokens(t *testing.T) {
-	for _, tt := range mockDifferentTokensTests() {
-		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := differentCmdTokens(mockCommandDefinitions(tt.tokens), false)
-			assertError(t, err, tt.expError)
-		})
-	}
-}
+//func TestDifferentCmdTokens(t *testing.T) {
+//	for _, tt := range mockDifferentTokensTests() {
+//		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
+//			err := differentCmdTokens(mockCommandDefinitions(tt.tokens), false)
+//			assertError(t, err, tt.expError)
+//		})
+//	}
+//}
 
 //func TestDifferentCmdAbbr(t *testing.T) {
 //	for _, tt := range mockDifferentTokensTests() {
@@ -62,23 +61,23 @@ func TestDifferentCmdTokens(t *testing.T) {
 //	}
 //}
 
-func TestArgTokensAreNotEmpty(t *testing.T) {
-	for _, tt := range mockNoEmptyTokensTests() {
-		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := argTokensAreNotEmpty(mockArgumentDefinitions(tt.tokens), false)
-			assertError(t, err, tt.expError)
-		})
-	}
-}
+//func TestArgTokensAreNotEmpty(t *testing.T) {
+//	for _, tt := range mockNoEmptyTokensTests() {
+//		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
+//			err := argTokensAreNotEmpty(mockArgumentDefinitions(tt.tokens), false)
+//			assertError(t, err, tt.expError)
+//		})
+//	}
+//}
 
-func TestDifferentArgTokens(t *testing.T) {
-	for _, tt := range mockDifferentTokensTests() {
-		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := differentArgTokens(mockArgumentDefinitions(tt.tokens), false)
-			assertError(t, err, tt.expError)
-		})
-	}
-}
+//func TestDifferentArgTokens(t *testing.T) {
+//	for _, tt := range mockDifferentTokensTests() {
+//		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
+//			err := differentArgTokens(mockArgumentDefinitions(tt.tokens), false)
+//			assertError(t, err, tt.expError)
+//		})
+//	}
+//}
 
 //func TestDifferentArgAbbr(t *testing.T) {
 //	for _, tt := range mockDifferentTokensTests() {
@@ -115,63 +114,63 @@ func TestDifferentArgTokens(t *testing.T) {
 //	}
 //}
 
-func TestCommandsValidArgs(t *testing.T) {
-	for _, tt := range mockNoEmptyTokensTests() {
-		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := commandsValidArgs(mockCommandDefinitions(tt.tokens), mockArgByToken, false)
-			assertError(t, err, tt.expError)
-		})
-	}
-}
+//func TestCommandsValidArgs(t *testing.T) {
+//	for _, tt := range mockNoEmptyTokensTests() {
+//		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
+//			err := commandsValidArgs(mockCommandDefinitions(tt.tokens), mockArgByToken, false)
+//			assertError(t, err, tt.expError)
+//		})
+//	}
+//}
 
-func TestAllUsedArgs(t *testing.T) {
-	tests := []struct {
-		commands  []string
-		arguments []string
-		expError  bool
-	}{
-		{nil, nil, false},
-		{[]string{}, []string{}, false},
-		{[]string{"1"}, []string{"1"}, false},
-		{[]string{"1"}, []string{"2"}, true},
-	}
+//func TestAllUsedArgs(t *testing.T) {
+//	tests := []struct {
+//		commands  []string
+//		arguments []string
+//		expError  bool
+//	}{
+//		{nil, nil, false},
+//		{[]string{}, []string{}, false},
+//		{[]string{"1"}, []string{"1"}, false},
+//		{[]string{"1"}, []string{"2"}, true},
+//	}
+//
+//	for _, tt := range tests {
+//		name := strings.Join(tt.commands, "-") + "-" +
+//			strings.Join(tt.arguments, "-")
+//		t.Run(name, func(t *testing.T) {
+//			err := allUsedArgs(
+//				mockCommandDefinitions(tt.commands),
+//				mockArgumentDefinitions(tt.arguments),
+//				false)
+//			assertError(t, err, tt.expError)
+//		})
+//	}
+//}
 
-	for _, tt := range tests {
-		name := strings.Join(tt.commands, "-") + "-" +
-			strings.Join(tt.arguments, "-")
-		t.Run(name, func(t *testing.T) {
-			err := allUsedArgs(
-				mockCommandDefinitions(tt.commands),
-				mockArgumentDefinitions(tt.arguments),
-				false)
-			assertError(t, err, tt.expError)
-		})
-	}
-}
+//func TestDifferentArgsCmd(t *testing.T) {
+//	for _, tt := range mockDifferentTokensTests() {
+//		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
+//			err := differentArgsCmd(mockCommandDefinitions(tt.tokens), false)
+//			assertError(t, err, tt.expError)
+//		})
+//	}
+//}
 
-func TestDifferentArgsCmd(t *testing.T) {
-	for _, tt := range mockDifferentTokensTests() {
-		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := differentArgsCmd(mockCommandDefinitions(tt.tokens), false)
-			assertError(t, err, tt.expError)
-		})
-	}
-}
-
-func TestDifferentArgValues(t *testing.T) {
-	tests := []TokensTest{
-		{nil, false},
-		{[]string{}, false},
-		{[]string{"1", "2", "3"}, false},
-		{[]string{"1", "1"}, true},
-	}
-	for _, tt := range tests {
-		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
-			err := differentArgValues(mockArgumentDefinitions(tt.tokens), false)
-			assertError(t, err, tt.expError)
-		})
-	}
-}
+//func TestDifferentArgValues(t *testing.T) {
+//	tests := []TokensTest{
+//		{nil, false},
+//		{[]string{}, false},
+//		{[]string{"1", "2", "3"}, false},
+//		{[]string{"1", "1"}, true},
+//	}
+//	for _, tt := range tests {
+//		t.Run(strings.Join(tt.tokens, "-"), func(t *testing.T) {
+//			err := differentArgValues(mockArgumentDefinitions(tt.tokens), false)
+//			assertError(t, err, tt.expError)
+//		})
+//	}
+//}
 
 func TestAppendError(t *testing.T) {
 	tests := []error{errors.New(""), nil}

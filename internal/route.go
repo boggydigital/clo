@@ -2,24 +2,19 @@ package internal
 
 import "fmt"
 
-const (
-	helpCommand         = "help"
-	helpCommandArgument = "help:command"
-)
-
 func Route(request *Request) error {
 	if request == nil {
 		request = &Request{
-			Command: helpCommand,
+			Command: "help",
 		}
 	}
 	switch request.Command {
-	case helpCommand:
+	case "help":
 		defs, err := LoadDefault()
 		if err != nil {
 			return err
 		}
-		return printHelp(request.ArgVal(helpCommandArgument), defs)
+		return printHelp(request.ArgVal("command"), defs)
 	default:
 		return fmt.Errorf("unknown command: '%s'", request.Command)
 	}

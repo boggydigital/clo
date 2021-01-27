@@ -44,8 +44,8 @@ func TestNext(t *testing.T) {
 	}
 }
 
-func TestFirst(t *testing.T) {
-	assertValEquals(t, len(first()), 1)
+func TestInitial(t *testing.T) {
+	assertValEquals(t, len(initial()), 3)
 }
 
 //func TestExpandAbbr(t *testing.T) {

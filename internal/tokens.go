@@ -38,13 +38,9 @@ func tokenString(tokenType int) string {
 func next(tokenType int) []int {
 	switch tokenType {
 	case command:
-		fallthrough
-	//case commandAbbr:
-	//	return []int{argumentAbbr, argument, value}
-	case argument:
-		//	fallthrough
-		//case argumentAbbr:
 		return []int{argument, value}
+	case argument:
+		return []int{value, argument}
 	case value:
 		return []int{argument, value}
 	default:
@@ -52,9 +48,8 @@ func next(tokenType int) []int {
 	}
 }
 
-// first
-func first() []int {
-	return []int{command}
+func initial() []int {
+	return []int{command, argument, value}
 }
 
 //func expandAbbr(token string, tokenType int, def *Definitions) string {

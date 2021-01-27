@@ -6,13 +6,13 @@ import (
 	"testing"
 )
 
-func TestCreateHelpCommandDefinition(t *testing.T) {
-	assertNil(t, createHelpCommandDefinition(), false)
-}
-
-func TestCreateHelpArgumentDefinition(t *testing.T) {
-	assertNil(t, createHelpArgumentDefinition(""), false)
-}
+//func TestCreateHelpCommandDefinition(t *testing.T) {
+//	assertNil(t, createHelpCommandDefinition(), false)
+//}
+//
+//func TestCreateHelpArgumentDefinition(t *testing.T) {
+//	assertNil(t, createHelpArgumentDefinition(""), false)
+//}
 
 //func TestAddCommandAbbr(t *testing.T) {
 //	tests := []struct {
@@ -56,89 +56,89 @@ func TestCreateHelpArgumentDefinition(t *testing.T) {
 //	}
 //}
 
-func TestAddHelpCommand(t *testing.T) {
-	tests := []struct {
-		token      string
-		cmdByToken func(string) *CommandDefinition
-		expNil     bool
-	}{
-		{"", nil, true},
-		{"command", mockCommandByToken, true},
-		{"help", mockCommandByTokenNoHelp, false},
-	}
+//func TestAddHelpCommand(t *testing.T) {
+//	tests := []struct {
+//		token      string
+//		cmdByToken func(string) *CommandDefinition
+//		expNil     bool
+//	}{
+//		{"", nil, true},
+//		{"command", mockCommandByToken, true},
+//		{"help", mockCommandByTokenNoHelp, false},
+//	}
+//
+//	for _, tt := range tests {
+//		t.Run(tt.token, func(t *testing.T) {
+//			cmd := addHelpCommand(tt.token, tt.cmdByToken)
+//			assertNil(t, cmd, tt.expNil)
+//			if cmd != nil {
+//				assertValEquals(t, cmd.Token, tt.token)
+//			}
+//		})
+//	}
+//}
 
-	for _, tt := range tests {
-		t.Run(tt.token, func(t *testing.T) {
-			cmd := addHelpCommand(tt.token, tt.cmdByToken)
-			assertNil(t, cmd, tt.expNil)
-			if cmd != nil {
-				assertValEquals(t, cmd.Token, tt.token)
-			}
-		})
-	}
-}
+//func TestAddHelpCommandArgument(t *testing.T) {
+//	tests := []struct {
+//		token      string
+//		argByToken func(string) *ArgumentDefinition
+//		expNil     bool
+//		expError   bool
+//	}{
+//		{"", nil, true, false},
+//		{"arg", mockArgByToken, true, true},
+//		{"help", mockArgByTokenNoHelp, false, false},
+//	}
+//
+//	for _, tt := range tests {
+//		t.Run(tt.token, func(t *testing.T) {
+//			arg, err := addHelpCommandArgument(tt.token, tt.argByToken)
+//			assertNil(t, arg, tt.expNil)
+//			assertError(t, err, tt.expError)
+//			if arg != nil {
+//				assertValEquals(t, arg.Token, tt.token)
+//			}
+//		})
+//	}
+//}
 
-func TestAddHelpCommandArgument(t *testing.T) {
-	tests := []struct {
-		token      string
-		argByToken func(string) *ArgumentDefinition
-		expNil     bool
-		expError   bool
-	}{
-		{"", nil, true, false},
-		{"arg", mockArgByToken, true, true},
-		{"help", mockArgByTokenNoHelp, false, false},
-	}
+//func TestTryAddHelpCommand(t *testing.T) {
+//	tests := []struct {
+//		defs     *Definitions
+//		expError bool
+//	}{
+//		{nil, true},
+//		{mockDefinitions(), false},
+//		{mockAddHelpCommand(mockDefinitions()), false},
+//		{mockAddHelpCommandArgument(mockDefinitions()), true},
+//	}
+//
+//	for ii, tt := range tests {
+//		t.Run(strconv.Itoa(ii), func(t *testing.T) {
+//			assertError(t, tryAddHelpCommand(tt.defs), tt.expError)
+//		})
+//	}
+//}
 
-	for _, tt := range tests {
-		t.Run(tt.token, func(t *testing.T) {
-			arg, err := addHelpCommandArgument(tt.token, tt.argByToken)
-			assertNil(t, arg, tt.expNil)
-			assertError(t, err, tt.expError)
-			if arg != nil {
-				assertValEquals(t, arg.Token, tt.token)
-			}
-		})
-	}
-}
-
-func TestTryAddHelpCommand(t *testing.T) {
-	tests := []struct {
-		defs     *Definitions
-		expError bool
-	}{
-		{nil, true},
-		{mockDefinitions(), false},
-		{mockAddHelpCommand(mockDefinitions()), false},
-		{mockAddHelpCommandArgument(mockDefinitions()), true},
-	}
-
-	for ii, tt := range tests {
-		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-			assertError(t, tryAddHelpCommand(tt.defs), tt.expError)
-		})
-	}
-}
-
-func TestExpandRefValues(t *testing.T) {
-	tests := []struct {
-		args     []ArgumentDefinition
-		commands []CommandDefinition
-		expError bool
-	}{
-		{nil, nil, false},
-		{mockArgumentDefinitions([]string{"arg1", "arg2"}), nil, false},
-		{mockArgumentDefinitions([]string{"from:commands"}), nil, false},
-		{mockArgumentDefinitions([]string{"from:commands"}), mockCommandDefinitions([]string{"c1", "c2"}), false},
-		{mockArgumentDefinitions([]string{"from:error"}), nil, true},
-	}
-	for ii, tt := range tests {
-		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-			err := expandRefValues(tt.args, tt.commands)
-			assertError(t, err, tt.expError)
-		})
-	}
-}
+//func TestExpandRefValues(t *testing.T) {
+//	tests := []struct {
+//		args     []ArgumentDefinition
+//		commands []CommandDefinition
+//		expError bool
+//	}{
+//		{nil, nil, false},
+//		{mockArgumentDefinitions([]string{"arg1", "arg2"}), nil, false},
+//		{mockArgumentDefinitions([]string{"from:commands"}), nil, false},
+//		{mockArgumentDefinitions([]string{"from:commands"}), mockCommandDefinitions([]string{"c1", "c2"}), false},
+//		{mockArgumentDefinitions([]string{"from:error"}), nil, true},
+//	}
+//	for ii, tt := range tests {
+//		t.Run(strconv.Itoa(ii), func(t *testing.T) {
+//			err := expandRefValues(tt.args, tt.commands)
+//			assertError(t, err, tt.expError)
+//		})
+//	}
+//}
 
 func TestPrintHelp(t *testing.T) {
 	//tests := []struct {
@@ -183,9 +183,9 @@ func TestPrintAppCommands(t *testing.T) {
 	}
 }
 
-func TestPrintAppAttrsLegend(t *testing.T) {
-	printAppAttrsLegend()
-}
+//func TestPrintAppAttrsLegend(t *testing.T) {
+//	printAppAttrsLegend()
+//}
 
 func TestPrintAppMoreInfoPrompt(t *testing.T) {
 	for ii, dd := range mockHelpDefinitionsTests {

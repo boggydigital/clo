@@ -18,7 +18,7 @@ func (def *Definitions) Parse(args []string) (*Request, error) {
 		Arguments: make(map[string][]string),
 	}
 
-	var expected = first()
+	var expected = initial()
 
 	for _, arg := range args {
 		if arg == "" {
@@ -26,21 +26,24 @@ func (def *Definitions) Parse(args []string) (*Request, error) {
 		}
 		matched := false
 		for _, tt := range expected {
-			success, err := match(arg, tt, req, def)
+			// set default context for certain token types
+			// based on defaults defined in clo.json
+			err := req.setDefaultContext(tt, def)
 			if err != nil {
 				return req, err
 			}
-			if success {
+			//
+			definedToken, err := match(arg, tt, req, def)
+			if err != nil {
+				return req, err
+			}
+
+			if definedToken != "" {
 				matched = true
-				//expandedArg := expandAbbr(arg, tt, def)
-				// it's ok to ignore the error below, since we'd only return
-				// error in two cases:
-				// 1) req.Command is already set - this shouldn't be
-				// possible in this flow since after matching command
-				// token or abbreviation we would progress to another type
-				// 2) if tokenType is an unsupported value, however this is
-				// not possible in this flow given the next() function
-				_ = req.update(arg, tt)
+				err = req.update(trimAttrs(definedToken), tt)
+				if err != nil {
+					return req, err
+				}
 				expected = next(tt)
 				break
 			}

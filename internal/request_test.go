@@ -31,36 +31,36 @@ func TestRequestUpdate(t *testing.T) {
 	}
 }
 
-func TestCommandHasRequiredArgs(t *testing.T) {
-	for ii, tt := range mockRequestCommandTests {
-		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-			err := tt.req.commandHasRequiredArgs(tt.defs)
-			assertError(t, err, tt.expError)
-		})
-	}
-}
+//func TestCommandHasRequiredArgs(t *testing.T) {
+//	for ii, tt := range mockRequestCommandTests {
+//		t.Run(strconv.Itoa(ii), func(t *testing.T) {
+//			err := tt.req.commandHasRequiredArgs(tt.defs)
+//			assertError(t, err, tt.expError)
+//		})
+//	}
+//}
 
-func TestArgumentsMultipleValues(t *testing.T) {
-	for ii, tt := range mockRequestArgumentTests {
-		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-			err := tt.req.argumentsMultipleValues(tt.defs)
-			assertError(t, err, tt.expError)
-		})
-	}
-}
+//func TestArgumentsMultipleValues(t *testing.T) {
+//	for ii, tt := range mockRequestArgumentTests {
+//		t.Run(strconv.Itoa(ii), func(t *testing.T) {
+//			err := tt.req.argumentsMultipleValues(tt.defs)
+//			assertError(t, err, tt.expError)
+//		})
+//	}
+//}
 
-func TestRequestVerify(t *testing.T) {
-	tests := make([]RequestTest, 0)
-	tests = append(tests, mockRequestCommandTests...)
-	tests = append(tests, mockRequestArgumentTests...)
-
-	for ii, tt := range tests {
-		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-			err := tt.req.verify(tt.defs)
-			assertError(t, err, tt.expError)
-		})
-	}
-}
+//func TestRequestVerify(t *testing.T) {
+//	tests := make([]RequestTest, 0)
+//	tests = append(tests, mockRequestCommandTests...)
+//	tests = append(tests, mockRequestArgumentTests...)
+//
+//	for ii, tt := range tests {
+//		t.Run(strconv.Itoa(ii), func(t *testing.T) {
+//			err := tt.req.verify(tt.defs)
+//			assertError(t, err, tt.expError)
+//		})
+//	}
+//}
 
 func TestRequestFirstValue(t *testing.T) {
 	tests := []struct {

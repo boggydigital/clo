@@ -9,6 +9,9 @@ import (
 
 func main() {
 	req, err := clo.Parse(os.Args[1:])
+
+	fmt.Println(req)
+
 	if err != nil {
 		fmt.Println("error:", err.Error())
 		if err = clo.Route(req); err != nil {
