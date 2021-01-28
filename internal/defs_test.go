@@ -6,52 +6,56 @@ import (
 )
 
 func mockValidCmdArg(cmd, arg string) (string, string) {
-	return "", ""
+	//rCmd, rArg := cmd, arg
+	//if strings.HasSuffix(cmd, "doesnt-exist") {
+	//	rCmd = ""
+	//}
+	//if strings.HasSuffix(arg, "doesnt-exist") {
+	//	rArg = ""
+	//}
+	return cmd, arg
 }
 
-//func TestDefinitionsLoad(t *testing.T) {
-//	tests := []struct {
-//		load      func() (*Definitions, error)
-//		validLoad bool
-//		addedCmd  string
-//	}{
-//		{LoadDefault, true, "help"},
-//		{loadMockPathThatDoesntExist, false, "help"},
-//	}
-//
-//	// Load adds 'help' command
-//	defs := mockDefinitions()
-//	writeMockDefs(defs, t)
-//	t.Cleanup(deleteMockDefs)
-//
-//	for ii, tt := range tests {
-//		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-//			// command shouldn't exist before we add it at load
-//			cmd := defs.CommandByToken(tt.addedCmd)
-//			assertNil(t, cmd, true)
-//
-//			defs, err := tt.load()
-//			assertError(t, err, !tt.validLoad)
-//			assertNil(t, defs, !tt.validLoad)
-//
-//			if defs != nil {
-//				cmd := defs.CommandByToken(tt.addedCmd)
-//				assertNil(t, cmd, false)
-//			}
-//		})
-//	}
-//}
+func TestDefinitionsLoad(t *testing.T) {
+	tests := []struct {
+		load      func() (*Definitions, error)
+		validLoad bool
+		addedCmd  string
+	}{
+		{LoadDefault, true, "help"},
+		{loadMockPathThatDoesntExist, false, "help"},
+	}
+
+	// Load adds 'help' command
+	defs := mockDefinitions()
+	writeMockDefs(defs, t)
+	t.Cleanup(deleteMockDefs)
+
+	for ii, tt := range tests {
+		t.Run(strconv.Itoa(ii), func(t *testing.T) {
+			// command shouldn't exist before we add it at load
+			dc := defs.definedCmd(tt.addedCmd)
+			assertValEquals(t, dc, "")
+
+			defs, err := tt.load()
+			assertError(t, err, !tt.validLoad)
+			assertNil(t, defs, !tt.validLoad)
+
+			if defs != nil {
+				dc := defs.definedCmd(tt.addedCmd)
+				assertValEquals(t, dc, tt.addedCmd)
+			}
+		})
+	}
+}
 
 func TestDefinitionsLoadErrors(t *testing.T) {
 	// Load fails with known breaks:
-	// - Pre-existing "help:command" argument
-	// - Pre-existing "from:nowhere" reference value
 	tests := []struct {
 		setup    func(t *testing.T)
 		expNil   bool
 		expError bool
 	}{
-		//{setupBrokenMockDefs, true, true},
 		{setupEmptyMockDefs, true, true},
 	}
 
@@ -65,122 +69,110 @@ func TestDefinitionsLoadErrors(t *testing.T) {
 	}
 }
 
-//func TestDefinitionsCommandByToken(t *testing.T) {
-//	defs := mockDefinitions()
-//	for _, tt := range mockByTokenAbbrTests("command") {
-//		t.Run(tt.token, func(t *testing.T) {
-//			cd := defs.CommandByToken(tt.token)
-//			assertNil(t, cd, tt.expNil)
-//		})
-//	}
-//}
+func TestDefinitionsDefinedCmd(t *testing.T) {
+	tests := []struct {
+		cmd    string
+		expCmd string
+	}{
+		{"cmd-that-doesnt-exist", ""}, // used to test defs == nil
+		{"cmd-that-doesnt-exist", ""},
+		{"command1", "command1_"},
+		{"a", "abc"},
+		{"ab", "abc"},
+		{"abc", "abc"},
+	}
+	for ii, tt := range tests {
+		t.Run(tt.cmd, func(t *testing.T) {
+			defs := mockDefinitions()
+			if ii == 0 {
+				defs = nil
+			}
+			dc := defs.definedCmd(tt.cmd)
+			assertValEquals(t, dc, tt.expCmd)
+		})
+	}
+}
 
-//func TestDefinitionsCommandByAbbr(t *testing.T) {
-//	defs := mockDefinitions()
-//	for _, tt := range mockByTokenAbbrTests("c") {
-//		t.Run(tt.token, func(t *testing.T) {
-//			cd := defs.CommandByAbbr(tt.token)
-//			assertNil(t, cd, tt.expNil)
-//		})
-//	}
-//}
+func TestDefinitionsDefinedCmdArg(t *testing.T) {
+	tests := []struct {
+		cmd, arg       string
+		expCmd, expArg string
+	}{
+		{"cmd-that-doesnt-exist", "arg-that-doesnt-exist", "", ""}, // used to test defs == nil
+		{"cmd-that-doesnt-exist", "arg-that-doesnt-exist", "", ""},
+		{"command1", "argument1", "command1_", "argument1_!$"},
+		{"command1", "argument-that-doesnt-exist", "command1_", ""},
+	}
+	for ii, tt := range tests {
+		t.Run(tt.cmd+tt.arg, func(t *testing.T) {
+			defs := mockDefinitions()
+			if ii == 0 {
+				defs = nil
+			}
+			dc, da := defs.definedCmdArg(tt.cmd, tt.arg)
+			assertValEquals(t, dc, tt.expCmd)
+			assertValEquals(t, da, tt.expArg)
+		})
+	}
+}
 
-//func TestDefinitionsArgByToken(t *testing.T) {
-//	defs := mockDefinitions()
-//	for _, tt := range mockByTokenAbbrTests("argument") {
-//		t.Run(tt.token, func(t *testing.T) {
-//			cd := defs.ArgByToken(tt.token)
-//			assertNil(t, cd, tt.expNil)
-//		})
-//	}
-//}
+func TestDefinitionsDefinedCmdArgVal(t *testing.T) {
+	tests := []struct {
+		cmd, arg, val          string
+		expCmd, expArg, expVal string
+	}{
+		{"cmd-that-doesnt-exist", "arg-that-doesnt-exist", "value1", "", "", ""},
+		{"cmd-that-doesnt-exist", "arg-that-doesnt-exist", "value1", "", "", ""},
+		{"command1", "argument1", "", "command1_", "argument1_!$", ""},
+		{"abc", "argval", "value1", "abc", "argval", "value1"},
+	}
+	for ii, tt := range tests {
+		t.Run(tt.cmd+tt.arg+tt.val, func(t *testing.T) {
+			defs := mockDefinitions()
+			if ii == 0 {
+				defs = nil
+			}
+			dc, da, dv := defs.definedCmdArgVal(tt.cmd, tt.arg, tt.val)
+			assertValEquals(t, dc, tt.expCmd)
+			assertValEquals(t, da, tt.expArg)
+			assertValEquals(t, dv, tt.expVal)
+		})
+	}
+}
 
-//func TestDefinitionsArgByAbbr(t *testing.T) {
-//	defs := mockDefinitions()
-//	for _, tt := range mockByTokenAbbrTests("a") {
-//		t.Run(tt.token, func(t *testing.T) {
-//			cd := defs.ArgByAbbr(tt.token)
-//			assertNil(t, cd, tt.expNil)
-//		})
-//	}
-//}
+func TestDefinitionsDefaultCommand(t *testing.T) {
+	tests := []struct {
+		defs   *Definitions
+		expCmd string
+	}{
+		{nil, ""},
+		{mockDefinitions(), "command1_"},
+		{&Definitions{}, ""},
+	}
+	for _, tt := range tests {
+		t.Run(tt.expCmd, func(t *testing.T) {
+			dc := tt.defs.defaultCommand()
+			assertValEquals(t, dc, tt.expCmd)
+		})
+	}
+}
 
-//func TestDefinitionsDefaultArg(t *testing.T) {
-//	defs := mockDefinitions()
-//	tests := []struct {
-//		cmd      *CommandDefinition
-//		validCmd bool
-//		args     []string
-//		expNil   bool
-//	}{
-//		{nil, false, nil, true},
-//		{
-//			defs.CommandByToken("command1"),
-//			true,
-//			[]string{"argument-that-doesnt-exist", "argument1", "argument2"},
-//			false,
-//		},
-//		{defs.CommandByToken("command2"), true, nil, true},
-//	}
-//
-//	for _, tt := range tests {
-//		name := "nil"
-//		if tt.cmd != nil {
-//			name = tt.cmd.Token
-//		}
-//		t.Run(name, func(t *testing.T) {
-//			assertNil(t, tt.cmd, !tt.validCmd)
-//			if tt.validCmd && tt.args != nil {
-//				tt.cmd.Arguments = tt.args
-//			}
-//			if tt.cmd != nil {
-//				ad := defs.ArgByToken(tt.cmd.defaultArgument)
-//				assertNil(t, ad, tt.expNil)
-//			}
-//		})
-//	}
-//}
-
-//func TestDefinitionsRequiredArgs(t *testing.T) {
-//	defs := mockDefinitions()
-//	tests := []struct {
-//		cmd          string
-//		requiredArgs int
-//	}{
-//		{"command-that-doesnt-exist", 0},
-//		{defs.Commands[0].Token, 1},
-//	}
-//	// this is required to hit a "if arg == nil {" condition
-//	defs.Commands[0].Arguments = append(defs.Commands[0].Arguments, "argument-that-doesnt-exist")
-//	for _, tt := range tests {
-//		t.Run(tt.cmd, func(t *testing.T) {
-//			cd := defs.CommandByToken(tt.cmd)
-//			if cd != nil {
-//				assertValEquals(t, len(cd.requiredArguments), tt.requiredArgs)
-//			}
-//		})
-//	}
-//}
-
-//func TestDefinitionsValidArgVal(t *testing.T) {
-//	tests := []struct {
-//		arg    string
-//		val    string
-//		expNil bool
-//		expVal bool
-//	}{
-//		{"", "", true, false},
-//		{"argument-that-doesnt-exist", "", true, false},
-//		{"argument1", "value1", false, true},
-//	}
-//	defs := mockDefinitions()
-//	for _, tt := range tests {
-//		t.Run(fmt.Sprintf("%s-%s", tt.arg, tt.val), func(t *testing.T) {
-//			ad := defs.ArgByToken(tt.arg)
-//			assertNil(t, ad, tt.expNil)
-//			if ad != nil {
-//				assertValEquals(t, ad.ValidValue(tt.val), tt.expVal)
-//			}
-//		})
-//	}
-//}
+func TestDefinitionsDefaultArgument(t *testing.T) {
+	tests := []struct {
+		cmd    string
+		expArg string
+	}{
+		{"", ""},
+		{"command1", "argument1_!$"},
+		{"cmd-that-doesnt-exist", ""},
+		{"command2", ""},
+	}
+	for ii, tt := range tests {
+		defs := mockDefinitions()
+		if ii == 0 {
+			defs = nil
+		}
+		da := defs.defaultArgument(tt.cmd)
+		assertValEquals(t, da, tt.expArg)
+	}
+}

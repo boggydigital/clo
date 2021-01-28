@@ -33,7 +33,12 @@ func (def *Definitions) Parse(args []string) (*Request, error) {
 				return req, err
 			}
 			//
-			definedToken, err := match(arg, tt, req, def)
+			definedToken, err := match(
+				arg,
+				tt,
+				req.Command,
+				req.lastArgument(),
+				def)
 			if err != nil {
 				return req, err
 			}

@@ -20,7 +20,7 @@ func matchArg(
 func match(
 	token string,
 	tokenType int,
-	req *Request,
+	cmdCtx, argCtx string,
 	def *Definitions) (string, error) {
 	if def == nil {
 		return "", fmt.Errorf("cannot match token with nil definitions")
@@ -30,12 +30,12 @@ func match(
 	case command:
 		return def.definedCmd(token), nil
 	case argument:
-		return matchArg(token, req.Command, def.definedCmdArg), nil
+		return matchArg(token, cmdCtx, def.definedCmdArg), nil
 	case value:
 		if isArg(token) {
 			break
 		}
-		_, _, val := def.definedCmdArgVal(req.Command, req.lastArgument(), token)
+		_, _, val := def.definedCmdArgVal(cmdCtx, argCtx, token)
 		return val, nil
 	default:
 		return "", fmt.Errorf(

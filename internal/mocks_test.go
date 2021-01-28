@@ -15,7 +15,8 @@ func mockDefinitions() *Definitions {
 		Version: 1,
 		Cmd: map[string][]string{
 			"command1_": {"argument1_!$", "argument2..."},
-			"command2":  {"argument2..."},
+			"command2":  {"argument2...", "xyz"},
+			"abc":       {"argval=value1,value2"},
 		},
 	}
 }
@@ -84,12 +85,12 @@ func loadMockPathThatDoesntExist() (*Definitions, error) {
 	return Load("path/that/doesnt/exist")
 }
 
-func setupBrokenMockDefs(t *testing.T) {
-	defs := mockDefinitions()
-	//mockAddHelpCommandArgument(defs)
-	writeMockDefs(defs, t)
-	t.Cleanup(deleteMockDefs)
-}
+//func setupBrokenMockDefs(t *testing.T) {
+//	defs := mockDefinitions()
+//	//mockAddHelpCommandArgument(defs)
+//	writeMockDefs(defs, t)
+//	t.Cleanup(deleteMockDefs)
+//}
 
 func setupEmptyMockDefs(t *testing.T) {
 	writeEmptyMockDefs(t)

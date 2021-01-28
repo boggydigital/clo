@@ -108,14 +108,13 @@ func (def *Definitions) defaultArgument(cmd string) string {
 	}
 
 	dc := def.definedCmd(cmd)
-	for c, args := range def.Cmd {
-		if c != dc {
-			continue
-		}
-		for _, arg := range args {
-			if isDefault(arg) {
-				return arg
-			}
+	if dc == "" {
+		return ""
+	}
+
+	for _, arg := range def.Cmd[dc] {
+		if isDefault(arg) {
+			return arg
 		}
 	}
 	return ""
