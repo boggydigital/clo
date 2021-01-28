@@ -5,6 +5,10 @@ import (
 	"testing"
 )
 
+func mockValidCmdArg(cmd, arg string) (string, string) {
+	return "", ""
+}
+
 //func TestDefinitionsLoad(t *testing.T) {
 //	tests := []struct {
 //		load      func() (*Definitions, error)

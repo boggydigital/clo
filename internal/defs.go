@@ -77,9 +77,9 @@ func (def *Definitions) definedCmdArgVal(c, a, v string) (string, string, string
 		return cmd, arg, ""
 	}
 
-	// argValues
+	// splitArgValues
 	if hasArgValues(arg) {
-		asv, values := argValues(arg)
+		asv, values := splitArgValues(arg)
 		for _, val := range values {
 			if strings.HasPrefix(val, v) {
 				return cmd, asv, val

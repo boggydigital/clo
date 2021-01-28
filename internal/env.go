@@ -7,7 +7,11 @@ import (
 	"strings"
 )
 
-func argEnv(cmd, arg string) string {
+func appName() string {
+	return filepath.Base(os.Args[0])
+}
+
+func argEnv(app, cmd, arg string) string {
 	if arg == "" {
 		return ""
 	}
@@ -19,9 +23,11 @@ func argEnv(cmd, arg string) string {
 		envKey = fmt.Sprintf("%s_%s", strings.ToUpper(cmd), envKey)
 	}
 
-	envKey = fmt.Sprintf("%s_%s",
-		strings.ToUpper(filepath.Base(os.Args[0])),
-		envKey)
+	if app != "" {
+		envKey = fmt.Sprintf("%s_%s",
+			strings.ToUpper(app),
+			envKey)
+	}
 
 	return envKey
 }
@@ -43,7 +49,7 @@ func (req *Request) readEnvArgs(def *Definitions) error {
 		}
 
 		tArg := trimAttrs(arg)
-		envKey := argEnv(req.Command, trimAttrs(arg))
+		envKey := argEnv(appName(), req.Command, trimAttrs(arg))
 		envVal := os.Getenv(envKey)
 
 		// only add value from environmental variable if it's the only value,

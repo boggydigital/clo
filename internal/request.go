@@ -48,16 +48,6 @@ func (req *Request) setDefaultContext(tokenType int, def *Definitions) error {
 	return nil
 }
 
-func (req *Request) wasUpdated(tokenType int) bool {
-	switch tokenType {
-	case command:
-		return req.Command != ""
-	case argument:
-		return req.lastArgument() != ""
-	}
-	return false
-}
-
 func (req *Request) update(token string, tokenType int) error {
 	switch tokenType {
 	case command:
@@ -68,15 +58,18 @@ func (req *Request) update(token string, tokenType int) error {
 		break
 	case argument:
 		arg := trimArgPrefix(token)
+		if req.Arguments == nil {
+			req.Arguments = map[string][]string{}
+		}
 		if req.Arguments[arg] == nil {
 			req.Arguments[arg] = []string{}
 		}
 	case value:
-		lastKey := req.lastArgument()
-		if lastKey == "" {
+		lastArg := req.lastArgument()
+		if lastArg == "" {
 			return fmt.Errorf("cannot update value for a request with no arguments")
 		}
-		req.Arguments[lastKey] = append(req.Arguments[lastKey], token)
+		req.Arguments[lastArg] = append(req.Arguments[lastArg], token)
 	default:
 		return fmt.Errorf(
 			"cannot update request for a token '%v' of type '%v'",
