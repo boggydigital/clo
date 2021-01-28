@@ -34,12 +34,12 @@ func Load(path string) (*Definitions, error) {
 	return def, nil
 }
 
-func (def *Definitions) definedCmd(c string) string {
-	if def == nil {
+func (defs *Definitions) definedCmd(c string) string {
+	if defs == nil {
 		return ""
 	}
 
-	for cmd := range def.Cmd {
+	for cmd := range defs.Cmd {
 		if strings.HasPrefix(cmd, c) {
 			return cmd
 		}
@@ -48,17 +48,17 @@ func (def *Definitions) definedCmd(c string) string {
 	return ""
 }
 
-func (def *Definitions) definedCmdArg(c, a string) (string, string) {
-	if def == nil {
+func (defs *Definitions) definedCmdArg(c, a string) (string, string) {
+	if defs == nil {
 		return "", ""
 	}
 
-	cmd := def.definedCmd(c)
+	cmd := defs.definedCmd(c)
 	if cmd == "" {
 		return cmd, ""
 	}
 
-	for _, arg := range def.Cmd[cmd] {
+	for _, arg := range defs.Cmd[cmd] {
 		if strings.HasPrefix(arg, a) {
 			return cmd, arg
 		}
@@ -67,12 +67,12 @@ func (def *Definitions) definedCmdArg(c, a string) (string, string) {
 	return cmd, ""
 }
 
-func (def *Definitions) definedCmdArgVal(c, a, v string) (string, string, string) {
-	if def == nil {
+func (defs *Definitions) definedCmdArgVal(c, a, v string) (string, string, string) {
+	if defs == nil {
 		return "", "", ""
 	}
 
-	cmd, arg := def.definedCmdArg(c, a)
+	cmd, arg := defs.definedCmdArg(c, a)
 	if arg == "" {
 		return cmd, arg, ""
 	}
@@ -90,11 +90,11 @@ func (def *Definitions) definedCmdArgVal(c, a, v string) (string, string, string
 	return cmd, arg, v
 }
 
-func (def *Definitions) defaultCommand() string {
-	if def == nil {
+func (defs *Definitions) defaultCommand() string {
+	if defs == nil {
 		return ""
 	}
-	for c := range def.Cmd {
+	for c := range defs.Cmd {
 		if isDefault(c) {
 			return c
 		}
@@ -102,17 +102,17 @@ func (def *Definitions) defaultCommand() string {
 	return ""
 }
 
-func (def *Definitions) defaultArgument(cmd string) string {
-	if def == nil {
+func (defs *Definitions) defaultArgument(cmd string) string {
+	if defs == nil {
 		return ""
 	}
 
-	dc := def.definedCmd(cmd)
+	dc := defs.definedCmd(cmd)
 	if dc == "" {
 		return ""
 	}
 
-	for _, arg := range def.Cmd[dc] {
+	for _, arg := range defs.Cmd[dc] {
 		if isDefault(arg) {
 			return arg
 		}

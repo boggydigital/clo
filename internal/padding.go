@@ -1,8 +1,8 @@
 package internal
 
-func (def *Definitions) CommandsPadding() int {
+func (defs *Definitions) cmdPadding() int {
 	lToken := ""
-	for cmd, _ := range def.Cmd {
+	for cmd, _ := range defs.Cmd {
 		if len(cmd) > len(lToken) {
 			lToken = cmd
 		}
@@ -10,17 +10,16 @@ func (def *Definitions) CommandsPadding() int {
 	return len(lToken)
 }
 
-func (def *Definitions) ArgumentsPadding(cmd string) int {
+func (defs *Definitions) argPadding(cmd string) int {
 	lToken := ""
-	//cd := def.CommandByToken(cmd)
-	//if cd == nil {
-	//	return len(lToken)
-	//}
-	//
-	//for _, arg := range cd.Arguments {
-	//	if len(arg) > len(lToken) {
-	//		lToken = arg
-	//	}
-	//}
+	dc := defs.definedCmd(cmd)
+	if dc == "" {
+		return 0
+	}
+	for _, arg := range defs.Cmd[dc] {
+		if len(arg) > len(lToken) {
+			lToken = arg
+		}
+	}
 	return len(lToken)
 }

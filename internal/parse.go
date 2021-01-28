@@ -7,9 +7,9 @@ import (
 // Parse converts args to a structured Request or returns an error if there are unexpected values,
 // order or if any of the defined constraints are not met: fixed values, required,
 // multiple values, etc.
-func (def *Definitions) Parse(args []string) (*Request, error) {
+func (defs *Definitions) Parse(args []string) (*Request, error) {
 
-	if def == nil {
+	if defs == nil {
 		return nil, fmt.Errorf("cannot parse using nil definitions")
 	}
 
@@ -28,7 +28,7 @@ func (def *Definitions) Parse(args []string) (*Request, error) {
 		for _, tt := range expected {
 			// set default context for certain token types
 			// based on defaults defined in clo.json
-			err := req.setDefaultContext(tt, def)
+			err := req.setDefaultContext(tt, defs)
 			if err != nil {
 				return req, err
 			}
@@ -38,7 +38,7 @@ func (def *Definitions) Parse(args []string) (*Request, error) {
 				tt,
 				req.Command,
 				req.lastArgument(),
-				def)
+				defs)
 			if err != nil {
 				return req, err
 			}
@@ -63,9 +63,9 @@ func (def *Definitions) Parse(args []string) (*Request, error) {
 	// Safely ignoring error here as well, since the only condition
 	// that would lead to an error is a nil definitions,
 	// and we've already tested that above
-	_ = req.readEnvArgs(def)
+	_ = req.readEnvArgs(defs)
 
-	if err := req.verify(def); err != nil {
+	if err := req.verify(defs); err != nil {
 		return req, err
 	}
 

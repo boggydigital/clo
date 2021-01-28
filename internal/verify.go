@@ -203,7 +203,7 @@ func appendError(errors []error, err error) []error {
 	return errors
 }
 
-func (def *Definitions) Verify(debug bool) []error {
+func (defs *Definitions) Verify(debug bool) []error {
 
 	errors := make([]error, 0)
 

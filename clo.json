@@ -5,7 +5,7 @@
     "generate": ["command...", "argument..."]
   },
   "help": {
-    "app": "declarative CLI parameters",
+    "clo": "command-line objectives",
     "verify": "verify provided file for common errors",
     "generate": "generate clo.json or parts of it",
     "verify:path": "path to the file",

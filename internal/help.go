@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -26,7 +27,7 @@ func addHelpCmd(def *Definitions) {
 
 func printHelp(cmd string, defs *Definitions) error {
 	if defs == nil {
-		return fmt.Errorf("cannot show help without definitions")
+		return fmt.Errorf("cannot show help for nil definitions")
 	}
 	if cmd == "" {
 		printAppHelp(defs)
@@ -40,15 +41,19 @@ func printAppIntro(defs *Definitions) {
 	if defs == nil {
 		return
 	}
-	//fmt.Printf("%s - %s\n", defs.App, defs.Help)
+	appIntro := appName()
+	if appHelp, ok := defs.Help[appIntro]; ok {
+		appIntro = fmt.Sprintf("%s - %s\n", appIntro, appHelp)
+	}
+	fmt.Print(appIntro)
 }
 
 func printAppUsage(defs *Definitions) {
 	if defs == nil {
 		return
 	}
-	//fmt.Printf("Usage: %s command [arguments [values]]\n",
-	//	defs.App)
+	fmt.Printf("Usage: %s command [arguments [values]]\n",
+		appName())
 }
 
 func printAppCommands(defs *Definitions) {
@@ -56,12 +61,14 @@ func printAppCommands(defs *Definitions) {
 		return
 	}
 	fmt.Println("Commands:")
-	//for _, cmd := range defs.Commands {
-	//fmt.Printf("  %-"+strconv.Itoa(defs.CommandsPadding())+"s  %s",
-	//	cmd.Token,
-	//	cmd.Help)
-	//fmt.Println()
-	//}
+	for cmd := range defs.Cmd {
+		tc := trimAttrs(cmd)
+		cmdLine := fmt.Sprintf("  %-"+strconv.Itoa(defs.cmdPadding())+"s", tc)
+		if cmdHelp, ok := defs.Help[tc]; ok {
+			cmdLine = fmt.Sprintf("%s  %s", cmdLine, cmdHelp)
+		}
+		fmt.Println(cmdLine)
+	}
 }
 
 func printAppMoreInfoPrompt(defs *Definitions) {
@@ -69,8 +76,8 @@ func printAppMoreInfoPrompt(defs *Definitions) {
 		return
 	}
 
-	//fmt.Printf("Run '%s help [command]' for help on a specific command.\n",
-	//	defs.App)
+	fmt.Printf("Run '%s help [command]' for help on a specific command.\n",
+		appName())
 }
 
 func printAppHelp(defs *Definitions) {
@@ -84,18 +91,19 @@ func printAppHelp(defs *Definitions) {
 }
 
 func printCmdUsage(cmd string, defs *Definitions) {
-	//if defs == nil {
-	//	return
-	//}
-	//cmdUsage := fmt.Sprintf("Usage: %s %s ", defs.App, cmd)
-	//cd := defs.CommandByToken(cmd)
-	//if cd == nil {
-	//	return
-	//}
-	//if len(cd.Arguments) > 0 {
-	//	cmdUsage += "[<arguments>]"
-	//}
-	//fmt.Println(cmdUsage)
+	if defs == nil {
+		return
+	}
+	cmdUsage := fmt.Sprintf("Usage: %s %s ", appName(), cmd)
+	dc := defs.definedCmd(cmd)
+	if dc == "" {
+		return
+	}
+	if len(defs.Cmd[dc]) > 0 {
+		// TODO: print actual arguments
+		cmdUsage += "[<arguments>]"
+	}
+	fmt.Println(cmdUsage)
 }
 
 func printArgAttrs(cmd string, arg string, defs *Definitions) {
@@ -128,7 +136,7 @@ func printArgValues(cmd string, arg string, defs *Definitions) {
 	//	return
 	//}
 	//if len(ad.Values) > 0 {
-	//	ap := strconv.Itoa(defs.ArgumentsPadding(cmd))
+	//	ap := strconv.Itoa(defs.argPadding(cmd))
 	//	fmt.Printf("  %-"+ap+"s  supported values: %s\n",
 	//		"",
 	//		strings.Join(ad.Values, ", "))
@@ -143,7 +151,7 @@ func printCmdArgDesc(cmd string, arg string, defs *Definitions) {
 	//if ad == nil {
 	//	return
 	//}
-	//fmt.Printf("  %-"+strconv.Itoa(defs.ArgumentsPadding(cmd))+"s  %s", arg, ad.Help)
+	//fmt.Printf("  %-"+strconv.Itoa(defs.argPadding(cmd))+"s  %s", arg, ad.Help)
 }
 
 func printCmdArgs(cmd string, defs *Definitions) {
