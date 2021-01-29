@@ -2,7 +2,8 @@ package internal
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
+	"os"
 	"strings"
 )
 
@@ -12,26 +13,29 @@ type Definitions struct {
 	Help    map[string]string   `json:"help"`
 }
 
-func LoadDefault() (*Definitions, error) {
-	return Load("clo.json")
-}
-
-func Load(path string) (*Definitions, error) {
-
-	bytes, err := ioutil.ReadFile(path)
+func LoadDefault(path string) (*Definitions, error) {
+	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
 
-	var def *Definitions
+	defs, err := Load(file)
+	if err != nil {
+		return defs, err
+	}
 
-	if e := json.Unmarshal(bytes, &def); e != nil {
+	return defs, nil
+}
+
+func Load(reader io.Reader) (*Definitions, error) {
+	var defs *Definitions
+	if e := json.NewDecoder(reader).Decode(&defs); e != nil {
 		return nil, e
 	}
 
-	addHelpCmd(def)
+	addHelpCmd(defs)
 
-	return def, nil
+	return defs, nil
 }
 
 func (defs *Definitions) definedCmd(c string) string {

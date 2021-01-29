@@ -1,118 +1,22 @@
 package internal
 
-type TokenTest struct {
-	token  string
-	expNil bool
-}
-
-type TokensTest struct {
-	tokens   []string
-	expError bool
-}
-
-type RequestTest struct {
-	req      *Request
-	expError bool
-}
-
 type TokenHelpTest struct {
 	token string
-	defs  *Definitions
-}
-
-type ValidityTest struct {
-	values   []string
-	value    string
-	expected bool
-}
-
-type MatchTest struct {
-	token     string
-	tokenType int
-	expected  bool
-	expError  bool
-}
-
-type MatchFlagTest struct {
-	MatchTest
-	def *Definitions
-}
-
-type MatchDefaultValueTest struct {
-	MatchTest
-	req *Request
-	def *Definitions
-}
-
-//type MatchValueTest struct {
-//	MatchTest
-//	arg *ArgumentDefinition
-//}
-
-var mockValidityTests = []ValidityTest{
-	{nil, "any", false},
-	{[]string{}, "any", false},
-	{[]string{"value1"}, "value1", true},
-	{[]string{"value-that-doesnt-exist"}, "value1", false},
-}
-
-var mockExamplesTests = []TokensTest{
-	{nil, false},
-	{[]string{}, false},
-	{[]string{"1", "2"}, false},
-	{[]string{"", ""}, true},
-}
-
-var mockEmptyExamplesTests = []TokensTest{
-	{nil, false},
-	{[]string{}, false},
-	{[]string{"1", "2"}, false},
-	{[]string{"empty"}, false},
-	{[]string{"skip"}, true},
-}
-
-func mockNoEmptyTokensTests() []TokensTest {
-	return []TokensTest{
-		{nil, false},
-		{[]string{}, false},
-		{[]string{"1", "2"}, false},
-		{[]string{"", "x"}, true},
-		{[]string{"x", ""}, true},
-	}
-}
-
-func mockDifferentTokensTests() []TokensTest {
-	return []TokensTest{
-		{nil, false},
-		{[]string{}, false},
-		{[]string{"1"}, false},
-		{[]string{"1", "2"}, false},
-		{[]string{"1", "2", "2"}, true},
-	}
-}
-
-func mockByTokenAbbrTests(prefix string) []TokenTest {
-	return []TokenTest{
-		// valid token/abbr
-		{prefix + "1", false},
-		// invalid token/abbr
-		{prefix + "-token-that-doesnt-exist", true},
-	}
 }
 
 var mockHelpDefinitionsTests = []*Definitions{nil, mockDefinitions()}
 
 var mockPrintArgumentHelpTests = []TokenHelpTest{
-	{"", nil},
-	{"argument1", mockDefinitions()},
-	{"argument2", mockDefinitions()},
-	{"argument3", mockDefinitions()},
-	{"argument-that-doesnt-exist", mockDefinitions()},
+	{""},
+	{"argument1"},
+	{"argument2"},
+	{"argument3"},
+	{"argument-that-doesnt-exist"},
 }
 
 var mockPrintCommandHelpTests = []TokenHelpTest{
-	{"", nil},
-	{"command1", mockDefinitions()},
-	{"command2", mockDefinitions()},
-	{"command-that-doesnt-exist", mockDefinitions()},
+	{""},
+	{"command1"},
+	{"command2"},
+	{"command-that-doesnt-exist"},
 }

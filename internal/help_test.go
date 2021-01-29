@@ -151,10 +151,11 @@ func TestPrintHelp(t *testing.T) {
 	//	{"command1", mockDefinitions(), false},
 	//	{"command-that-doesnt-exist", mockDefinitions(), false},
 	//}
+	defs := mockDefinitions()
 	for _, tt := range mockPrintCommandHelpTests {
 		t.Run(tt.token, func(t *testing.T) {
-			err := printHelp(tt.token, tt.defs)
-			assertError(t, err, tt.defs == nil)
+			err := printHelp(tt.token, defs)
+			assertError(t, err, defs == nil)
 		})
 	}
 }
@@ -204,41 +205,46 @@ func TestPrintAppHelp(t *testing.T) {
 }
 
 func TestPrintCmdUsage(t *testing.T) {
+	defs := mockDefinitions()
 	for _, tt := range mockPrintCommandHelpTests {
 		t.Run(tt.token, func(t *testing.T) {
-			printCmdUsage(tt.token, tt.defs)
+			printCmdUsage(tt.token, defs)
 		})
 	}
 }
 
 func TestPrintArgAttrs(t *testing.T) {
+	defs := mockDefinitions()
 	for _, tt := range mockPrintArgumentHelpTests {
 		t.Run(tt.token, func(t *testing.T) {
-			printArgAttrs("", tt.token, tt.defs)
+			printArgAttrs("", tt.token, defs)
 		})
 	}
 }
 
 func TestPrintArgValues(t *testing.T) {
+	defs := mockDefinitions()
 	for _, tt := range mockPrintArgumentHelpTests {
 		t.Run(tt.token, func(t *testing.T) {
-			printArgValues("", tt.token, tt.defs)
+			printArgValues("", tt.token, defs)
 		})
 	}
 }
 
 func TestPrintCmdArgDesc(t *testing.T) {
+	defs := mockDefinitions()
 	for _, tt := range mockPrintArgumentHelpTests {
 		t.Run(tt.token, func(t *testing.T) {
-			printCmdArgDesc("", tt.token, tt.defs)
+			printCmdArgDesc("", tt.token, defs)
 		})
 	}
 }
 
 func TestPrintCmdArgs(t *testing.T) {
+	defs := mockDefinitions()
 	for _, tt := range mockPrintCommandHelpTests {
 		t.Run(tt.token, func(t *testing.T) {
-			printCmdArgs(tt.token, tt.defs)
+			printCmdArgs(tt.token, defs)
 		})
 	}
 }
@@ -248,9 +254,10 @@ func TestPrintCmdArgs(t *testing.T) {
 //}
 
 func TestPrintCmdHelp(t *testing.T) {
+	defs := mockDefinitions()
 	for _, tt := range mockPrintCommandHelpTests {
 		t.Run(fmt.Sprintf("%s", tt.token), func(t *testing.T) {
-			printCmdHelp(tt.token, tt.defs)
+			printCmdHelp(tt.token, defs)
 		})
 	}
 }

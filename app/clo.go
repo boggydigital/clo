@@ -8,19 +8,18 @@ import (
 )
 
 func main() {
-	req, err := clo.Parse(os.Args[1:])
+	defs, err := clo.LoadDefinitions("clo.json")
 
-	fmt.Println(req)
-
+	req, err := clo.Parse(os.Args[1:], defs)
 	if err != nil {
 		fmt.Println("error:", err.Error())
-		if err = clo.Route(req); err != nil {
+		if err = clo.Route(req, defs); err != nil {
 			fmt.Println("error:", err.Error())
 		}
 		os.Exit(1)
 	}
 
-	if err := cmd.Dispatch(req); err != nil {
+	if err := cmd.Route(req, defs); err != nil {
 		fmt.Println("error:", err.Error())
 		os.Exit(1)
 	}

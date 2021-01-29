@@ -4,9 +4,9 @@ import (
 	"github.com/boggydigital/clo"
 )
 
-func Dispatch(req *clo.Request) error {
+func Route(req *clo.Request, defs *clo.Definitions) error {
 	if req == nil {
-		return clo.Route(nil)
+		return clo.Route(nil, defs)
 	}
 	switch req.Command {
 	case "verify":
@@ -18,6 +18,6 @@ func Dispatch(req *clo.Request) error {
 			req.ArgValues("command"),
 			req.ArgValues("argument"))
 	default:
-		return clo.Route(req)
+		return clo.Route(req, defs)
 	}
 }

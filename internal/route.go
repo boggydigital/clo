@@ -2,7 +2,7 @@ package internal
 
 import "fmt"
 
-func Route(request *Request) error {
+func Route(request *Request, defs *Definitions) error {
 	if request == nil {
 		request = &Request{
 			Command: "help",
@@ -10,10 +10,6 @@ func Route(request *Request) error {
 	}
 	switch request.Command {
 	case "help":
-		defs, err := LoadDefault()
-		if err != nil {
-			return err
-		}
 		return printHelp(request.ArgVal("command"), defs)
 	default:
 		return fmt.Errorf("unknown command: '%s'", request.Command)

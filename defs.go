@@ -11,7 +11,7 @@ type Definitions struct {
 
 // LoadDefinitions loads definitions JSON from a path.
 func LoadDefinitions(path string) (*Definitions, error) {
-	defs, err := internal.Load(path)
+	defs, err := internal.LoadDefault(path)
 	if err != nil {
 		return nil, err
 	}

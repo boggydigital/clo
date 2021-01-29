@@ -1,18 +1,20 @@
 package internal
 
 import (
+	"strconv"
 	"testing"
 )
 
 func TestDefinitionsParse(t *testing.T) {
 	//defs := mockDefinitions()
-	//tests := []struct {
-	//	def      *Definitions
-	//	args     []string
-	//	req      *Request
-	//	expError bool
-	//}{
-	//	{},
+	tests := []struct {
+		args   []string
+		req    *Request
+		expErr bool
+	}{
+		{[]string{}, nil, true},
+		{[]string{"--argument1"}, &Request{Command: "command1", Arguments: map[string][]string{"argument1": {}}}, false},
+	}
 	//{nil, []string{}, nil, true},
 	//{defs, []string{""}, &Request{
 	//	Command:   "",
@@ -39,12 +41,15 @@ func TestDefinitionsParse(t *testing.T) {
 	//	true,
 	//},
 	//}
-
-	//for _, tt := range tests {
-	//	t.Run(strings.Join(tt.args, "-"), func(t *testing.T) {
-	//		req, err := tt.def.Parse(tt.args)
-	//		assertError(t, err, tt.expError)
-	//		assertInterfaceEquals(t, req, tt.req)
-	//	})
-	//}
+	for ii, tt := range tests {
+		t.Run(strconv.Itoa(ii), func(t *testing.T) {
+			defs := mockDefinitions()
+			if ii == 0 {
+				defs = nil
+			}
+			req, err := defs.Parse(tt.args)
+			assertError(t, err, tt.expErr)
+			assertInterfaceEquals(t, req, tt.req)
+		})
+	}
 }

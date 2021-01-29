@@ -93,6 +93,11 @@ func TestRequestUpdate(t *testing.T) {
 	}
 }
 
+type RequestTest struct {
+	req      *Request
+	expError bool
+}
+
 var mockRequestCommandTests = []RequestTest{
 	{nil, true}, // will be used to test defs == nil
 	{nil, true},
