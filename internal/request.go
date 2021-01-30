@@ -6,27 +6,28 @@ import (
 )
 
 type Request struct {
-	Command   string
-	Arguments map[string][]string
+	Command      string
+	Arguments    map[string][]string
+	lastArgument string
 }
 
 func (req *Request) hasArguments() bool {
 	return req != nil && len(req.Arguments) > 0
 }
 
-func (req *Request) lastArgument() string {
-	if req == nil {
-		return ""
-	}
-	if len(req.Arguments) == 0 {
-		return ""
-	}
-	keys := make([]string, 0, len(req.Arguments))
-	for k := range req.Arguments {
-		keys = append(keys, k)
-	}
-	return keys[len(keys)-1]
-}
+//func (req *Request) lastArgument() string {
+//	if req == nil {
+//		return ""
+//	}
+//	if len(req.Arguments) == 0 {
+//		return ""
+//	}
+//	keys := make([]string, 0, len(req.Arguments))
+//	for k := range req.Arguments {
+//		keys = append(keys, k)
+//	}
+//	return keys[len(keys)-1]
+//}
 
 func (req *Request) setDefaultContext(tokenType int, def *Definitions) error {
 	switch tokenType {
@@ -38,7 +39,7 @@ func (req *Request) setDefaultContext(tokenType int, def *Definitions) error {
 			}
 		}
 	case value:
-		if req.lastArgument() == "" {
+		if req.lastArgument == "" {
 			da := def.defaultArgument(req.Command)
 			if da != "" {
 				return req.update(trimAttrs(da), argument)
@@ -58,18 +59,18 @@ func (req *Request) update(token string, tokenType int) error {
 		break
 	case argument:
 		arg := trimArgPrefix(token)
+		req.lastArgument = arg
 		if req.Arguments == nil {
 			req.Arguments = map[string][]string{}
 		}
-		if req.Arguments[arg] == nil {
-			req.Arguments[arg] = []string{}
+		if req.Arguments[req.lastArgument] == nil {
+			req.Arguments[req.lastArgument] = []string{}
 		}
 	case value:
-		lastArg := req.lastArgument()
-		if lastArg == "" {
+		if req.lastArgument == "" {
 			return fmt.Errorf("cannot update value for a request with no arguments")
 		}
-		req.Arguments[lastArg] = append(req.Arguments[lastArg], token)
+		req.Arguments[req.lastArgument] = append(req.Arguments[req.lastArgument], token)
 	default:
 		return fmt.Errorf(
 			"cannot update request for a token '%v' of type '%v'",

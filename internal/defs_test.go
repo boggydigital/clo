@@ -156,12 +156,9 @@ func TestDefinitionsDefinedCmd(t *testing.T) {
 		{"ab", "abc"},
 		{"abc", "abc"},
 	}
-	for ii, tt := range tests {
+	for _, tt := range tests {
 		t.Run(tt.cmd, func(t *testing.T) {
 			defs := mockDefinitions()
-			if ii == 0 {
-				defs = nil
-			}
 			dc := defs.definedCmd(tt.cmd)
 			assertValEquals(t, dc, tt.expCmd)
 		})
@@ -178,12 +175,9 @@ func TestDefinitionsDefinedCmdArg(t *testing.T) {
 		{"command1", "argument1", "command1_", "argument1_!$"},
 		{"command1", "argument-that-doesnt-exist", "command1_", ""},
 	}
-	for ii, tt := range tests {
+	for _, tt := range tests {
 		t.Run(tt.cmd+tt.arg, func(t *testing.T) {
 			defs := mockDefinitions()
-			if ii == 0 {
-				defs = nil
-			}
 			dc, da := defs.definedCmdArg(tt.cmd, tt.arg)
 			assertValEquals(t, dc, tt.expCmd)
 			assertValEquals(t, da, tt.expArg)
@@ -201,12 +195,9 @@ func TestDefinitionsDefinedCmdArgVal(t *testing.T) {
 		{"command1", "argument1", "", "command1_", "argument1_!$", ""},
 		{"abc", "argval", "value1", "abc", "argval", "value1"},
 	}
-	for ii, tt := range tests {
+	for _, tt := range tests {
 		t.Run(tt.cmd+tt.arg+tt.val, func(t *testing.T) {
 			defs := mockDefinitions()
-			if ii == 0 {
-				defs = nil
-			}
 			dc, da, dv := defs.definedCmdArgVal(tt.cmd, tt.arg, tt.val)
 			assertValEquals(t, dc, tt.expCmd)
 			assertValEquals(t, da, tt.expArg)
@@ -237,16 +228,12 @@ func TestDefinitionsDefaultArgument(t *testing.T) {
 		cmd    string
 		expArg string
 	}{
-		{"", ""},
 		{"command1", "argument1_!$"},
 		{"cmd-that-doesnt-exist", ""},
 		{"command2", ""},
 	}
-	for ii, tt := range tests {
+	for _, tt := range tests {
 		defs := mockDefinitions()
-		if ii == 0 {
-			defs = nil
-		}
 		da := defs.defaultArgument(tt.cmd)
 		assertValEquals(t, da, tt.expArg)
 	}

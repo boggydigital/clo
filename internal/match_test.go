@@ -40,12 +40,9 @@ func TestMatch(t *testing.T) {
 		{"-value1", value, "abc", "argval", "", false},
 		{"value1", value, "abc", "argval", "value1", false},
 	}
-	for ii, tt := range tests {
+	for _, tt := range tests {
 		t.Run(tt.token, func(t *testing.T) {
 			defs := mockDefinitions()
-			if ii == 0 {
-				defs = nil
-			}
 			m, err := match(tt.token, tt.tokenType, tt.cmdCtx, tt.argCtx, defs)
 			assertValEquals(t, m, tt.expected)
 			assertError(t, err, tt.expError)

@@ -5,51 +5,69 @@ import (
 	"testing"
 )
 
-func TestDefinitionsParse(t *testing.T) {
-	//defs := mockDefinitions()
-	tests := []struct {
-		args   []string
-		req    *Request
-		expErr bool
-	}{
-		{[]string{}, nil, true},
-		{[]string{"--argument1"}, &Request{Command: "command1", Arguments: map[string][]string{"argument1": {}}}, false},
+func mockDefinitions() *Definitions {
+	return &Definitions{
+		Version: 1,
+		Cmd: map[string][]string{
+			"command1_": {"argument1_!$", "argument2..."},
+			"command2":  {"argument2...", "xyz"},
+			"abc":       {"argval=value1,value2"},
+		},
 	}
-	//{nil, []string{}, nil, true},
-	//{defs, []string{""}, &Request{
-	//	Command:   "",
-	//	Arguments: map[string][]string{},
-	//}, false},
-	//{defs, []string{"c1", "-a1", "value1"},
-	//	&Request{
-	//		Command: "command1",
-	//		Arguments: map[string][]string{
-	//			"argument1": {"value1"},
-	//		},
-	//	},
-	//	false,
-	//},
-	//{defs, []string{"c1", "-a1", "value-that-doesnt-exist"}, nil, true},
-	//{defs, []string{"command-that-doesnt-exist"}, nil, true},
-	//{defs, []string{"c1", "-a2", "value3", "value4"},
-	//	&Request{
-	//		Command: "command1",
-	//		Arguments: map[string][]string{
-	//			"argument2": {"value3", "value4"},
-	//		},
-	//	},
-	//	true,
-	//},
-	//}
+}
+
+func mockDefinitionsNoDefaults() *Definitions {
+	return &Definitions{
+		Version: 1,
+		Cmd: map[string][]string{
+			"command1": {"argument1=value1,value2", "argument2=value3,value4"},
+		},
+	}
+}
+
+func TestDefinitionsParse(t *testing.T) {
+	tests := []struct {
+		args       []string
+		expCmd     string
+		expLastArg string
+		expLenArgs int
+		expErr     bool
+	}{
+		{[]string{"", "command1", "--argument1"}, "command1", "argument1", 1, false},
+		{[]string{"--argument1"}, "command1", "argument1", 1, false},
+		{[]string{"unknown-token"}, "command1", "argument1", 1, false},
+	}
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
 			defs := mockDefinitions()
-			if ii == 0 {
-				defs = nil
-			}
 			req, err := defs.Parse(tt.args)
 			assertError(t, err, tt.expErr)
-			assertInterfaceEquals(t, req, tt.req)
+			assertValEquals(t, req.Command, tt.expCmd)
+			assertValEquals(t, req.lastArgument, tt.expLastArg)
+			assertValEquals(t, len(req.Arguments), tt.expLenArgs)
+		})
+	}
+}
+
+func TestDefinitionsNoDefaultsParse(t *testing.T) {
+	tests := []struct {
+		args       []string
+		expCmd     string
+		expLastArg string
+		expLenArgs int
+		expErr     bool
+	}{
+		{[]string{"command2"}, "", "", 0, true},
+		{[]string{"command1", "argument1", "value-that-doesnt-exist"}, "command1", "", 0, true},
+	}
+	for ii, tt := range tests {
+		t.Run(strconv.Itoa(ii), func(t *testing.T) {
+			defs := mockDefinitionsNoDefaults()
+			req, err := defs.Parse(tt.args)
+			assertError(t, err, tt.expErr)
+			assertValEquals(t, req.Command, tt.expCmd)
+			assertValEquals(t, req.lastArgument, tt.expLastArg)
+			assertValEquals(t, len(req.Arguments), tt.expLenArgs)
 		})
 	}
 }

@@ -1,16 +1,12 @@
 {
   "version": 1,
   "cmd": {
-    "verify_": ["path_$!", "debug"],
-    "generate": ["command...", "argument..."]
+    "validate_": ["path_$!", "debug"]
   },
   "help": {
     "clo": "command-line objectives",
-    "verify": "verify provided file for common errors",
-    "generate": "generate clo.json or parts of it",
-    "verify:path": "path to the file",
-    "generate:command": "clo.json command",
-    "generate:argument": "clo.json argument",
+    "validate": "verify provided file for common errors",
+    "validate:path": "path to the file",
     "debug": "print debug information"
   }
 }

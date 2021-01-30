@@ -27,6 +27,7 @@
 ## Changes
 
 - default argument values - when none are specified (can be generated as "arg=value!")
+- help printout should use templates
 
 ## Follow-up
 

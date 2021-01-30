@@ -25,8 +25,11 @@ func assertNil(t *testing.T, v interface{}, expNil bool) {
 }
 
 func assertError(t *testing.T, err error, expError bool) {
-	if (err != nil && !expError) || (err == nil && expError) {
-		t.Error(err)
+	if err != nil && !expError {
+		t.Error("unexpected error: ", err)
+	}
+	if err == nil && expError {
+		t.Error("missing expected error")
 	}
 }
 

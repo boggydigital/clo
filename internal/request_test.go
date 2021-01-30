@@ -24,25 +24,6 @@ func TestRequestHasArguments(t *testing.T) {
 	}
 }
 
-func TestRequestLastArgument(t *testing.T) {
-	tests := []struct {
-		req      *Request
-		expected string
-	}{
-		{nil, ""},
-		{&Request{}, ""},
-		{&Request{Arguments: map[string][]string{}}, ""},
-		{&Request{Arguments: map[string][]string{"1": {}}}, "1"},
-		{&Request{Arguments: map[string][]string{"1": {"2"}}}, "1"},
-		{&Request{Arguments: map[string][]string{"1": {"2"}, "3": {}}}, "3"},
-	}
-	for ii, tt := range tests {
-		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-			assertValEquals(t, tt.req.lastArgument(), tt.expected)
-		})
-	}
-}
-
 func TestRequestSetDefaultContext(t *testing.T) {
 	defs := mockDefinitions()
 	tests := []struct {
@@ -62,7 +43,7 @@ func TestRequestSetDefaultContext(t *testing.T) {
 			assertError(t, tt.req.setDefaultContext(tt.tokenType, defs), tt.expError)
 			if tt.req != nil {
 				assertValEquals(t, tt.req.Command, tt.expCmd)
-				assertValEquals(t, tt.req.lastArgument(), tt.expArg)
+				assertValEquals(t, tt.req.lastArgument, tt.expArg)
 			}
 		})
 	}
@@ -113,9 +94,6 @@ func TestRequestCommandHasRequiredArgs(t *testing.T) {
 	for ii, tt := range mockRequestCommandTests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
 			defs := mockDefinitions()
-			if ii == 0 {
-				defs = nil
-			}
 			err := tt.req.commandHasRequiredArgs(defs)
 			assertError(t, err, tt.expError)
 		})
@@ -136,9 +114,6 @@ func TestArgumentsMultipleValues(t *testing.T) {
 	for ii, tt := range mockRequestArgumentTests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
 			defs := mockDefinitions()
-			if ii == 0 {
-				defs = nil
-			}
 			err := tt.req.argumentsMultipleValues(defs)
 			assertError(t, err, tt.expError)
 		})
@@ -153,9 +128,6 @@ func TestRequestVerify(t *testing.T) {
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
 			defs := mockDefinitions()
-			if ii == 0 {
-				defs = nil
-			}
 			err := tt.req.verify(defs)
 			assertError(t, err, tt.expError)
 		})

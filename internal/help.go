@@ -42,7 +42,8 @@ func printAppIntro(defs *Definitions) {
 		return
 	}
 	appIntro := appName()
-	if appHelp, ok := defs.Help[appIntro]; ok {
+	appHelp := defs.help([]string{appIntro})
+	if appHelp != "" {
 		appIntro = fmt.Sprintf("%s - %s\n", appIntro, appHelp)
 	}
 	fmt.Print(appIntro)
@@ -106,89 +107,57 @@ func printCmdUsage(cmd string, defs *Definitions) {
 	fmt.Println(cmdUsage)
 }
 
-func printArgAttrs(cmd string, arg string, defs *Definitions) {
-	//if defs == nil {
-	//	return
-	//}
-	//ad := defs.ArgByToken(arg)
-	//if ad == nil {
-	//	return
-	//}
-	//attrs := make([]string, 0)
-	//if ad.Env {
-	//	//envToken := argEnv(defs.EnvPrefix, cmd, arg)
-	//	//attrs = append(attrs, fmt.Sprintf("Env:%s", envToken))
-	//}
-	//if ad.Multiple {
-	//	attrs = append(attrs, "Mult")
-	//}
-	//if len(attrs) > 0 {
-	//	fmt.Printf(" (%s)", strings.Join(attrs, ", "))
-	//}
-}
-
 func printArgValues(cmd string, arg string, defs *Definitions) {
-	//if defs == nil {
-	//	return
-	//}
-	//ad := defs.ArgByToken(arg)
-	//if ad == nil {
-	//	return
-	//}
-	//if len(ad.Values) > 0 {
-	//	ap := strconv.Itoa(defs.argPadding(cmd))
-	//	fmt.Printf("  %-"+ap+"s  supported values: %s\n",
-	//		"",
-	//		strings.Join(ad.Values, ", "))
-	//}
+	if defs == nil {
+		return
+	}
+	_, da := defs.definedCmdArg(cmd, arg)
+	if da == "" {
+		return
+	}
+	_, values := splitArgValues(da)
+	if len(values) > 0 {
+		ap := strconv.Itoa(defs.argPadding(cmd))
+		fmt.Printf("  %-"+ap+"s  supported values: %s\n",
+			"",
+			strings.Join(values, ", "))
+	}
 }
 
 func printCmdArgDesc(cmd string, arg string, defs *Definitions) {
-	//if defs == nil {
-	//	return
-	//}
-	//ad := defs.ArgByToken(arg)
-	//if ad == nil {
-	//	return
-	//}
-	//fmt.Printf("  %-"+strconv.Itoa(defs.argPadding(cmd))+"s  %s", arg, ad.Help)
+	if defs == nil {
+		return
+	}
+	_, da := defs.definedCmdArg(cmd, arg)
+	if da == "" {
+		return
+	}
+	fmt.Printf("  %-"+strconv.Itoa(defs.argPadding(cmd))+"s  %s",
+		trimAttrs(da),
+		defs.help([]string{cmd, arg}))
 }
 
 func printCmdArgs(cmd string, defs *Definitions) {
-	//if defs == nil {
-	//	return
-	//}
-	//cd := defs.CommandByToken(cmd)
-	//if cd == nil {
-	//	return
-	//}
-	//fmt.Println("Arguments:")
-	//for _, arg := range cd.Arguments {
-	//	printCmdArgDesc(cmd, arg, defs)
-	//	printArgAttrs(cmd, arg, defs)
-	//	fmt.Println()
-	//	printArgValues(cmd, arg, defs)
-	//}
+	if defs == nil {
+		return
+	}
+	dc := defs.definedCmd(cmd)
+	if dc == "" {
+		return
+	}
+	if len(defs.Cmd[dc]) > 0 {
+		fmt.Println("Arguments:")
+		for _, arg := range defs.Cmd[dc] {
+			printCmdArgDesc(cmd, arg, defs)
+			fmt.Println()
+			printArgValues(cmd, arg, defs)
+		}
+	}
 }
-
-//func printArgAttrsLegend() {
-//	fmt.Println("Arguments (attributes):")
-//	fmt.Printf("  %-4s  %s\n", "Def", "default argument - value(s) can be provided right "+
-//		"after a command without an argument token")
-//	fmt.Printf("  %-4s  %s\n", "Mult", "supports multiple values, that can be provided "+
-//		"in sequence or each with an argument token")
-//	fmt.Printf("  %-4s  %s\n", "Req", "required argument - app cannot "+
-//		"meaningfully run without a value")
-//	fmt.Printf("  %-4s  %s\n", "Env", "value can be provided with an "+
-//		"environment variable specified above")
-//	fmt.Printf("  %-4s  %s\n", "Abbr", "argument abbreviation that can be "+
-//		"used in place of a full token")
-//}
 
 func printCmdHelp(cmd string, defs *Definitions) {
 	printCmdUsage(cmd, defs)
 	fmt.Println()
 	printCmdArgs(cmd, defs)
 	fmt.Println()
-	//printArgAttrsLegend()
 }

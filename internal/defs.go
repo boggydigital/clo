@@ -123,3 +123,25 @@ func (defs *Definitions) defaultArgument(cmd string) string {
 	}
 	return ""
 }
+
+func transform(arr []string, f func(string) string) []string {
+	marr := make([]string, 0, len(arr))
+	for _, s := range arr {
+		marr = append(marr, f(s))
+	}
+	return marr
+}
+
+func (defs *Definitions) help(tokens []string) string {
+	if defs == nil || defs.Help == nil {
+		return ""
+	}
+	for len(tokens) > 0 {
+		key := strings.Join(transform(tokens, trimAttrs), ":")
+		if value, ok := defs.Help[key]; ok {
+			return value
+		}
+		tokens = tokens[1:]
+	}
+	return ""
+}

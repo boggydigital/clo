@@ -8,7 +8,10 @@ import (
 )
 
 func appName() string {
-	return filepath.Base(os.Args[0])
+	if len(os.Args) > 0 {
+		return filepath.Base(os.Args[0])
+	}
+	return "app"
 }
 
 func argEnv(app, cmd, arg string) string {

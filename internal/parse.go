@@ -37,7 +37,7 @@ func (defs *Definitions) Parse(args []string) (*Request, error) {
 				arg,
 				tt,
 				req.Command,
-				req.lastArgument(),
+				req.lastArgument,
 				defs)
 			if err != nil {
 				return req, err
