@@ -2,8 +2,6 @@ package internal
 
 import (
 	"encoding/json"
-	"io/ioutil"
-	"os"
 	"strconv"
 	"strings"
 	"testing"
@@ -12,13 +10,6 @@ import (
 const defsFilename = "clo-test.json"
 
 func mockValidCmdArg(cmd, arg string) (string, string) {
-	//rCmd, rArg := cmd, arg
-	//if strings.HasSuffix(cmd, "doesnt-exist") {
-	//	rCmd = ""
-	//}
-	//if strings.HasSuffix(arg, "doesnt-exist") {
-	//	rArg = ""
-	//}
 	return cmd, arg
 }
 
@@ -49,104 +40,6 @@ func TestDefinitionsLoad(t *testing.T) {
 		})
 	}
 }
-
-func mockWriteDefinitions(path string) error {
-	defs := mockDefinitions()
-	bytes, err := json.Marshal(defs)
-	if err != nil {
-		return err
-	}
-	return ioutil.WriteFile(defsFilename, bytes, 0644)
-}
-
-func mockWriteEmptyDefinitions(path string) error {
-	return ioutil.WriteFile(defsFilename, []byte{}, 0644)
-}
-
-func TestDefinitionsLoadDefault(t *testing.T) {
-	tests := []struct {
-		path      string
-		mockWrite func(string) error
-		expNil    bool
-		expErr    bool
-	}{
-		{defsFilename, mockWriteDefinitions, false, false},
-		{defsFilename, mockWriteEmptyDefinitions, true, true},
-		{"path-that-doesnt-exist", nil, true, true},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.path, func(t *testing.T) {
-			if tt.mockWrite != nil {
-				err := tt.mockWrite(tt.path)
-				assertError(t, err, false)
-
-			}
-			defs, err := LoadDefault(tt.path)
-			assertNil(t, defs, tt.expNil)
-			assertError(t, err, tt.expErr)
-			t.Cleanup(func() {
-				if _, err := os.Stat(tt.path); os.IsNotExist(err) {
-					return
-				}
-				err := os.Remove(tt.path)
-				assertError(t, err, false)
-			})
-		})
-	}
-}
-
-//func TestDefinitionsLoad(t *testing.T) {
-//	tests := []struct {
-//		load      func() (*Definitions, error)
-//		validLoad bool
-//		addedCmd  string
-//	}{
-//		{LoadDefault, true, "help"},
-//	}
-//
-//	// Load adds 'help' command
-//	defs := mockDefinitions()
-//	writeMockDefs(defs, t)
-//	t.Cleanup(deleteMockDefs)
-//
-//	for ii, tt := range tests {
-//		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-//			// command shouldn't exist before we add it at load
-//			dc := defs.definedCmd(tt.addedCmd)
-//			assertValEquals(t, dc, "")
-//
-//			defs, err := tt.load()
-//			assertError(t, err, !tt.validLoad)
-//			assertNil(t, defs, !tt.validLoad)
-//
-//			if defs != nil {
-//				dc := defs.definedCmd(tt.addedCmd)
-//				assertValEquals(t, dc, tt.addedCmd)
-//			}
-//		})
-//	}
-//}
-
-//func TestDefinitionsLoadErrors(t *testing.T) {
-//	// Load fails with known breaks:
-//	tests := []struct {
-//		setup    func(t *testing.T)
-//		expNil   bool
-//		expError bool
-//	}{
-//		{setupEmptyMockDefs, true, true},
-//	}
-//
-//	for ii, tt := range tests {
-//		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-//			tt.setup(t)
-//			defs, err := LoadDefault()
-//			assertNil(t, defs, tt.expNil)
-//			assertError(t, err, tt.expError)
-//		})
-//	}
-//}
 
 func TestDefinitionsDefinedCmd(t *testing.T) {
 	tests := []struct {
