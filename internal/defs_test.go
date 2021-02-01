@@ -86,6 +86,9 @@ func TestDefinitionsLoadDefault(t *testing.T) {
 			assertNil(t, defs, tt.expNil)
 			assertError(t, err, tt.expErr)
 			t.Cleanup(func() {
+				if _, err := os.Stat(tt.path); os.IsNotExist(err) {
+					return
+				}
 				err := os.Remove(tt.path)
 				assertError(t, err, false)
 			})
