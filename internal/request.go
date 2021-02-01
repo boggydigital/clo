@@ -15,20 +15,6 @@ func (req *Request) hasArguments() bool {
 	return req != nil && len(req.Arguments) > 0
 }
 
-//func (req *Request) lastArgument() string {
-//	if req == nil {
-//		return ""
-//	}
-//	if len(req.Arguments) == 0 {
-//		return ""
-//	}
-//	keys := make([]string, 0, len(req.Arguments))
-//	for k := range req.Arguments {
-//		keys = append(keys, k)
-//	}
-//	return keys[len(keys)-1]
-//}
-
 func (req *Request) setDefaultContext(tokenType int, def *Definitions) error {
 	switch tokenType {
 	case argument:

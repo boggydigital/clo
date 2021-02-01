@@ -130,7 +130,7 @@ func printArgValues(cmd string, arg string, defs *Definitions) {
 		ap := strconv.Itoa(defs.argPadding(cmd))
 		fmt.Printf("  %-"+ap+"s  supported values: %s\n",
 			"",
-			strings.Join(values, ", "))
+			strings.Join(transform(values, trimAttrs), ", "))
 	}
 }
 

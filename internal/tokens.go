@@ -3,11 +3,7 @@ package internal
 // this set of constants enumerates all distinct token types
 const (
 	command = iota
-	//commandAbbr
 	argument
-	//argumentAbbr
-	//valueDefault
-	//valueFixed
 	value
 )
 
@@ -16,16 +12,8 @@ func tokenString(tokenType int) string {
 	switch tokenType {
 	case command:
 		return "command"
-	//case commandAbbr:
-	//	return "commandAbbr"
 	case argument:
 		return "argument"
-	//case argumentAbbr:
-	//	return "argumentAbbr"
-	//case valueDefault:
-	//	return "valueDefault"
-	//case valueFixed:
-	//	return "valueFixed"
 	case value:
 		return "value"
 	}
@@ -51,22 +39,3 @@ func next(tokenType int) []int {
 func initial() []int {
 	return []int{command, argument, value}
 }
-
-//func expandAbbr(token string, tokenType int, def *Definitions) string {
-//	switch tokenType {
-//	case command:
-//		cd := def.CommandByAbbr(token)
-//		if cd == nil {
-//			return token
-//		}
-//		return cd.Token
-//	case argument:
-//		ad := def.ArgByAbbr(trimPrefix(token))
-//		if ad == nil {
-//			return token
-//		}
-//		return ad.Token
-//	default:
-//		return token
-//	}
-//}
