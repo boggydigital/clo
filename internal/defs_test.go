@@ -80,14 +80,15 @@ func TestDefinitionsLoadDefault(t *testing.T) {
 			if tt.mockWrite != nil {
 				err := tt.mockWrite(tt.path)
 				assertError(t, err, false)
-				t.Cleanup(func() {
-					err := os.Remove(tt.path)
-					assertError(t, err, false)
-				})
+
 			}
 			defs, err := LoadDefault(tt.path)
 			assertNil(t, defs, tt.expNil)
 			assertError(t, err, tt.expErr)
+			t.Cleanup(func() {
+				err := os.Remove(tt.path)
+				assertError(t, err, false)
+			})
 		})
 	}
 }
