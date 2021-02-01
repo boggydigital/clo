@@ -36,7 +36,7 @@ func TestRequestSetDefaultContext(t *testing.T) {
 		{nil, command, false, "", ""},
 		{&Request{}, command, false, "", ""},
 		{&Request{}, argument, false, "command1", ""},
-		{&Request{}, value, false, "", "argument1"},
+		{&Request{lastArgument: "argument1"}, value, false, "", "argument1"},
 	}
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
