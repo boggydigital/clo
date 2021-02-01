@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func addHelpCmd(def *Definitions) {
+func addInternalHelpCmd(def *Definitions) {
 	if def == nil {
 		return
 	}
@@ -22,6 +22,16 @@ func addHelpCmd(def *Definitions) {
 				"command", defaultAttr,
 				strings.Join(commands, ",")),
 		}
+	}
+
+	// add help topics for help command and arguments
+
+	if _, ok := def.Help["help"]; !ok {
+		def.Help["help"] = "display app help"
+	}
+
+	if _, ok := def.Help["help:command"]; !ok {
+		def.Help["help:command"] = "display app command help"
 	}
 }
 

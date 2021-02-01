@@ -3,8 +3,9 @@ package internal
 func (defs *Definitions) cmdPadding() int {
 	lToken := ""
 	for cmd, _ := range defs.Cmd {
-		if len(cmd) > len(lToken) {
-			lToken = cmd
+		tc := trimAttrs(cmd)
+		if len(tc) > len(lToken) {
+			lToken = tc
 		}
 	}
 	return len(lToken)
@@ -17,8 +18,9 @@ func (defs *Definitions) argPadding(cmd string) int {
 		return 0
 	}
 	for _, arg := range defs.Cmd[dc] {
-		if len(arg) > len(lToken) {
-			lToken = arg
+		ta := trimAttrs(arg)
+		if len(ta) > len(lToken) {
+			lToken = ta
 		}
 	}
 	return len(lToken)

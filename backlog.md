@@ -23,6 +23,7 @@
 
 - argument "excludes" property - list argument tokens that can't be included with this argument (e.g. username / username-file): decided that this likely can happen on the app level
 - arguments that are required for some arg-values? E.g. username/password for fetch-type = account-product: decided that this can happen on the app level
+- update "generate" - deprecated, given it won't be a win over more compact syntax
 
 ## Changes
 
@@ -34,4 +35,3 @@
 - help command review
 - review and update unit tests based on the new logic
 - update documentation
-- update "generate"

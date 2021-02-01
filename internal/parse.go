@@ -65,6 +65,9 @@ func (defs *Definitions) Parse(args []string) (*Request, error) {
 	// and we've already tested that above
 	_ = req.readEnvArgs(defs)
 
+	// check is any arguments have default values that can be used
+	// instead of leaving those arguments empty
+
 	if err := req.verify(defs); err != nil {
 		return req, err
 	}

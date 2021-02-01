@@ -33,7 +33,7 @@ func Load(reader io.Reader) (*Definitions, error) {
 		return nil, e
 	}
 
-	addHelpCmd(defs)
+	addInternalHelpCmd(defs)
 
 	return defs, nil
 }
