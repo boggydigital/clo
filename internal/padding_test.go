@@ -4,7 +4,7 @@ import "testing"
 
 func TestCommandsPadding(t *testing.T) {
 	defs := mockDefinitions()
-	assertValEquals(t, defs.cmdPadding(), len("command1_"))
+	assertValEquals(t, defs.cmdPadding(), len("command1"))
 }
 
 func TestDefinitionsArgumentsPadding(t *testing.T) {
@@ -12,7 +12,7 @@ func TestDefinitionsArgumentsPadding(t *testing.T) {
 		cmd        string
 		expPadding int
 	}{
-		{"command1", len("argument1_!$")},
+		{"command1", len("argument1")},
 		{"command-that-doesnt-exist", 0},
 	}
 	defs := mockDefinitions()

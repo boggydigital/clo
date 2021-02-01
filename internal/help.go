@@ -6,18 +6,18 @@ import (
 	"strings"
 )
 
-func addInternalHelpCmd(def *Definitions) {
-	if def == nil {
+func addInternalHelpCmd(defs *Definitions) {
+	if defs == nil {
 		return
 	}
 
-	commands := make([]string, 0, len(def.Cmd))
-	for c, _ := range def.Cmd {
+	commands := make([]string, 0, len(defs.Cmd))
+	for c, _ := range defs.Cmd {
 		commands = append(commands, trimAttrs(c))
 	}
 
-	if _, ok := def.Cmd["help"]; !ok {
-		def.Cmd["help"] = []string{
+	if _, ok := defs.Cmd["help"]; !ok {
+		defs.Cmd["help"] = []string{
 			fmt.Sprintf("%s%s=%s",
 				"command", defaultAttr,
 				strings.Join(commands, ",")),
@@ -25,13 +25,16 @@ func addInternalHelpCmd(def *Definitions) {
 	}
 
 	// add help topics for help command and arguments
-
-	if _, ok := def.Help["help"]; !ok {
-		def.Help["help"] = "display app help"
+	if defs.Help == nil {
+		defs.Help = make(map[string]string, 0)
 	}
 
-	if _, ok := def.Help["help:command"]; !ok {
-		def.Help["help:command"] = "display app command help"
+	if _, ok := defs.Help["help"]; !ok {
+		defs.Help["help"] = "display app help"
+	}
+
+	if _, ok := defs.Help["help:command"]; !ok {
+		defs.Help["help:command"] = "display app command help"
 	}
 }
 
