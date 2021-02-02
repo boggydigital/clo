@@ -4,9 +4,9 @@
     "validate_": ["path_$!", "verbose"]
   },
   "help": {
-    "clo": "command-line objectives. See https://github.com/boggydigital/clo for details",
-    "validate": "verify provided file for common errors",
+    "clo": "command-line objectives",
+    "validate": "validates that provided file doesn't have errors",
     "validate:path": "path to the file that should be validated",
-    "verbose": "print result of every validation test"
+    "validate:verbose": "print result of every validation test"
   }
 }

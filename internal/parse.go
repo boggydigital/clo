@@ -66,10 +66,11 @@ func (defs *Definitions) Parse(args []string) (*Request, error) {
 
 	// check is any arguments have default values that can be used
 	// instead of leaving those arguments empty
-	if err := defs.fillDefaultArgValues(req); err != nil {
+	if err := defs.defaultArgValues(req); err != nil {
 		return req, fmt.Errorf("failed to fill arguments default values")
 	}
 
+	// validate request using definition constraints
 	if err := req.validate(defs); err != nil {
 		return req, err
 	}

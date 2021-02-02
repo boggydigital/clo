@@ -11,6 +11,36 @@ func mockValidCmdArg(cmd, arg string) (string, string) {
 	return cmd, arg
 }
 
+func mockDefinitions() *Definitions {
+	return &Definitions{
+		Version: 1,
+		Cmd: map[string][]string{
+			"command1_": {"argument1_!$", "argument2..."},
+			"command2":  {"argument2...", "xyz"},
+			"abc":       {"argval=value1,value2_"},
+		},
+		Help: map[string]string{
+			"command1":           "command1 help",
+			"command1:argument1": "command1 argument1 help",
+			"command1:argument2": "command1 argument2 help",
+			"command2":           "command2 help",
+			"command2:argument2": "command2 argument2 help",
+			"command2:xyz":       "command2 xyz help",
+			"abc":                "abc help",
+			"abc:argval":         "abc argval help",
+		},
+	}
+}
+
+func mockDefinitionsNoDefaults() *Definitions {
+	return &Definitions{
+		Version: 1,
+		Cmd: map[string][]string{
+			"command1": {"argument1=value1,value2", "argument2=value3,value4"},
+		},
+	}
+}
+
 func TestDefinitionsLoad(t *testing.T) {
 	bytes, err := json.Marshal(mockDefinitions())
 	assertError(t, err, false)
@@ -131,5 +161,40 @@ func TestDefinitionsDefaultArgument(t *testing.T) {
 		defs := mockDefinitions()
 		da := defs.defaultArgument(tt.cmd)
 		assertValEquals(t, da, tt.expArg)
+	}
+}
+
+func TestDefinitionsDefaultArgumentValues(t *testing.T) {
+	tests := []struct {
+		req    *Request
+		expReq *Request
+		expErr bool
+	}{
+		{nil, nil, true},
+		{&Request{}, &Request{}, true},
+		{&Request{Command: "command1"}, &Request{Command: "command1", Arguments: map[string][]string{}}, false},
+		{&Request{Command: "abc"}, &Request{
+			Command: "abc",
+			Arguments: map[string][]string{
+				"argval": {"value2"},
+			},
+		}, false},
+		{&Request{
+			Command: "abc",
+			Arguments: map[string][]string{
+				"argval": {"value1"}},
+		},
+			&Request{
+				Command: "abc",
+				Arguments: map[string][]string{
+					"argval": {"value1"}},
+			}, false},
+	}
+	defs := mockDefinitions()
+	for ii, tt := range tests {
+		t.Run(strconv.Itoa(ii), func(t *testing.T) {
+			assertError(t, defs.defaultArgValues(tt.req), tt.expErr)
+			assertInterfaceEquals(t, tt.req, tt.expReq)
+		})
 	}
 }

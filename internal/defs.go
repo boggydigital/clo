@@ -134,12 +134,15 @@ func transform(arr []string, f func(string) string) []string {
 	return marr
 }
 
-func (defs *Definitions) fillDefaultArgValues(req *Request) error {
+func (defs *Definitions) defaultArgValues(req *Request) error {
 	if req == nil {
 		return errors.New("cannot fill default argument values for a nil request")
 	}
 	if req.Command == "" {
 		return errors.New("cannot fill default argument values for a request without a command")
+	}
+	if req.Arguments == nil {
+		req.Arguments = make(map[string][]string, 0)
 	}
 
 	dc := defs.definedCmd(req.Command)

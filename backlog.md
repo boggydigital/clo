@@ -18,6 +18,7 @@
 - ~~consider = to specify argument values (values can follow same _ convention for default)~~
 - ~~consider maps for commands and arguments to less verbose~~
 - ~~default command for an app (e.g. "glo 123" -> "glo convert -g 123") - when matching argument~~
+- ~~default argument values - when none are specified (can be generated as "arg=value!")~~
 
 ## Cuts
 
@@ -27,7 +28,6 @@
 
 ## Changes
 
-- default argument values - when none are specified (can be generated as "arg=value!")
 - help printout should use templates
 
 ## Follow-up

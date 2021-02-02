@@ -5,36 +5,6 @@ import (
 	"testing"
 )
 
-func mockDefinitions() *Definitions {
-	return &Definitions{
-		Version: 1,
-		Cmd: map[string][]string{
-			"command1_": {"argument1_!$", "argument2..."},
-			"command2":  {"argument2...", "xyz"},
-			"abc":       {"argval=value1,value2"},
-		},
-		Help: map[string]string{
-			"command1":           "command1 help",
-			"command1:argument1": "command1 argument1 help",
-			"command1:argument2": "command1 argument2 help",
-			"command2":           "command2 help",
-			"command2:argument2": "command2 argument2 help",
-			"command2:xyz":       "command2 xyz help",
-			"abc":                "abc help",
-			"abc:argval":         "abc argval help",
-		},
-	}
-}
-
-func mockDefinitionsNoDefaults() *Definitions {
-	return &Definitions{
-		Version: 1,
-		Cmd: map[string][]string{
-			"command1": {"argument1=value1,value2", "argument2=value3,value4"},
-		},
-	}
-}
-
 func TestDefinitionsParse(t *testing.T) {
 	tests := []struct {
 		args       []string
