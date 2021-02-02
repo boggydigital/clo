@@ -152,7 +152,7 @@ func appendErr(errors []error, err error) []error {
 	return errors
 }
 
-func (defs *Definitions) Validate(debug bool) []error {
+func (defs *Definitions) Validate(verbose bool) []error {
 
 	if defs == nil {
 		return []error{
@@ -163,22 +163,22 @@ func (defs *Definitions) Validate(debug bool) []error {
 	errs := make([]error, 0)
 
 	// commands
-	errs = appendErr(errs, noEmptyCmd(defs.Cmd, debug))
-	errs = appendErr(errs, differentCmd(defs.Cmd, debug))
-	errs = appendErr(errs, differentCmdArgs(defs.Cmd, debug))
-	errs = appendErr(errs, cmdHaveHelp(defs.Cmd, defs.help, debug))
+	errs = appendErr(errs, noEmptyCmd(defs.Cmd, verbose))
+	errs = appendErr(errs, differentCmd(defs.Cmd, verbose))
+	errs = appendErr(errs, differentCmdArgs(defs.Cmd, verbose))
+	errs = appendErr(errs, cmdHaveHelp(defs.Cmd, defs.getHelp, verbose))
 
 	// arguments
 	for c := range defs.Cmd {
 		tc, args := trimAttrs(c), defs.Cmd[c]
-		errs = appendErr(errs, noEmptyArgs(tc, args, debug))
-		errs = appendErr(errs, differentCmdArgValues(tc, args, debug))
-		errs = appendErr(errs, cmdArgsHaveHelp(tc, args, defs.help, debug))
+		errs = appendErr(errs, noEmptyArgs(tc, args, verbose))
+		errs = appendErr(errs, differentCmdArgValues(tc, args, verbose))
+		errs = appendErr(errs, cmdArgsHaveHelp(tc, args, defs.getHelp, verbose))
 	}
 
 	// help
-	errs = appendErr(errs, noEmptyHelpTopic(defs.Help, debug))
-	errs = appendErr(errs, noEmptyHelpMessages(defs.Help, debug))
+	errs = appendErr(errs, noEmptyHelpTopic(defs.Help, verbose))
+	errs = appendErr(errs, noEmptyHelpMessages(defs.Help, verbose))
 
 	return errs
 }

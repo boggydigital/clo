@@ -6,6 +6,19 @@ import (
 	"strings"
 )
 
+func (defs *Definitions) getHelp(topics []string) string {
+	if defs == nil || defs.Help == nil {
+		return ""
+	}
+	for ; len(topics) > 0; topics = topics[1:] {
+		key := strings.Join(transform(topics, trimAttrs), ":")
+		if value, ok := defs.Help[key]; ok {
+			return value
+		}
+	}
+	return ""
+}
+
 func addInternalHelpCmd(defs *Definitions) {
 	if defs == nil {
 		return
@@ -55,7 +68,7 @@ func printAppIntro(defs *Definitions) {
 		return
 	}
 	appIntro := appName()
-	appHelp := defs.help([]string{appIntro})
+	appHelp := defs.getHelp([]string{appIntro})
 	if appHelp != "" {
 		appIntro = fmt.Sprintf("%s - %s\n", appIntro, appHelp)
 	}
@@ -131,8 +144,13 @@ func printArgValues(cmd string, arg string, defs *Definitions) {
 	_, values := splitArgValues(da)
 	if len(values) > 0 {
 		ap := strconv.Itoa(defs.argPadding(cmd))
-		fmt.Printf("  %-"+ap+"s  supported values: %s\n",
+		singularOrPlural := "value"
+		if len(values) > 1 {
+			singularOrPlural = "values"
+		}
+		fmt.Printf("  %-"+ap+"s  supported %s: %s\n",
 			"",
+			singularOrPlural,
 			strings.Join(transform(values, trimAttrs), ", "))
 	}
 }
@@ -147,7 +165,7 @@ func printCmdArgDesc(cmd string, arg string, defs *Definitions) {
 	}
 	fmt.Printf("  %-"+strconv.Itoa(defs.argPadding(cmd))+"s  %s",
 		trimAttrs(da),
-		defs.help([]string{cmd, arg}))
+		defs.getHelp([]string{cmd, arg}))
 }
 
 func printCmdArgs(cmd string, defs *Definitions) {

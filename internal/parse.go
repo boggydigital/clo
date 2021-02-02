@@ -60,15 +60,17 @@ func (defs *Definitions) Parse(args []string) (*Request, error) {
 
 	// read arguments that are specified as supporting env
 	// if the value has not been provided as a CLI arg.
-	// Safely ignoring error here as well, since the only condition
-	// that would lead to an error is a nil definitions,
-	// and we've already tested that above
-	_ = req.readEnvArgs(defs)
+	if err := req.readEnvArgs(defs); err != nil {
+		return req, fmt.Errorf("failed to fill arguments from the environment")
+	}
 
 	// check is any arguments have default values that can be used
 	// instead of leaving those arguments empty
+	if err := defs.fillDefaultArgValues(req); err != nil {
+		return req, fmt.Errorf("failed to fill arguments default values")
+	}
 
-	if err := req.verify(defs); err != nil {
+	if err := req.validate(defs); err != nil {
 		return req, err
 	}
 

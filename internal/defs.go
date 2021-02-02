@@ -2,6 +2,8 @@ package internal
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -132,16 +134,42 @@ func transform(arr []string, f func(string) string) []string {
 	return marr
 }
 
-func (defs *Definitions) help(tokens []string) string {
-	if defs == nil || defs.Help == nil {
-		return ""
+func (defs *Definitions) fillDefaultArgValues(req *Request) error {
+	if req == nil {
+		return errors.New("cannot fill default argument values for a nil request")
 	}
-	for len(tokens) > 0 {
-		key := strings.Join(transform(tokens, trimAttrs), ":")
-		if value, ok := defs.Help[key]; ok {
-			return value
+	if req.Command == "" {
+		return errors.New("cannot fill default argument values for a request without a command")
+	}
+
+	dc := defs.definedCmd(req.Command)
+	if dc == "" {
+		return fmt.Errorf("unknown request command %s", req.Command)
+	}
+
+	for _, arg := range defs.Cmd[dc] {
+		a, values := splitArgValues(arg)
+		ta := trimAttrs(a)
+
+		// check if request already has some values specified for that argument
+		if rv, ok := req.Arguments[ta]; ok {
+			if len(rv) > 0 {
+				continue
+			}
 		}
-		tokens = tokens[1:]
+
+		for _, v := range values {
+			if !isDefault(v) {
+				continue
+			}
+
+			if req.Arguments[ta] == nil {
+				req.Arguments[ta] = make([]string, 0)
+			}
+
+			req.Arguments[ta] = append(req.Arguments[ta], trimAttrs(v))
+		}
 	}
-	return ""
+
+	return nil
 }

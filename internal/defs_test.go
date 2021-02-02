@@ -7,8 +7,6 @@ import (
 	"testing"
 )
 
-const defsFilename = "clo-test.json"
-
 func mockValidCmdArg(cmd, arg string) (string, string) {
 	return cmd, arg
 }

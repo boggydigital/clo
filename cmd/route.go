@@ -10,8 +10,8 @@ func Route(req *clo.Request, defs *clo.Definitions) error {
 	}
 	switch req.Command {
 	case "validate":
-		debug := req.Flag("debug")
-		return Validate(req.ArgVal("path"), debug)
+		verbose := req.Flag("verbose")
+		return Validate(req.ArgVal("path"), verbose)
 	case "generate":
 		return Generate(
 			req.ArgVal("app"),

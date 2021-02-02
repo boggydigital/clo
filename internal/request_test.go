@@ -128,7 +128,7 @@ func TestRequestVerify(t *testing.T) {
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
 			defs := mockDefinitions()
-			err := tt.req.verify(defs)
+			err := tt.req.validate(defs)
 			assertError(t, err, tt.expError)
 		})
 	}

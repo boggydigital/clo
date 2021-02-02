@@ -68,15 +68,15 @@ func (req *Request) update(token string, tokenType int) error {
 
 func (req *Request) commandHasRequiredArgs(def *Definitions) error {
 	if def == nil {
-		return errors.New("cannot verify required arguments using nil definitions")
+		return errors.New("cannot validate required arguments using nil definitions")
 	}
 	if req == nil {
-		return errors.New("cannot verify required arguments using nil request")
+		return errors.New("cannot validate required arguments using nil request")
 	}
 
 	dc := def.definedCmd(req.Command)
 	if dc == "" {
-		return fmt.Errorf("cannot verify required arguments without a command")
+		return fmt.Errorf("cannot validate required arguments without a command")
 	}
 
 	for _, arg := range def.Cmd[dc] {
@@ -94,10 +94,10 @@ func (req *Request) commandHasRequiredArgs(def *Definitions) error {
 
 func (req *Request) argumentsMultipleValues(def *Definitions) error {
 	if def == nil {
-		return errors.New("cannot verify required argument using nil definitions")
+		return errors.New("cannot validate required argument using nil definitions")
 	}
 	if req == nil {
-		return errors.New("cannot verify nil request for required arguments")
+		return errors.New("cannot validate nil request for required arguments")
 	}
 
 	for arg, values := range req.Arguments {
@@ -118,12 +118,12 @@ func (req *Request) argumentsMultipleValues(def *Definitions) error {
 	return nil
 }
 
-func (req *Request) verify(def *Definitions) error {
+func (req *Request) validate(def *Definitions) error {
 	if def == nil {
-		return errors.New("cannot verify required argument using nil definitions")
+		return errors.New("cannot validate required argument using nil definitions")
 	}
 	if req == nil {
-		return errors.New("cannot verify nil request for required arguments")
+		return errors.New("cannot validate nil request for required arguments")
 	}
 
 	err := req.commandHasRequiredArgs(def)

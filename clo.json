@@ -1,12 +1,12 @@
 {
   "version": 1,
   "cmd": {
-    "validate_": ["path_$!", "debug"]
+    "validate_": ["path_$!", "verbose"]
   },
   "help": {
-    "clo": "command-line objectives",
+    "clo": "command-line objectives. See https://github.com/boggydigital/clo for details",
     "validate": "verify provided file for common errors",
-    "validate:path": "path to the file",
-    "debug": "print debug information"
+    "validate:path": "path to the file that should be validated",
+    "verbose": "print result of every validation test"
   }
 }
