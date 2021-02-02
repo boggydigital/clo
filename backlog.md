@@ -1,5 +1,9 @@
 # clo backlog
 
+## TODO
+
+- help printout should use templates
+
 ## Done
 
 - ~~Roll back the version to v0.5.0-beta~~
@@ -19,19 +23,12 @@
 - ~~consider maps for commands and arguments to less verbose~~
 - ~~default command for an app (e.g. "glo 123" -> "glo convert -g 123") - when matching argument~~
 - ~~default argument values - when none are specified (can be generated as "arg=value!")~~
+- ~~review and update unit tests based on the new logic~~
+- ~~update documentation~~
+- ~~help command review~~
 
 ## Cuts
 
 - argument "excludes" property - list argument tokens that can't be included with this argument (e.g. username / username-file): decided that this likely can happen on the app level
 - arguments that are required for some arg-values? E.g. username/password for fetch-type = account-product: decided that this can happen on the app level
 - update "generate" - deprecated, given it won't be a win over more compact syntax
-
-## Changes
-
-- help printout should use templates
-
-## Follow-up
-
-- help command review
-- review and update unit tests based on the new logic
-- update documentation
