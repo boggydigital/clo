@@ -1,4 +1,4 @@
-package internal
+package clo
 
 // this set of constants enumerates all distinct token types
 const (

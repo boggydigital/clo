@@ -4,8 +4,7 @@
 
 Clo is a Golang module to build declarations of a command-line app objectives - commands and
 arguments with values. Clo processes user provided command-line app input string (args) and returns
-a structured `Request` object. Clo takes care of a `help` command (perhaps more in the future). Clo
-can validate the definitions file and report any errors that would prevent normal operation.
+a structured `Request` object. Clo takes care of a `help` command (perhaps more in the future).
 
 ## Using clo in your app
 
@@ -219,38 +218,3 @@ constraints or set defaults:
 - `...` - **multiple**. Applies to arguments. If set - argument can take more than one value. If not set - parsing multiple values for such argument would result in error.
 
 - `$` - **env. variable**. Applies to arguments. If set - argument value can be read from env. variable, unless specified by the user.
-
-## Clo app
-
-clo app can be used to validate definitions file:
-
-`clo validate [--path] <path-to-definitions.json> [--verbose]`
-
-Command details:
-
-- `validate` - validates that provided file doesn't have errors
-
-Argument details:
-
-- `path` - (default, required) path to the file that should be validated.
-- `verbose` - print result of every validation test
-
-As a reference here is how `clo.json` is defined for this app:
-
-```json
-{
-  "version": 1,
-  "cmd": {
-    "validate_": [
-      "path_$!",
-      "verbose"
-    ]
-  },
-  "help": {
-    "clo": "command-line objectives",
-    "validate": "validates that provided file doesn't have errors",
-    "validate:path": "path to the file that should be validated",
-    "validate:verbose": "print result of every validation test"
-  }
-}
-```

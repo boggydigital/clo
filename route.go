@@ -1,12 +1,17 @@
 package clo
 
-import "github.com/boggydigital/clo/internal"
+import "fmt"
 
-// Route Request to a function that can handle the command
-// with the provided arguments and values.
 func Route(request *Request, defs *Definitions) error {
 	if request == nil {
-		return internal.Route(nil, &defs.Definitions)
+		request = &Request{
+			Command: "help",
+		}
 	}
-	return internal.Route(&request.Request, &defs.Definitions)
+	switch request.Command {
+	case "help":
+		return printHelp(request.ArgVal("command"), defs)
+	default:
+		return fmt.Errorf("unknown command: '%s'", request.Command)
+	}
 }

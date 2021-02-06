@@ -1,4 +1,4 @@
-package internal
+package clo
 
 func (defs *Definitions) cmdPadding() int {
 	lToken := ""
