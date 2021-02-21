@@ -1,11 +1,12 @@
 package clo
 
 import (
+	"bytes"
+	_ "embed"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
-	"os"
 	"strings"
 )
 
@@ -15,13 +16,12 @@ type Definitions struct {
 	Help    map[string]string   `json:"help"`
 }
 
-func LoadDefault(path string) (*Definitions, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
+//go:embed "clo.json"
+var cloBytes []byte
 
-	defs, err := Load(file)
+func LoadDefault() (*Definitions, error) {
+	byteBuffer := bytes.NewBuffer(cloBytes)
+	defs, err := Load(byteBuffer)
 	if err != nil {
 		return defs, err
 	}
