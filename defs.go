@@ -124,7 +124,8 @@ func (defs *Definitions) defaultArgValues(req *Request) error {
 		return errors.New("cannot fill default argument values for a nil request")
 	}
 	if req.Command == "" {
-		return errors.New("cannot fill default argument values for a request without a command")
+		// return if no command has been specified, nothing to fill
+		return nil
 	}
 	if req.Arguments == nil {
 		req.Arguments = make(map[string][]string, 0)
