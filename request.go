@@ -45,7 +45,6 @@ func (req *Request) update(token string, tokenType int) error {
 			return errors.New("request already has a command specified")
 		}
 		req.Command = token
-		break
 	case argument:
 		arg := trimArgPrefix(token)
 		req.lastArgument = arg

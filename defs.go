@@ -135,11 +135,11 @@ func (defs *Definitions) defaultArgument(cmd string) (string, error) {
 }
 
 func transform(arr []string, f func(string) string) []string {
-	marr := make([]string, 0, len(arr))
+	mArr := make([]string, 0, len(arr))
 	for _, s := range arr {
-		marr = append(marr, f(s))
+		mArr = append(mArr, f(s))
 	}
-	return marr
+	return mArr
 }
 
 func (defs *Definitions) defaultArgValues(req *Request) error {
@@ -151,7 +151,7 @@ func (defs *Definitions) defaultArgValues(req *Request) error {
 		return nil
 	}
 	if req.Arguments == nil {
-		req.Arguments = make(map[string][]string, 0)
+		req.Arguments = make(map[string][]string)
 	}
 
 	dc, err := defs.definedCmd(req.Command)

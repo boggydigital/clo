@@ -25,7 +25,7 @@ func addInternalHelpCmd(defs *Definitions) {
 	}
 
 	commands := make([]string, 0, len(defs.Cmd))
-	for c, _ := range defs.Cmd {
+	for c := range defs.Cmd {
 		commands = append(commands, trimAttrs(c))
 	}
 
@@ -39,7 +39,7 @@ func addInternalHelpCmd(defs *Definitions) {
 
 	// add help topics for help command and arguments
 	if defs.Help == nil {
-		defs.Help = make(map[string]string, 0)
+		defs.Help = make(map[string]string)
 	}
 
 	if _, ok := defs.Help["help"]; !ok {

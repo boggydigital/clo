@@ -7,7 +7,7 @@ const (
 	requiredAttr = "!"
 	multipleAttr = "..."
 	envAttr      = "$"
-	attrs        = defaultAttr + requiredAttr + multipleAttr + envAttr
+	attrs        = defaultAttr + requiredAttr + envAttr + "." // "." is a sufficient replacement for multipleAttr = "..." given all "." will be trimmed
 	argValuesSep = "="
 )
 

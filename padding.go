@@ -2,7 +2,7 @@ package clo
 
 func (defs *Definitions) cmdPadding() int {
 	lToken := ""
-	for cmd, _ := range defs.Cmd {
+	for cmd := range defs.Cmd {
 		tc := trimAttrs(cmd)
 		if len(tc) > len(lToken) {
 			lToken = tc
