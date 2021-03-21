@@ -58,7 +58,9 @@ func printHelp(cmd string, defs *Definitions) error {
 	if cmd == "" {
 		printAppHelp(defs)
 	} else {
-		printCmdHelp(cmd, defs)
+		if err := printCmdHelp(cmd, defs); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -117,33 +119,44 @@ func printAppHelp(defs *Definitions) {
 	printAppMoreInfoPrompt(defs)
 }
 
-func printCmdUsage(cmd string, defs *Definitions) {
+func printCmdUsage(cmd string, defs *Definitions) error {
 	if defs == nil {
-		return
+		return fmt.Errorf("clo: can't print command usage for nil defintions")
 	}
 	cmdUsage := fmt.Sprintf("Usage: %s %s ", appName(), cmd)
-	dc := defs.definedCmd(cmd)
+	dc, err := defs.definedCmd(cmd)
+	if err != nil {
+		return err
+	}
 	if dc == "" {
-		return
+		return nil
 	}
 	if len(defs.Cmd[dc]) > 0 {
 		// TODO: print actual arguments
 		cmdUsage += "[<arguments>]"
 	}
 	fmt.Println(cmdUsage)
+	return nil
 }
 
-func printArgValues(cmd string, arg string, defs *Definitions) {
+func printArgValues(cmd string, arg string, defs *Definitions) error {
 	if defs == nil {
-		return
+		return fmt.Errorf("clo: can't print argument values for nil definitions")
 	}
-	_, da := defs.definedCmdArg(cmd, arg)
+	da, err := defs.definedArg(cmd, arg)
+	if err != nil {
+		return err
+	}
 	if da == "" {
-		return
+		return nil
 	}
 	_, values := splitArgValues(da)
 	if len(values) > 0 {
-		ap := strconv.Itoa(defs.argPadding(cmd))
+		argPadding, err := defs.argPadding(cmd)
+		if err != nil {
+			return err
+		}
+		ap := strconv.Itoa(argPadding)
 		singularOrPlural := "value"
 		if len(values) > 1 {
 			singularOrPlural = "values"
@@ -153,42 +166,64 @@ func printArgValues(cmd string, arg string, defs *Definitions) {
 			singularOrPlural,
 			strings.Join(transform(values, trimAttrs), ", "))
 	}
+	return nil
 }
 
-func printCmdArgDesc(cmd string, arg string, defs *Definitions) {
+func printCmdArgDesc(cmd string, arg string, defs *Definitions) error {
 	if defs == nil {
-		return
+		return fmt.Errorf("clo: can't print command argument description for nil defintions")
 	}
-	_, da := defs.definedCmdArg(cmd, arg)
+	da, err := defs.definedArg(cmd, arg)
+	if err != nil {
+		return err
+	}
 	if da == "" {
-		return
+		return nil
 	}
-	fmt.Printf("  %-"+strconv.Itoa(defs.argPadding(cmd))+"s  %s",
+	argPadding, err := defs.argPadding(cmd)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("  %-"+strconv.Itoa(argPadding)+"s  %s",
 		trimAttrs(da),
 		defs.getHelp([]string{cmd, arg}))
+	return nil
 }
 
-func printCmdArgs(cmd string, defs *Definitions) {
+func printCmdArgs(cmd string, defs *Definitions) error {
 	if defs == nil {
-		return
+		return fmt.Errorf("clo: can't print command args for nil defintions")
 	}
-	dc := defs.definedCmd(cmd)
+	dc, err := defs.definedCmd(cmd)
+	if err != nil {
+		return err
+	}
 	if dc == "" {
-		return
+		return nil
 	}
 	if len(defs.Cmd[dc]) > 0 {
 		fmt.Println("Arguments:")
 		for _, arg := range defs.Cmd[dc] {
-			printCmdArgDesc(cmd, arg, defs)
+			if err := printCmdArgDesc(cmd, arg, defs); err != nil {
+				return err
+			}
 			fmt.Println()
-			printArgValues(cmd, arg, defs)
+			if err := printArgValues(cmd, arg, defs); err != nil {
+				return err
+			}
 		}
 	}
+	return nil
 }
 
-func printCmdHelp(cmd string, defs *Definitions) {
-	printCmdUsage(cmd, defs)
+func printCmdHelp(cmd string, defs *Definitions) error {
+	if err := printCmdUsage(cmd, defs); err != nil {
+		return err
+	}
 	fmt.Println()
-	printCmdArgs(cmd, defs)
+	if err := printCmdArgs(cmd, defs); err != nil {
+		return err
+	}
 	fmt.Println()
+	return nil
 }

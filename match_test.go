@@ -17,7 +17,8 @@ func TestMatchArgument(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.token, func(t *testing.T) {
-			arg := matchArg(tt.token, tt.cmd, mockValidCmdArg)
+			arg, err := matchArg(tt.token, tt.cmd, mockDefinedArg)
+			assertError(t, err, false)
 			assertValEquals(t, arg, tt.expArg)
 		})
 	}

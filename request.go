@@ -26,7 +26,10 @@ func (req *Request) setDefaultContext(tokenType int, def *Definitions) error {
 		}
 	case value:
 		if req.lastArgument == "" {
-			da := def.defaultArgument(req.Command)
+			da, err := def.defaultArgument(req.Command)
+			if err != nil {
+				return err
+			}
 			if da != "" {
 				return req.update(trimAttrs(da), argument)
 			}
@@ -74,7 +77,10 @@ func (req *Request) commandHasRequiredArgs(def *Definitions) error {
 		return errors.New("cannot validate required arguments using nil request")
 	}
 
-	dc := def.definedCmd(req.Command)
+	dc, err := def.definedCmd(req.Command)
+	if err != nil {
+		return err
+	}
 	if dc == "" {
 		return fmt.Errorf("cannot validate required arguments without a command")
 	}
@@ -105,7 +111,10 @@ func (req *Request) argumentsMultipleValues(def *Definitions) error {
 			continue
 		}
 
-		_, da := def.definedCmdArg(req.Command, arg)
+		da, err := def.definedArg(req.Command, arg)
+		if err != nil {
+			return err
+		}
 		if da == "" {
 			continue
 		}

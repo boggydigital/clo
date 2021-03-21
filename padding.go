@@ -11,11 +11,14 @@ func (defs *Definitions) cmdPadding() int {
 	return len(lToken)
 }
 
-func (defs *Definitions) argPadding(cmd string) int {
+func (defs *Definitions) argPadding(cmd string) (int, error) {
 	lToken := ""
-	dc := defs.definedCmd(cmd)
+	dc, err := defs.definedCmd(cmd)
+	if err != nil {
+		return 0, err
+	}
 	if dc == "" {
-		return 0
+		return 0, nil
 	}
 	for _, arg := range defs.Cmd[dc] {
 		ta := trimAttrs(arg)
@@ -23,5 +26,5 @@ func (defs *Definitions) argPadding(cmd string) int {
 			lToken = ta
 		}
 	}
-	return len(lToken)
+	return len(lToken), nil
 }

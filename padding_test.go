@@ -19,7 +19,9 @@ func TestDefinitionsArgumentsPadding(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.cmd, func(t *testing.T) {
-			assertValEquals(t, defs.argPadding(tt.cmd), tt.expPadding)
+			argPadding, err := defs.argPadding(tt.cmd)
+			assertError(t, err, false)
+			assertValEquals(t, argPadding, tt.expPadding)
 		})
 	}
 }

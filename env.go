@@ -41,7 +41,10 @@ func (req *Request) readEnvArgs(def *Definitions) error {
 		return fmt.Errorf("cannot fill args from env using nil definitions")
 	}
 
-	dc := def.definedCmd(req.Command)
+	dc, err := def.definedCmd(req.Command)
+	if err != nil {
+		return err
+	}
 	if dc == "" {
 		return fmt.Errorf("cannot fill args from env for an empty command")
 	}

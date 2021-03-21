@@ -8,6 +8,11 @@ func Route(request *Request, defs *Definitions) error {
 			Command: "help",
 		}
 	}
+
+	if request.Command == "" {
+		request.Command = "help"
+	}
+
 	switch request.Command {
 	case "help":
 		return printHelp(request.ArgVal("command"), defs)

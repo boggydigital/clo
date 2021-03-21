@@ -7,8 +7,8 @@ import (
 	"testing"
 )
 
-func mockValidCmdArg(cmd, arg string) (string, string) {
-	return cmd, arg
+func mockDefinedArg(_, arg string) (string, error) {
+	return arg, nil
 }
 
 func mockDefinitions() *Definitions {
@@ -62,7 +62,8 @@ func TestDefinitionsLoad(t *testing.T) {
 			assertError(t, err, tt.expErr)
 			// check that Load adds help command
 			if defs != nil {
-				helpCmd := defs.definedCmd("help")
+				helpCmd, err := defs.definedCmd("help")
+				assertError(t, err, false)
 				assertValNotEquals(t, helpCmd, "")
 			}
 		})
@@ -73,18 +74,22 @@ func TestDefinitionsDefinedCmd(t *testing.T) {
 	tests := []struct {
 		cmd    string
 		expCmd string
+		expErr bool
 	}{
-		{"cmd-that-doesnt-exist", ""}, // used to test defs == nil
-		{"cmd-that-doesnt-exist", ""},
-		{"command1", "command1_"},
-		{"a", "abc"},
-		{"ab", "abc"},
-		{"abc", "abc"},
+		{"cmd-that-doesnt-exist", "", false}, // used to test defs == nil
+		{"cmd-that-doesnt-exist", "", false},
+		{"command1", "command1_", false},
+		{"a", "abc", false},
+		{"ab", "abc", false},
+		{"abc", "abc", false},
+		{"c", "", true},
+		{"command", "", true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.cmd, func(t *testing.T) {
 			defs := mockDefinitions()
-			dc := defs.definedCmd(tt.cmd)
+			dc, err := defs.definedCmd(tt.cmd)
+			assertError(t, err, tt.expErr)
 			assertValEquals(t, dc, tt.expCmd)
 		})
 	}
@@ -92,19 +97,19 @@ func TestDefinitionsDefinedCmd(t *testing.T) {
 
 func TestDefinitionsDefinedCmdArg(t *testing.T) {
 	tests := []struct {
-		cmd, arg       string
-		expCmd, expArg string
+		cmd, arg string
+		expArg   string
 	}{
-		{"cmd-that-doesnt-exist", "arg-that-doesnt-exist", "", ""}, // used to test defs == nil
-		{"cmd-that-doesnt-exist", "arg-that-doesnt-exist", "", ""},
-		{"command1", "argument1", "command1_", "argument1_!$"},
-		{"command1", "argument-that-doesnt-exist", "command1_", ""},
+		{"cmd-that-doesnt-exist", "arg-that-doesnt-exist", ""}, // used to test defs == nil
+		{"cmd-that-doesnt-exist", "arg-that-doesnt-exist", ""},
+		{"command1", "argument1", "argument1_!$"},
+		{"command1", "argument-that-doesnt-exist", ""},
 	}
 	for _, tt := range tests {
 		t.Run(tt.cmd+tt.arg, func(t *testing.T) {
 			defs := mockDefinitions()
-			dc, da := defs.definedCmdArg(tt.cmd, tt.arg)
-			assertValEquals(t, dc, tt.expCmd)
+			da, err := defs.definedArg(tt.cmd, tt.arg)
+			assertError(t, err, false)
 			assertValEquals(t, da, tt.expArg)
 		})
 	}
@@ -112,20 +117,19 @@ func TestDefinitionsDefinedCmdArg(t *testing.T) {
 
 func TestDefinitionsDefinedCmdArgVal(t *testing.T) {
 	tests := []struct {
-		cmd, arg, val          string
-		expCmd, expArg, expVal string
+		cmd, arg, val string
+		expVal        string
 	}{
-		{"cmd-that-doesnt-exist", "arg-that-doesnt-exist", "value1", "", "", ""},
-		{"cmd-that-doesnt-exist", "arg-that-doesnt-exist", "value1", "", "", ""},
-		{"command1", "argument1", "", "command1_", "argument1_!$", ""},
-		{"abc", "argval", "value1", "abc", "argval", "value1"},
+		{"cmd-that-doesnt-exist", "arg-that-doesnt-exist", "value1", ""},
+		{"cmd-that-doesnt-exist", "arg-that-doesnt-exist", "value1", ""},
+		{"command1", "argument1", "", ""},
+		{"abc", "argval", "value1", "value1"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.cmd+tt.arg+tt.val, func(t *testing.T) {
 			defs := mockDefinitions()
-			dc, da, dv := defs.definedCmdArgVal(tt.cmd, tt.arg, tt.val)
-			assertValEquals(t, dc, tt.expCmd)
-			assertValEquals(t, da, tt.expArg)
+			dv, err := defs.definedVal(tt.cmd, tt.arg, tt.val)
+			assertError(t, err, false)
 			assertValEquals(t, dv, tt.expVal)
 		})
 	}
@@ -159,7 +163,8 @@ func TestDefinitionsDefaultArgument(t *testing.T) {
 	}
 	for _, tt := range tests {
 		defs := mockDefinitions()
-		da := defs.defaultArgument(tt.cmd)
+		da, err := defs.defaultArgument(tt.cmd)
+		assertError(t, err, false)
 		assertValEquals(t, da, tt.expArg)
 	}
 }
@@ -171,7 +176,7 @@ func TestDefinitionsDefaultArgumentValues(t *testing.T) {
 		expErr bool
 	}{
 		{nil, nil, true},
-		{&Request{}, &Request{}, true},
+		{&Request{}, &Request{}, false},
 		{&Request{Command: "command1"}, &Request{Command: "command1", Arguments: map[string][]string{}}, false},
 		{&Request{Command: "abc"}, &Request{
 			Command: "abc",
