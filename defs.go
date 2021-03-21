@@ -127,8 +127,9 @@ func (defs *Definitions) defaultArgument(cmd string) (string, error) {
 	}
 
 	for _, arg := range defs.Cmd[dc] {
-		if isDefault(arg) {
-			return arg, nil
+		asv, _ := splitArgValues(arg)
+		if isDefault(asv) {
+			return asv, nil
 		}
 	}
 	return "", nil

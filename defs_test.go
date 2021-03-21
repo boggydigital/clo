@@ -17,7 +17,7 @@ func mockDefinitions() *Definitions {
 		Cmd: map[string][]string{
 			"command1_": {"argument1_!$", "argument2..."},
 			"command2":  {"argument2...", "xyz"},
-			"abc":       {"argval=value1,value2_"},
+			"abc":       {"argval=value1,value2_", "defarg_"},
 		},
 		Help: map[string]string{
 			"command1":           "command1 help",
@@ -28,6 +28,7 @@ func mockDefinitions() *Definitions {
 			"command2:xyz":       "command2 xyz help",
 			"abc":                "abc help",
 			"abc:argval":         "abc argval help",
+			"abc:defarg":         "abc defarg help",
 		},
 	}
 }
@@ -200,6 +201,24 @@ func TestDefinitionsDefaultArgumentValues(t *testing.T) {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
 			assertError(t, defs.defaultArgValues(tt.req), tt.expErr)
 			assertInterfaceEquals(t, tt.req, tt.expReq)
+		})
+	}
+}
+
+func TestDefaultArgByNameNotValues(t *testing.T) {
+	tests := []struct {
+		cmd    string
+		extArg string
+		expErr bool
+	}{
+		{"abc", "defarg_", false},
+	}
+	defs := mockDefinitions()
+	for _, tt := range tests {
+		t.Run(tt.cmd+tt.extArg, func(t *testing.T) {
+			defArg, err := defs.defaultArgument(tt.cmd)
+			assertError(t, err, tt.expErr)
+			assertValEquals(t, defArg, tt.extArg)
 		})
 	}
 }
