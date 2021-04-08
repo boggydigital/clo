@@ -86,15 +86,17 @@ func (defs *Definitions) definedVal(c, a, v string) (string, error) {
 	var values []string
 
 	// splitArgValues
-	if hasArgValues(arg) {
-		_, values = splitArgValues(arg)
-		for _, val := range values {
-			if strings.HasPrefix(val, v) {
-				if definedValue != "" {
-					return val, fmt.Errorf("clo: ambiguous value %s that could be %s or %s", v, definedValue, val)
-				}
-				definedValue = val
+	if !hasArgValues(arg) {
+		return v, nil
+	}
+
+	_, values = splitArgValues(arg)
+	for _, val := range values {
+		if strings.HasPrefix(val, v) {
+			if definedValue != "" {
+				return val, fmt.Errorf("clo: ambiguous value %s that could be %s or %s", v, definedValue, val)
 			}
+			definedValue = val
 		}
 	}
 

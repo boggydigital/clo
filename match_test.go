@@ -44,6 +44,7 @@ func TestMatch(t *testing.T) {
 		{"-value1", value, "abc", "argval", "", false},
 		{"value1", value, "abc", "argval", "value1", false},
 		{"ab", value, "abc", "argval", "abbr-val", false},
+		{"val", value, "command2", "argument2", "val", false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.token, func(t *testing.T) {
