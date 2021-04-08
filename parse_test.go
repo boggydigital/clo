@@ -15,16 +15,18 @@ func TestDefinitionsParse(t *testing.T) {
 	}{
 		{[]string{"", "command1", "--argument1"}, "command1", "argument1", 1, false},
 		{[]string{"--argument1"}, "command1", "argument1", 1, false},
-		{[]string{"unknown-token"}, "command1", "argument1", 1, false},
+		{[]string{"unknown-token"}, "command1", "argument1", 1, true},
 	}
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
 			defs := mockDefinitions()
 			req, err := defs.Parse(tt.args)
 			assertError(t, err, tt.expErr)
-			assertValEquals(t, req.Command, tt.expCmd)
-			assertValEquals(t, req.lastArgument, tt.expLastArg)
-			assertValEquals(t, len(req.Arguments), tt.expLenArgs)
+			if req != nil {
+				assertValEquals(t, req.Command, tt.expCmd)
+				assertValEquals(t, req.lastArgument, tt.expLastArg)
+				assertValEquals(t, len(req.Arguments), tt.expLenArgs)
+			}
 		})
 	}
 }

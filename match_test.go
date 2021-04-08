@@ -35,11 +35,15 @@ func TestMatch(t *testing.T) {
 		{"token", -1, "", "", "", true},
 		{"token", -1, "", "", "", true},
 		{"command1", command, "", "", "command1_", false},
+		{"a", command, "", "", "abc", false},
 		{"argument1", argument, "command1", "", "", false},
 		{"-argument1", argument, "command1", "", "argument1_!$", false},
 		{"--argument1", argument, "command1", "", "argument1_!$", false},
+		{"-ab", argument, "command1", "", "abbr-arg", false},
+		{"--ab", argument, "command1", "", "abbr-arg", false},
 		{"-value1", value, "abc", "argval", "", false},
 		{"value1", value, "abc", "argval", "value1", false},
+		{"ab", value, "abc", "argval", "abbr-val", false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.token, func(t *testing.T) {

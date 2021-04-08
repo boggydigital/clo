@@ -98,7 +98,7 @@ func (defs *Definitions) definedVal(c, a, v string) (string, error) {
 		}
 	}
 
-	return v, nil
+	return definedValue, nil
 }
 
 func (defs *Definitions) defaultCommand() string {

@@ -15,14 +15,15 @@ func mockDefinitions() *Definitions {
 	return &Definitions{
 		Version: 1,
 		Cmd: map[string][]string{
-			"command1_": {"argument1_!$", "argument2..."},
+			"command1_": {"argument1_!$", "argument2...", "abbr-arg"},
 			"command2":  {"argument2...", "xyz"},
-			"abc":       {"argval=value1,value2_", "defarg_"},
+			"abc":       {"argval=value1,value2_,abbr-val", "defarg_"},
 		},
 		Help: map[string]string{
 			"command1":           "command1 help",
 			"command1:argument1": "command1 argument1 help",
 			"command1:argument2": "command1 argument2 help",
+			"command1:abbr-arg":  "command1 abbr_arg help",
 			"command2":           "command2 help",
 			"command2:argument2": "command2 argument2 help",
 			"command2:xyz":       "command2 xyz help",
