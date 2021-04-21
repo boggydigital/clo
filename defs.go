@@ -13,15 +13,96 @@ type Definitions struct {
 	Help    map[string]string   `json:"help"`
 }
 
-func Load(reader io.Reader) (*Definitions, error) {
+func Load(reader io.Reader, valuesDelegates map[string]func() []string) (*Definitions, error) {
 	var defs *Definitions
 	if e := json.NewDecoder(reader).Decode(&defs); e != nil {
 		return nil, e
 	}
 
+	// post processing definitions include the following steps:
+	// - replace placeholder values using delegates (if provided)
+	// - add 'help' command if not present
+
+	if valuesDelegates != nil {
+		if err := defs.replacePlaceholders(valuesDelegates); err != nil {
+			return defs, err
+		}
+	}
+
 	addInternalHelpCmd(defs)
 
 	return defs, nil
+}
+
+func (defs *Definitions) replaceArgValuesList(cmd, replaceArg string, replacedValues []string) {
+	if replaceArg == "" {
+		return
+	}
+	// capacity = existing arguments, plus replaced values, minus the 1 placeholder
+	replacedArgs := make([]string, 0, len(defs.Cmd[cmd])+len(replacedValues)-1)
+
+	// first, add all existing arguments, except the placeholder
+	for _, arg := range defs.Cmd[cmd] {
+		if arg == replaceArg {
+			continue
+		}
+		replacedArgs = append(replacedArgs, arg)
+	}
+	// second, add replaced values we've got from a delegate
+	replacedArgs = append(replacedArgs, replacedValues...)
+
+	defs.Cmd[cmd] = replacedArgs
+}
+
+func (defs *Definitions) replacePlaceholders(valuesDelegates map[string]func() []string) error {
+	for cmd, args := range defs.Cmd {
+
+		// replacing argument with list values can happen once per command.
+		// we might populate those values as we scan arguments upon finding list placeholder
+		// (placeholder is a list placeholder, when the only value is a placeholder, e.g. "{list_values}"
+		// and not part of argument values, e.g. "arg={arg_values}")
+		var replaceArg string
+		var replacedValues []string
+
+		for i, arg := range args {
+			ph := extract(arg)
+
+			if ph.identifier == "" {
+				continue
+			}
+
+			if valuesDelegates[ph.identifier] == nil {
+				return fmt.Errorf("clo: %s not present in data delegates, can't expand", ph.identifier)
+			}
+
+			values := valuesDelegates[ph.identifier]()
+
+			// if the placeholder has been specified as "first value is default"
+			if ph.defaultFirstValue {
+				if len(values) == 0 {
+					return fmt.Errorf("clo: replaced values are empty, can't make first value default")
+				}
+				values[0] = values[0] + "_"
+			}
+
+			// list values is the last placeholder, so if we encountered one
+			// we store replaced argument, values to replace with and break from the scan
+			if ph.listValues {
+				replaceArg = ph.String()
+				replacedValues = values
+				break
+			}
+
+			// replace argument placeholder with a comma separated list of values,
+			// provided by a delegate
+			defs.Cmd[cmd][i] = strings.Replace(arg, ph.String(), strings.Join(values, ","), 1)
+		}
+
+		// if replaceArg, replacedValues have been filled during args scan, then
+		// replace that placeholder with a list of values provided by a delegate
+		defs.replaceArgValuesList(cmd, replaceArg, replacedValues)
+	}
+	return nil
 }
 
 func (defs *Definitions) definedCmd(c string) (string, error) {
