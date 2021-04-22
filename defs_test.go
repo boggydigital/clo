@@ -1,6 +1,7 @@
 package clo
 
 import (
+	"bytes"
 	"encoding/json"
 	"strconv"
 	"strings"
@@ -34,6 +35,21 @@ func mockDefinitions() *Definitions {
 	}
 }
 
+var valueDelegates = map[string]func() []string{
+	"arguments": func() []string { return []string{"a1", "a2"} },
+	"values":    func() []string { return []string{"v1", "v2"} },
+}
+
+func mockDefinitionsReplace() *Definitions {
+	return &Definitions{
+		Version: 1,
+		Cmd: map[string][]string{
+			"c1": {"{arguments}"},
+			"c2": {"arg={values}"},
+		},
+	}
+}
+
 func mockDefinitionsNoDefaults() *Definitions {
 	return &Definitions{
 		Version: 1,
@@ -59,7 +75,7 @@ func TestDefinitionsLoad(t *testing.T) {
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
 			r := strings.NewReader(tt.content)
-			defs, err := Load(r)
+			defs, err := Load(r, nil)
 			assertNil(t, defs, tt.expNil)
 			assertError(t, err, tt.expErr)
 			// check that Load adds help command
@@ -70,6 +86,50 @@ func TestDefinitionsLoad(t *testing.T) {
 			}
 		})
 	}
+}
+
+type valueDelegatesTest struct {
+	cmd          string
+	expArgs      int
+	placeholders bool
+}
+
+func TestDefinitionsLoadReplace(t *testing.T) {
+	bb, err := json.Marshal(mockDefinitionsReplace())
+	assertError(t, err, false)
+
+	testsNoValuesDelegates := []valueDelegatesTest{
+		{"c1", 1, true},
+		{"c2", 1, true},
+	}
+
+	testsValuesDelegates := []valueDelegatesTest{
+		{"c1", 2, false},
+		{"c2", 1, false},
+	}
+
+	valueDelegatesTests := []struct {
+		name                string
+		delegates           map[string]func() []string
+		valueDelegatesTests []valueDelegatesTest
+	}{
+		{"no-vd-", nil, testsNoValuesDelegates},
+		{"vd-", valueDelegates, testsValuesDelegates},
+	}
+
+	for _, vdt := range valueDelegatesTests {
+		def, err := Load(bytes.NewReader(bb), vdt.delegates)
+		assertError(t, err, false)
+
+		for _, tt := range vdt.valueDelegatesTests {
+			t.Run(vdt.name+tt.cmd, func(t *testing.T) {
+				assertValEquals(t, len(def.Cmd[tt.cmd]), tt.expArgs)
+				assertValEquals(t, strings.Contains(def.Cmd[tt.cmd][0], placeholderPrefix), tt.placeholders)
+				assertValEquals(t, strings.Contains(def.Cmd[tt.cmd][0], placeholderSuffix), tt.placeholders)
+			})
+		}
+	}
+
 }
 
 func TestDefinitionsDefinedCmd(t *testing.T) {

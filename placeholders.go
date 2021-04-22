@@ -21,7 +21,7 @@ func extract(data string) *placeholder {
 		ph.identifier = data[start+1 : end]
 		if isDefault(ph.identifier) && len(ph.identifier) > 1 {
 			ph.defaultFirstValue = true
-			ph.identifier = ph.identifier[1:]
+			ph.identifier = strings.TrimSuffix(ph.identifier, defaultAttr)
 		}
 		ph.listValues = start == 0
 	}
@@ -31,7 +31,7 @@ func extract(data string) *placeholder {
 func (ph *placeholder) String() string {
 	id := ph.identifier
 	if ph.defaultFirstValue {
-		id = "_" + id
+		id = id + "_"
 	}
 	return placeholderPrefix + id + placeholderSuffix
 }
