@@ -112,14 +112,16 @@ func TestDefinitionsLoadReplace(t *testing.T) {
 		name                string
 		delegates           map[string]func() []string
 		valueDelegatesTests []valueDelegatesTest
+		expError            bool
 	}{
-		{"no-vd-", nil, testsNoValuesDelegates},
-		{"vd-", valueDelegates, testsValuesDelegates},
+		{"no-vd-", nil, testsNoValuesDelegates, false},
+		{"empty-vd-", map[string]func() []string{}, nil, true},
+		{"vd-", valueDelegates, testsValuesDelegates, false},
 	}
 
 	for _, vdt := range valueDelegatesTests {
 		def, err := Load(bytes.NewReader(bb), vdt.delegates)
-		assertError(t, err, false)
+		assertError(t, err, vdt.expError)
 
 		for _, tt := range vdt.valueDelegatesTests {
 			t.Run(vdt.name+tt.cmd, func(t *testing.T) {
