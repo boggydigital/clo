@@ -76,13 +76,18 @@ func (defs *Definitions) replacePlaceholders(valuesDelegates map[string]func() [
 			}
 
 			values := valuesDelegates[ph.identifier]()
+			if ph.multiple {
+				for j := 0; j < len(values); j++ {
+					values[j] = makeMultiple(values[j])
+				}
+			}
 
 			// if the placeholder has been specified as "first value is default"
 			if ph.defaultFirstValue {
 				if len(values) == 0 {
 					return fmt.Errorf("clo: replaced values are empty, can't make first value default")
 				}
-				values[0] = values[0] + "_"
+				values[0] = makeDefault(values[0])
 			}
 
 			// list values is the last placeholder, so if we encountered one

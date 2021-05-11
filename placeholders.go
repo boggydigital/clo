@@ -4,6 +4,7 @@ import "strings"
 
 type placeholder struct {
 	identifier        string
+	multiple          bool
 	defaultFirstValue bool
 	listValues        bool
 }
@@ -21,8 +22,11 @@ func extract(data string) *placeholder {
 		ph.identifier = data[start+1 : end]
 		if isDefault(ph.identifier) && len(ph.identifier) > 1 {
 			ph.defaultFirstValue = true
-			ph.identifier = strings.TrimSuffix(ph.identifier, defaultAttr)
 		}
+		if isMultiple(ph.identifier) && len(ph.identifier) > 3 {
+			ph.multiple = true
+		}
+		ph.identifier = trimAttrs(ph.identifier)
 		ph.listValues = start == 0
 	}
 	return ph
@@ -31,7 +35,10 @@ func extract(data string) *placeholder {
 func (ph *placeholder) String() string {
 	id := ph.identifier
 	if ph.defaultFirstValue {
-		id = id + "_"
+		id = makeDefault(id)
+	}
+	if ph.multiple {
+		id = makeMultiple(id)
 	}
 	return placeholderPrefix + id + placeholderSuffix
 }

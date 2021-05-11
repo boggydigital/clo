@@ -14,15 +14,20 @@ func TestExtract(t *testing.T) {
 		{"val={", &placeholder{}},
 		{"val=}id{", &placeholder{}},
 		{"val={}", &placeholder{}},
-		{"val={_}", &placeholder{"_", false, false}},
-		{"val={id_}", &placeholder{"id", true, false}},
-		{"val={id}", &placeholder{"id", false, false}},
+		{"val={_}", &placeholder{"", false, false, false}},
+		{"val={...}", &placeholder{"", false, false, false}},
+		{"val={id_}", &placeholder{"id", false, true, false}},
+		{"val={id...}", &placeholder{"id", true, false, false}},
+		{"val={id_...}", &placeholder{"id", true, true, false}},
+		{"val={id}", &placeholder{"id", false, false, false}},
 		{"{}", &placeholder{}},
-		{"{_}", &placeholder{"_", false, true}},
-		{"{id_}", &placeholder{"id", true, true}},
-		{"{id}", &placeholder{"id", false, true}},
-		{" {id}", &placeholder{"id", false, false}},
-		{"{id1}={id2}", &placeholder{"id1", false, true}},
+		{"{_}", &placeholder{"", false, false, true}},
+		{"{id_}", &placeholder{"id", false, true, true}},
+		{"{id...}", &placeholder{"id", true, false, true}},
+		{"{id_...}", &placeholder{"id", true, true, true}},
+		{"{id}", &placeholder{"id", false, false, true}},
+		{" {id}", &placeholder{"id", false, false, false}},
+		{"{id1}={id2}", &placeholder{"id1", false, false, true}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.input, func(t *testing.T) {
@@ -38,10 +43,13 @@ func TestString(t *testing.T) {
 		expected string
 	}{
 		{&placeholder{}, "{}"},
-		{&placeholder{"id", false, false}, "{id}"},
-		{&placeholder{"id", false, true}, "{id}"},
-		{&placeholder{"id", true, false}, "{id_}"},
-		{&placeholder{"id", true, true}, "{id_}"},
+		{&placeholder{"id", false, false, false}, "{id}"},
+		{&placeholder{"id", false, false, true}, "{id}"},
+		{&placeholder{"id", false, true, false}, "{id_}"},
+		{&placeholder{"id", true, false, false}, "{id...}"},
+		{&placeholder{"id", true, true, false}, "{id_...}"},
+		{&placeholder{"id", false, true, true}, "{id_}"},
+		{&placeholder{"id", true, true, true}, "{id_...}"},
 	}
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {

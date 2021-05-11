@@ -15,12 +15,26 @@ func isDefault(token string) bool {
 	return strings.Contains(token, defaultAttr)
 }
 
+func makeDefault(token string) string {
+	if isDefault(token) {
+		return token
+	}
+	return token + defaultAttr
+}
+
 func isRequired(token string) bool {
 	return strings.Contains(token, requiredAttr)
 }
 
 func isMultiple(token string) bool {
 	return strings.Contains(token, multipleAttr)
+}
+
+func makeMultiple(token string) string {
+	if isMultiple(token) {
+		return token
+	}
+	return token + multipleAttr
 }
 
 func isEnv(token string) bool {
