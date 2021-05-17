@@ -2,6 +2,7 @@ package clo
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -90,7 +91,15 @@ func printAppCommands(defs *Definitions) {
 		return
 	}
 	fmt.Println("Commands:")
+
+	// print cmds as a sorted list
+	sortedCmds := make([]string, 0, len(defs.Cmd))
 	for cmd := range defs.Cmd {
+		sortedCmds = append(sortedCmds, cmd)
+	}
+	sort.Strings(sortedCmds)
+
+	for _, cmd := range sortedCmds {
 		tc := trimAttrs(cmd)
 		cmdLine := fmt.Sprintf("  %-"+strconv.Itoa(defs.cmdPadding())+"s", tc)
 		if cmdHelp, ok := defs.Help[tc]; ok {
@@ -203,6 +212,8 @@ func printCmdArgs(cmd string, defs *Definitions) error {
 	}
 	if len(defs.Cmd[dc]) > 0 {
 		fmt.Println("Arguments:")
+		// print cmd args as a sorted list
+		sort.Strings(defs.Cmd[dc])
 		for _, arg := range defs.Cmd[dc] {
 			if err := printCmdArgDesc(cmd, arg, defs); err != nil {
 				return err
