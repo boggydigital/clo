@@ -101,9 +101,9 @@ func printAppCommands(defs *Definitions) {
 
 	for _, cmd := range sortedCmds {
 		tc := trimAttrs(cmd)
-		cmdLine := fmt.Sprintf("  %-"+strconv.Itoa(defs.cmdPadding())+"s", tc)
+		cmdLine := fmt.Sprintf(" %-"+strconv.Itoa(defs.cmdPadding())+"s", tc)
 		if cmdHelp, ok := defs.Help[tc]; ok {
-			cmdLine = fmt.Sprintf("%s  %s", cmdLine, cmdHelp)
+			cmdLine = fmt.Sprintf("%s %s", cmdLine, cmdHelp)
 		}
 		fmt.Println(cmdLine)
 	}
@@ -170,7 +170,7 @@ func printArgValues(cmd string, arg string, defs *Definitions) error {
 		if len(values) > 1 {
 			singularOrPlural = "values"
 		}
-		fmt.Printf("  %-"+ap+"s  supported %s: %s\n",
+		fmt.Printf(" %-"+ap+"s supported %s: %s\n",
 			"",
 			singularOrPlural,
 			strings.Join(transform(values, trimAttrs), ", "))
@@ -193,7 +193,7 @@ func printCmdArgDesc(cmd string, arg string, defs *Definitions) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("  %-"+strconv.Itoa(argPadding)+"s  %s",
+	fmt.Printf(" %-"+strconv.Itoa(argPadding)+"s %s",
 		trimAttrs(da),
 		defs.getHelp([]string{cmd, arg}))
 	return nil
