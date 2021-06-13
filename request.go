@@ -163,14 +163,6 @@ func (req *Request) ArgValues(arg string) []string {
 	return req.Arguments[arg]
 }
 
-func (req *Request) ArgValuesMap(arg string) map[string]bool {
-	argValuesMap := make(map[string]bool, 0)
-	for _, av := range req.ArgValues(arg) {
-		argValuesMap[av] = true
-	}
-	return argValuesMap
-}
-
 func (req *Request) Flag(arg string) bool {
 	if req == nil {
 		return false
