@@ -3,11 +3,11 @@ package clo
 import "strings"
 
 const (
-	defaultAttr  = "_"
-	requiredAttr = "!"
-	multipleAttr = "..."
+	defaultAttr  = "@"
+	requiredAttr = "^"
+	multipleAttr = "&"
 	envAttr      = "$"
-	attrs        = defaultAttr + requiredAttr + envAttr + "." // "." is a sufficient replacement for multipleAttr = "..." given all "." will be trimmed
+	attrs        = defaultAttr + requiredAttr + envAttr + multipleAttr
 	argValuesSep = "="
 )
 

@@ -16,9 +16,9 @@ func mockDefinitions() *Definitions {
 	return &Definitions{
 		Version: 1,
 		Cmd: map[string][]string{
-			"command1_": {"argument1_!$", "argument2...", "abbr-arg"},
-			"command2":  {"argument2...", "xyz"},
-			"abc":       {"argval=value1,value2_,abbr-val", "defarg_"},
+			"command1" + defaultAttr: {"argument1" + defaultAttr + requiredAttr + envAttr, "argument2" + multipleAttr, "abbr-arg"},
+			"command2":               {"argument2" + multipleAttr, "xyz"},
+			"abc":                    {"argval" + argValuesSep + "value1,value2" + defaultAttr + ",abbr-val", "defarg" + defaultAttr},
 		},
 		Help: map[string]string{
 			"command1":           "command1 help",
@@ -45,7 +45,7 @@ func mockDefinitionsReplace() *Definitions {
 		Version: 1,
 		Cmd: map[string][]string{
 			"c1": {"{arguments}"},
-			"c2": {"arg={values}"},
+			"c2": {"arg" + argValuesSep + "{values}"},
 		},
 	}
 }
@@ -54,7 +54,7 @@ func mockDefinitionsNoDefaults() *Definitions {
 	return &Definitions{
 		Version: 1,
 		Cmd: map[string][]string{
-			"command1": {"argument1=value1,value2", "argument2=value3,value4"},
+			"command1": {"argument1" + argValuesSep + "value1,value2", "argument2" + argValuesSep + "value3,value4"},
 		},
 	}
 }
@@ -142,7 +142,7 @@ func TestDefinitionsDefinedCmd(t *testing.T) {
 	}{
 		{"cmd-that-doesnt-exist", "", false}, // used to test defs == nil
 		{"cmd-that-doesnt-exist", "", false},
-		{"command1", "command1_", false},
+		{"command1", "command1" + defaultAttr, false},
 		{"a", "abc", false},
 		{"ab", "abc", false},
 		{"abc", "abc", false},
@@ -166,7 +166,7 @@ func TestDefinitionsDefinedCmdArg(t *testing.T) {
 	}{
 		{"cmd-that-doesnt-exist", "arg-that-doesnt-exist", ""}, // used to test defs == nil
 		{"cmd-that-doesnt-exist", "arg-that-doesnt-exist", ""},
-		{"command1", "argument1", "argument1_!$"},
+		{"command1", "argument1", "argument1" + defaultAttr + requiredAttr + envAttr},
 		{"command1", "argument-that-doesnt-exist", ""},
 	}
 	for _, tt := range tests {
@@ -205,7 +205,7 @@ func TestDefinitionsDefaultCommand(t *testing.T) {
 		expCmd string
 	}{
 		{nil, ""},
-		{mockDefinitions(), "command1_"},
+		{mockDefinitions(), "command1" + defaultAttr},
 		{&Definitions{}, ""},
 	}
 	for _, tt := range tests {
@@ -221,7 +221,7 @@ func TestDefinitionsDefaultArgument(t *testing.T) {
 		cmd    string
 		expArg string
 	}{
-		{"command1", "argument1_!$"},
+		{"command1", "argument1" + defaultAttr + requiredAttr + envAttr},
 		{"cmd-that-doesnt-exist", ""},
 		{"command2", ""},
 	}
@@ -274,7 +274,7 @@ func TestDefaultArgByNameNotValues(t *testing.T) {
 		extArg string
 		expErr bool
 	}{
-		{"abc", "defarg_", false},
+		{"abc", "defarg" + defaultAttr, false},
 	}
 	defs := mockDefinitions()
 	for _, tt := range tests {

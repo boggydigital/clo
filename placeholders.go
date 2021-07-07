@@ -23,7 +23,7 @@ func extract(data string) *placeholder {
 		if isDefault(ph.identifier) && len(ph.identifier) > 1 {
 			ph.defaultFirstValue = true
 		}
-		if isMultiple(ph.identifier) && len(ph.identifier) > 3 {
+		if isMultiple(ph.identifier) && len(ph.identifier) > 1 {
 			ph.multiple = true
 		}
 		ph.identifier = trimAttrs(ph.identifier)
