@@ -3,10 +3,10 @@ package clo
 import "strings"
 
 const (
-	defaultAttr  = "@"
-	requiredAttr = "^"
-	multipleAttr = "&"
 	envAttr      = "$"
+	defaultAttr  = "^"
+	multipleAttr = "&"
+	requiredAttr = "*"
 	attrs        = defaultAttr + requiredAttr + envAttr + multipleAttr
 	argValuesSep = "="
 )
