@@ -235,25 +235,25 @@ func TestDefinitionsDefaultArgument(t *testing.T) {
 
 func TestDefinitionsDefaultArgumentValues(t *testing.T) {
 	tests := []struct {
-		req    *Request
-		expReq *Request
+		req    *request
+		expReq *request
 		expErr bool
 	}{
 		{nil, nil, true},
-		{&Request{}, &Request{}, false},
-		{&Request{Command: "command1"}, &Request{Command: "command1", Arguments: map[string][]string{}}, false},
-		{&Request{Command: "abc"}, &Request{
+		{&request{}, &request{}, false},
+		{&request{Command: "command1"}, &request{Command: "command1", Arguments: map[string][]string{}}, false},
+		{&request{Command: "abc"}, &request{
 			Command: "abc",
 			Arguments: map[string][]string{
 				"argval": {"value2"},
 			},
 		}, false},
-		{&Request{
+		{&request{
 			Command: "abc",
 			Arguments: map[string][]string{
 				"argval": {"value1"}},
 		},
-			&Request{
+			&request{
 				Command: "abc",
 				Arguments: map[string][]string{
 					"argval": {"value1"}},

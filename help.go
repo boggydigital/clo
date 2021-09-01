@@ -7,6 +7,8 @@ import (
 	"strings"
 )
 
+const helpCmd = "help"
+
 func (defs *Definitions) getHelp(topics []string) string {
 	if defs == nil || defs.Help == nil {
 		return ""
@@ -30,8 +32,8 @@ func addInternalHelpCmd(defs *Definitions) {
 		commands = append(commands, trimAttrs(c))
 	}
 
-	if _, ok := defs.Cmd["help"]; !ok {
-		defs.Cmd["help"] = []string{
+	if _, ok := defs.Cmd[helpCmd]; !ok {
+		defs.Cmd[helpCmd] = []string{
 			fmt.Sprintf("%s%s=%s",
 				"command", defaultAttr,
 				strings.Join(commands, ",")),
@@ -43,12 +45,12 @@ func addInternalHelpCmd(defs *Definitions) {
 		defs.Help = make(map[string]string)
 	}
 
-	if _, ok := defs.Help["help"]; !ok {
-		defs.Help["help"] = "display app help"
+	if _, ok := defs.Help[helpCmd]; !ok {
+		defs.Help[helpCmd] = "display app help"
 	}
 
-	if _, ok := defs.Help["help:command"]; !ok {
-		defs.Help["help:command"] = "display app command help"
+	if _, ok := defs.Help[helpCmd+":command"]; !ok {
+		defs.Help[helpCmd+":command"] = "display app command help"
 	}
 }
 

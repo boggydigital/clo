@@ -8,14 +8,14 @@ import (
 
 func TestRequestHasArguments(t *testing.T) {
 	tests := []struct {
-		req      *Request
+		req      *request
 		expected bool
 	}{
 		{nil, false},
-		{&Request{}, false},
-		{&Request{Arguments: map[string][]string{}}, false},
-		{&Request{Arguments: map[string][]string{"1": {}}}, true},
-		{&Request{Arguments: map[string][]string{"1": {"2"}}}, true},
+		{&request{}, false},
+		{&request{Arguments: map[string][]string{}}, false},
+		{&request{Arguments: map[string][]string{"1": {}}}, true},
+		{&request{Arguments: map[string][]string{"1": {"2"}}}, true},
 	}
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
@@ -27,16 +27,16 @@ func TestRequestHasArguments(t *testing.T) {
 func TestRequestSetDefaultContext(t *testing.T) {
 	defs := mockDefinitions()
 	tests := []struct {
-		req       *Request
+		req       *request
 		tokenType int
 		expError  bool
 		expCmd    string
 		expArg    string
 	}{
 		{nil, command, false, "", ""},
-		{&Request{}, command, false, "", ""},
-		{&Request{}, argument, false, "command1", ""},
-		{&Request{lastArgument: "argument1"}, value, false, "", "argument1"},
+		{&request{}, command, false, "", ""},
+		{&request{}, argument, false, "command1", ""},
+		{&request{lastArgument: "argument1"}, value, false, "", "argument1"},
 	}
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
@@ -65,7 +65,7 @@ func TestRequestUpdate(t *testing.T) {
 		{"", -1, true},
 		{"", math.MaxInt64, true},
 	}
-	req := &Request{}
+	req := &request{}
 	for _, tt := range sequentialTests {
 		t.Run(tt.token, func(t *testing.T) {
 			err := req.update(tt.token, tt.tokenType)
@@ -75,19 +75,19 @@ func TestRequestUpdate(t *testing.T) {
 }
 
 type RequestTest struct {
-	req      *Request
+	req      *request
 	expError bool
 }
 
 var mockRequestCommandTests = []RequestTest{
 	{nil, true}, // will be used to test defs == nil
 	{nil, true},
-	{&Request{Command: "command2", Arguments: nil}, false},
-	{&Request{Command: "command1", Arguments: nil}, true},
-	{&Request{Command: "command1", Arguments: map[string][]string{"argument3": {}}}, true},
-	{&Request{Command: "command1", Arguments: map[string][]string{"argument1": {}}}, false},
-	{&Request{Command: "command1", Arguments: map[string][]string{"argument1": {"1"}}}, false},
-	{&Request{Command: "command-that-doesnt-exist", Arguments: map[string][]string{"argument1": {"1"}}}, true},
+	{&request{Command: "command2", Arguments: nil}, false},
+	{&request{Command: "command1", Arguments: nil}, true},
+	{&request{Command: "command1", Arguments: map[string][]string{"argument3": {}}}, true},
+	{&request{Command: "command1", Arguments: map[string][]string{"argument1": {}}}, false},
+	{&request{Command: "command1", Arguments: map[string][]string{"argument1": {"1"}}}, false},
+	{&request{Command: "command-that-doesnt-exist", Arguments: map[string][]string{"argument1": {"1"}}}, true},
 }
 
 func TestRequestCommandHasRequiredArgs(t *testing.T) {
@@ -103,11 +103,11 @@ func TestRequestCommandHasRequiredArgs(t *testing.T) {
 var mockRequestArgumentTests = []RequestTest{
 	{nil, true}, // will be used to test defs == nil
 	{nil, true},
-	{&Request{Command: "command2", Arguments: map[string][]string{}}, false},
-	{&Request{Command: "command2", Arguments: map[string][]string{"": {}}}, false},
-	{&Request{Command: "command1", Arguments: map[string][]string{"argument1": {"1", "2"}}}, true},
-	{&Request{Command: "command2", Arguments: map[string][]string{"argument2": {"1", "2"}}}, false},
-	{&Request{Command: "command2", Arguments: map[string][]string{"argument-that-doesnt-exist": {"1", "2"}}}, false},
+	{&request{Command: "command2", Arguments: map[string][]string{}}, false},
+	{&request{Command: "command2", Arguments: map[string][]string{"": {}}}, false},
+	{&request{Command: "command1", Arguments: map[string][]string{"argument1": {"1", "2"}}}, true},
+	{&request{Command: "command2", Arguments: map[string][]string{"argument2": {"1", "2"}}}, false},
+	{&request{Command: "command2", Arguments: map[string][]string{"argument-that-doesnt-exist": {"1", "2"}}}, false},
 }
 
 func TestArgumentsMultipleValues(t *testing.T) {
@@ -136,13 +136,13 @@ func TestRequestVerify(t *testing.T) {
 
 func TestRequestArgVal(t *testing.T) {
 	tests := []struct {
-		req      *Request
+		req      *request
 		value    string
 		expected string
 	}{
 		{nil, "", ""},
-		{&Request{Arguments: map[string][]string{"1": {"3"}, "2": {}}}, "1", "3"},
-		{&Request{Arguments: map[string][]string{"1": {"3"}, "2": {}}}, "3", ""},
+		{&request{Arguments: map[string][]string{"1": {"3"}, "2": {}}}, "1", "3"},
+		{&request{Arguments: map[string][]string{"1": {"3"}, "2": {}}}, "3", ""},
 	}
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
@@ -153,14 +153,14 @@ func TestRequestArgVal(t *testing.T) {
 
 func TestRequestArgValues(t *testing.T) {
 	tests := []struct {
-		req      *Request
+		req      *request
 		value    string
 		expected int
 	}{
 		{nil, "", 0},
-		{&Request{Arguments: map[string][]string{"1": {"3", "4"}, "2": {}}}, "1", 2},
-		{&Request{Arguments: map[string][]string{"1": {"3", "4"}, "2": {}}}, "2", 0},
-		{&Request{Arguments: map[string][]string{"1": {"3"}, "2": {}}}, "3", 0},
+		{&request{Arguments: map[string][]string{"1": {"3", "4"}, "2": {}}}, "1", 2},
+		{&request{Arguments: map[string][]string{"1": {"3", "4"}, "2": {}}}, "2", 0},
+		{&request{Arguments: map[string][]string{"1": {"3"}, "2": {}}}, "3", 0},
 	}
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
@@ -171,14 +171,14 @@ func TestRequestArgValues(t *testing.T) {
 
 func TestRequestFlag(t *testing.T) {
 	tests := []struct {
-		req      *Request
+		req      *request
 		value    string
 		expected bool
 	}{
 		{nil, "", false},
-		{&Request{Arguments: map[string][]string{"1": {"3"}, "2": {}}}, "1", true},
-		{&Request{Arguments: map[string][]string{"1": {"3"}, "2": {}}}, "2", true},
-		{&Request{Arguments: map[string][]string{"1": {"3"}, "2": {}}}, "3", false},
+		{&request{Arguments: map[string][]string{"1": {"3"}, "2": {}}}, "1", true},
+		{&request{Arguments: map[string][]string{"1": {"3"}, "2": {}}}, "2", true},
+		{&request{Arguments: map[string][]string{"1": {"3"}, "2": {}}}, "3", false},
 	}
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {

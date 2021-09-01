@@ -2,12 +2,14 @@ package clo
 
 import (
 	"fmt"
+	"net/url"
+	"strings"
 )
 
-// Parse converts args to a structured Request or returns an error if there are unexpected values,
+// ParseRequest converts args to a structured request or returns an error if there are unexpected values,
 // order or if any of the defined constraints are not met: fixed values, required,
 // multiple values, etc.
-func (defs *Definitions) Parse(args []string) (*Request, error) {
+func (defs *Definitions) parseRequest(args []string) (*request, error) {
 
 	if len(args) == 0 {
 		return nil, nil
@@ -17,7 +19,7 @@ func (defs *Definitions) Parse(args []string) (*Request, error) {
 		return nil, fmt.Errorf("cannot parse using nil definitions")
 	}
 
-	var req = &Request{
+	var req = &request{
 		Command:   "",
 		Arguments: make(map[string][]string),
 	}
@@ -80,4 +82,30 @@ func (defs *Definitions) Parse(args []string) (*Request, error) {
 	}
 
 	return req, nil
+}
+
+func (defs *Definitions) parseUrl(args []string) (*url.URL, error) {
+	req, err := defs.parseRequest(args)
+	if err != nil {
+		return nil, err
+	}
+
+	if req == nil {
+		req = &request{Command: helpCmd}
+	}
+
+	u := &url.URL{
+		Scheme: "cli",
+		Host:   "clo",
+		Path:   req.Command,
+	}
+
+	q := u.Query()
+	for arg, values := range req.Arguments {
+		q.Add(arg, strings.Join(values, ","))
+	}
+
+	u.RawQuery = q.Encode()
+
+	return u, nil
 }

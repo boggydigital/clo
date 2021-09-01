@@ -5,17 +5,17 @@ import (
 	"fmt"
 )
 
-type Request struct {
+type request struct {
 	Command      string
 	Arguments    map[string][]string
 	lastArgument string
 }
 
-func (req *Request) hasArguments() bool {
+func (req *request) hasArguments() bool {
 	return req != nil && len(req.Arguments) > 0
 }
 
-func (req *Request) setDefaultContext(tokenType int, def *Definitions) error {
+func (req *request) setDefaultContext(tokenType int, def *Definitions) error {
 	switch tokenType {
 	case argument:
 		if req.Command == "" {
@@ -38,7 +38,7 @@ func (req *Request) setDefaultContext(tokenType int, def *Definitions) error {
 	return nil
 }
 
-func (req *Request) update(token string, tokenType int) error {
+func (req *request) update(token string, tokenType int) error {
 	switch tokenType {
 	case command:
 		if req.Command != "" {
@@ -68,7 +68,7 @@ func (req *Request) update(token string, tokenType int) error {
 	return nil
 }
 
-func (req *Request) commandHasRequiredArgs(def *Definitions) error {
+func (req *request) commandHasRequiredArgs(def *Definitions) error {
 	if def == nil {
 		return errors.New("cannot validate required arguments using nil definitions")
 	}
@@ -97,7 +97,7 @@ func (req *Request) commandHasRequiredArgs(def *Definitions) error {
 	return nil
 }
 
-func (req *Request) argumentsMultipleValues(def *Definitions) error {
+func (req *request) argumentsMultipleValues(def *Definitions) error {
 	if def == nil {
 		return errors.New("cannot validate required argument using nil definitions")
 	}
@@ -126,7 +126,7 @@ func (req *Request) argumentsMultipleValues(def *Definitions) error {
 	return nil
 }
 
-func (req *Request) validate(def *Definitions) error {
+func (req *request) validate(def *Definitions) error {
 	if def == nil {
 		return errors.New("cannot validate required argument using nil definitions")
 	}
@@ -145,7 +145,7 @@ func (req *Request) validate(def *Definitions) error {
 	return nil
 }
 
-func (req *Request) ArgVal(arg string) string {
+func (req *request) ArgVal(arg string) string {
 	if req == nil {
 		return ""
 	}
@@ -156,14 +156,14 @@ func (req *Request) ArgVal(arg string) string {
 	return ""
 }
 
-func (req *Request) ArgValues(arg string) []string {
+func (req *request) ArgValues(arg string) []string {
 	if req == nil {
 		return []string{}
 	}
 	return req.Arguments[arg]
 }
 
-func (req *Request) Flag(arg string) bool {
+func (req *request) Flag(arg string) bool {
 	if req == nil {
 		return false
 	}

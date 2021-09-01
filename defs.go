@@ -21,6 +21,7 @@ func Load(reader io.Reader, valuesDelegates map[string]func() []string) (*Defini
 
 	// post processing definitions include the following steps:
 	// - replace placeholder values using delegates (if provided)
+	// - copy "SAME-AS" arguments
 	// - add 'help' command if not present
 
 	if valuesDelegates != nil {
@@ -231,7 +232,7 @@ func transform(arr []string, f func(string) string) []string {
 	return mArr
 }
 
-func (defs *Definitions) defaultArgValues(req *Request) error {
+func (defs *Definitions) defaultArgValues(req *request) error {
 	if req == nil {
 		return fmt.Errorf("clo: can't fill default argument values for a nil request")
 	}

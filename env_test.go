@@ -36,7 +36,7 @@ func TestReadEnvArg(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.cmd+tt.arg, func(t *testing.T) {
-			req := Request{}
+			req := request{}
 			assertError(t, req.readEnvArgs(nil), true)
 			// setup - make sure argument1 expects value from env
 			defs := mockDefinitions()
