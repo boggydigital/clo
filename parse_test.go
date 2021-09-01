@@ -20,7 +20,7 @@ func TestDefinitionsParse(t *testing.T) {
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
 			defs := mockDefinitions()
-			req, err := defs.Parse(tt.args)
+			req, err := defs.parseRequest(tt.args)
 			assertError(t, err, tt.expErr)
 			assertValEquals(t, req.Command, tt.expCmd)
 			assertValEquals(t, req.lastArgument, tt.expLastArg)
@@ -43,7 +43,7 @@ func TestDefinitionsNoDefaultsParse(t *testing.T) {
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
 			defs := mockDefinitionsNoDefaults()
-			req, err := defs.Parse(tt.args)
+			req, err := defs.parseRequest(tt.args)
 			assertError(t, err, tt.expErr)
 			assertValEquals(t, req.Command, tt.expCmd)
 			assertValEquals(t, req.lastArgument, tt.expLastArg)
