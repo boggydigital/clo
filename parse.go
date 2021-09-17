@@ -102,6 +102,9 @@ func (defs *Definitions) parseUrl(args []string) (*url.URL, error) {
 
 	q := u.Query()
 	for arg, values := range req.Arguments {
+		if len(values) == 0 {
+			continue
+		}
 		q.Add(arg, strings.Join(values, ","))
 	}
 
