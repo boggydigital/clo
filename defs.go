@@ -271,10 +271,6 @@ func (defs *Definitions) defaultArgValues(req *request) error {
 		a, values := splitArgValues(arg)
 		ta := trimAttrs(a)
 
-		if req.Arguments[ta] == nil {
-			req.Arguments[ta] = make([]string, 0)
-		}
-
 		// check if request already has some values specified for that argument
 		if rv, ok := req.Arguments[ta]; ok {
 			if len(rv) > 0 {
@@ -300,6 +296,10 @@ func (defs *Definitions) defaultArgValues(req *request) error {
 		for _, v := range values {
 			if !isDefault(v) {
 				continue
+			}
+
+			if req.Arguments[ta] == nil {
+				req.Arguments[ta] = make([]string, 0)
 			}
 
 			req.Arguments[ta] = append(req.Arguments[ta], trimAttrs(v))
