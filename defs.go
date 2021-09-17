@@ -4,13 +4,17 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 )
 
+const defaultsOverrideFilename = "my-defaults.json"
+
 type Definitions struct {
-	Version int                 `json:"version"`
-	Cmd     map[string][]string `json:"cmd"`
-	Help    map[string]string   `json:"help"`
+	Version           int                 `json:"version"`
+	Cmd               map[string][]string `json:"cmd"`
+	Help              map[string]string   `json:"help"`
+	defaultsOverrides map[string][]string
 }
 
 func Load(reader io.Reader, valuesDelegates map[string]func() []string) (*Definitions, error) {
@@ -19,10 +23,10 @@ func Load(reader io.Reader, valuesDelegates map[string]func() []string) (*Defini
 		return nil, e
 	}
 
-	// post processing definitions include the following steps:
+	// post-processing definitions include the following steps:
 	// - replace placeholder values using delegates (if provided)
-	// - copy "SAME-AS" arguments
 	// - add 'help' command if not present
+	// - load user default overrides from my-defaults.json if present
 
 	if valuesDelegates != nil {
 		if err := defs.replacePlaceholders(valuesDelegates); err != nil {
@@ -31,6 +35,17 @@ func Load(reader io.Reader, valuesDelegates map[string]func() []string) (*Defini
 	}
 
 	addInternalHelpCmd(defs)
+
+	// load user overrides
+	if _, err := os.Stat(defaultsOverrideFilename); err == nil {
+		dof, err := os.Open(defaultsOverrideFilename)
+		if err != nil {
+			return defs, err
+		}
+		if err := json.NewDecoder(dof).Decode(&defs.defaultsOverrides); err != nil {
+			return defs, err
+		}
+	}
 
 	return defs, nil
 }
@@ -256,6 +271,10 @@ func (defs *Definitions) defaultArgValues(req *request) error {
 		a, values := splitArgValues(arg)
 		ta := trimAttrs(a)
 
+		if req.Arguments[ta] == nil {
+			req.Arguments[ta] = make([]string, 0)
+		}
+
 		// check if request already has some values specified for that argument
 		if rv, ok := req.Arguments[ta]; ok {
 			if len(rv) > 0 {
@@ -263,13 +282,24 @@ func (defs *Definitions) defaultArgValues(req *request) error {
 			}
 		}
 
+		// TODO: add tests for overrides
+		// check if user has provided default overrides
+		if defs.defaultsOverrides != nil {
+			// check the cmd:arg first, as it's most specific
+			dv, ok := defs.defaultsOverrides[fmt.Sprintf("%s:%s", trimAttrs(dc), ta)]
+			if !ok {
+				// if cmd:arg doesn't match, check generic arg
+				dv, ok = defs.defaultsOverrides[ta]
+			}
+			if ok {
+				req.Arguments[ta] = dv
+				continue
+			}
+		}
+
 		for _, v := range values {
 			if !isDefault(v) {
 				continue
-			}
-
-			if req.Arguments[ta] == nil {
-				req.Arguments[ta] = make([]string, 0)
 			}
 
 			req.Arguments[ta] = append(req.Arguments[ta], trimAttrs(v))
