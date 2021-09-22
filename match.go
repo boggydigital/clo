@@ -21,7 +21,7 @@ func match(
 	token string,
 	tokenType int,
 	cmdCtx, argCtx string,
-	def *Definitions) (string, error) {
+	def *definitions) (string, error) {
 	if def == nil {
 		return "", fmt.Errorf("cannot match token with nil definitions")
 	}

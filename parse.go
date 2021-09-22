@@ -9,7 +9,7 @@ import (
 // ParseRequest converts args to a structured request or returns an error if there are unexpected values,
 // order or if any of the defined constraints are not met: fixed values, required,
 // multiple values, etc.
-func (defs *Definitions) parseRequest(args []string) (*request, error) {
+func (defs *definitions) parseRequest(args []string) (*request, error) {
 
 	if len(args) == 0 {
 		return nil, nil
@@ -84,7 +84,7 @@ func (defs *Definitions) parseRequest(args []string) (*request, error) {
 	return req, nil
 }
 
-func (defs *Definitions) parseUrl(args []string) (*url.URL, error) {
+func (defs *definitions) parseUrl(args []string) (*url.URL, error) {
 	req, err := defs.parseRequest(args)
 	if err != nil {
 		return nil, err

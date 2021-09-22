@@ -9,7 +9,7 @@ import (
 
 const defaultsOverrideFilename = "my-defaults.json"
 
-func (defs *Definitions) loadDefaultsOverrides() (map[string][]string, error) {
+func (defs *definitions) loadDefaultsOverrides() (map[string][]string, error) {
 	if _, err := os.Stat(defaultsOverrideFilename); err == nil {
 		dof, err := os.Open(defaultsOverrideFilename)
 		if err != nil {
@@ -29,7 +29,7 @@ func (defs *Definitions) loadDefaultsOverrides() (map[string][]string, error) {
 	return nil, nil
 }
 
-func (defs *Definitions) validateCmdArgValuesOverrides(cmd, arg string, values []string) error {
+func (defs *definitions) validateCmdArgValuesOverrides(cmd, arg string, values []string) error {
 	dc, err := defs.definedCmd(cmd)
 	if err != nil {
 		return err
@@ -59,7 +59,7 @@ func (defs *Definitions) validateCmdArgValuesOverrides(cmd, arg string, values [
 	return nil
 }
 
-func (defs *Definitions) validateOverrides(do map[string][]string) error {
+func (defs *definitions) validateOverrides(do map[string][]string) error {
 	for overrideArg, overrideValues := range do {
 		if strings.Contains(overrideArg, ":") {
 			parts := strings.Split(overrideArg, ":")

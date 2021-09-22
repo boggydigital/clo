@@ -7,15 +7,15 @@ import (
 	"strings"
 )
 
-type Definitions struct {
+type definitions struct {
 	Version           int                 `json:"version"`
 	Cmd               map[string][]string `json:"cmd"`
 	Help              map[string]string   `json:"help"`
 	defaultsOverrides map[string][]string
 }
 
-func Load(reader io.Reader, valuesDelegates map[string]func() []string) (*Definitions, error) {
-	var defs *Definitions
+func Load(reader io.Reader, valuesDelegates map[string]func() []string) (*definitions, error) {
+	var defs *definitions
 	if e := json.NewDecoder(reader).Decode(&defs); e != nil {
 		return nil, e
 	}
@@ -42,7 +42,7 @@ func Load(reader io.Reader, valuesDelegates map[string]func() []string) (*Defini
 	return defs, nil
 }
 
-func (defs *Definitions) replaceArgValuesList(cmd, replaceArg string, replacedValues []string) {
+func (defs *definitions) replaceArgValuesList(cmd, replaceArg string, replacedValues []string) {
 	if replaceArg == "" {
 		return
 	}
@@ -62,7 +62,7 @@ func (defs *Definitions) replaceArgValuesList(cmd, replaceArg string, replacedVa
 	defs.Cmd[cmd] = replacedArgs
 }
 
-func (defs *Definitions) replacePlaceholders(valuesDelegates map[string]func() []string) error {
+func (defs *definitions) replacePlaceholders(valuesDelegates map[string]func() []string) error {
 	for cmd, args := range defs.Cmd {
 
 		// replacing argument with list values can happen once per command.
@@ -118,7 +118,7 @@ func (defs *Definitions) replacePlaceholders(valuesDelegates map[string]func() [
 	return nil
 }
 
-func (defs *Definitions) definedCmd(c string) (string, error) {
+func (defs *definitions) definedCmd(c string) (string, error) {
 	if defs == nil {
 		return "", fmt.Errorf("clo: no defined command for nil definitions")
 	}
@@ -136,7 +136,7 @@ func (defs *Definitions) definedCmd(c string) (string, error) {
 	return definedToken, nil
 }
 
-func (defs *Definitions) definedArg(c, a string) (string, error) {
+func (defs *definitions) definedArg(c, a string) (string, error) {
 	if defs == nil {
 		return "", fmt.Errorf("clo: no defined command argument for nil defintions")
 	}
@@ -163,7 +163,7 @@ func (defs *Definitions) definedArg(c, a string) (string, error) {
 	return definedArg, nil
 }
 
-func (defs *Definitions) definedVal(c, a, v string) (string, error) {
+func (defs *definitions) definedVal(c, a, v string) (string, error) {
 	if defs == nil {
 		return "", fmt.Errorf("clo: no defined command argument value for nil definitions")
 	}
@@ -197,7 +197,7 @@ func (defs *Definitions) definedVal(c, a, v string) (string, error) {
 	return definedValue, nil
 }
 
-func (defs *Definitions) defaultCommand() string {
+func (defs *definitions) defaultCommand() string {
 	if defs == nil {
 		return ""
 	}
@@ -209,7 +209,7 @@ func (defs *Definitions) defaultCommand() string {
 	return ""
 }
 
-func (defs *Definitions) defaultArgument(cmd string) (string, error) {
+func (defs *definitions) defaultArgument(cmd string) (string, error) {
 	if defs == nil {
 		return "", fmt.Errorf("clo: no default argument for nil defintions")
 	}
@@ -239,7 +239,7 @@ func transform(arr []string, f func(string) string) []string {
 	return mArr
 }
 
-func (defs *Definitions) defaultArgValues(req *request) error {
+func (defs *definitions) defaultArgValues(req *request) error {
 	if req == nil {
 		return fmt.Errorf("clo: can't fill default argument values for a nil request")
 	}

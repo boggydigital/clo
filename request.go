@@ -15,7 +15,7 @@ func (req *request) hasArguments() bool {
 	return req != nil && len(req.Arguments) > 0
 }
 
-func (req *request) setDefaultContext(tokenType int, def *Definitions) error {
+func (req *request) setDefaultContext(tokenType int, def *definitions) error {
 	switch tokenType {
 	case argument:
 		if req.Command == "" {
@@ -68,7 +68,7 @@ func (req *request) update(token string, tokenType int) error {
 	return nil
 }
 
-func (req *request) commandHasRequiredArgs(def *Definitions) error {
+func (req *request) commandHasRequiredArgs(def *definitions) error {
 	if def == nil {
 		return errors.New("cannot validate required arguments using nil definitions")
 	}
@@ -97,7 +97,7 @@ func (req *request) commandHasRequiredArgs(def *Definitions) error {
 	return nil
 }
 
-func (req *request) argumentsMultipleValues(def *Definitions) error {
+func (req *request) argumentsMultipleValues(def *definitions) error {
 	if def == nil {
 		return errors.New("cannot validate required argument using nil definitions")
 	}
@@ -126,7 +126,7 @@ func (req *request) argumentsMultipleValues(def *Definitions) error {
 	return nil
 }
 
-func (req *request) validate(def *Definitions) error {
+func (req *request) validate(def *definitions) error {
 	if def == nil {
 		return errors.New("cannot validate required argument using nil definitions")
 	}

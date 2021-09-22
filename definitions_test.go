@@ -12,8 +12,8 @@ func mockDefinedArg(_, arg string) (string, error) {
 	return arg, nil
 }
 
-func mockDefinitions() *Definitions {
-	return &Definitions{
+func mockDefinitions() *definitions {
+	return &definitions{
 		Version: 1,
 		Cmd: map[string][]string{
 			"command1" + defaultAttr: {"argument1" + defaultAttr + requiredAttr + envAttr, "argument2" + multipleAttr, "abbr-arg"},
@@ -40,8 +40,8 @@ var valueDelegates = map[string]func() []string{
 	"values":    func() []string { return []string{"v1", "v2"} },
 }
 
-func mockDefinitionsReplace() *Definitions {
-	return &Definitions{
+func mockDefinitionsReplace() *definitions {
+	return &definitions{
 		Version: 1,
 		Cmd: map[string][]string{
 			"c1": {"{arguments}"},
@@ -50,8 +50,8 @@ func mockDefinitionsReplace() *Definitions {
 	}
 }
 
-func mockDefinitionsNoDefaults() *Definitions {
-	return &Definitions{
+func mockDefinitionsNoDefaults() *definitions {
+	return &definitions{
 		Version: 1,
 		Cmd: map[string][]string{
 			"command1": {"argument1" + argValuesSep + "value1,value2", "argument2" + argValuesSep + "value3,value4"},
@@ -201,12 +201,12 @@ func TestDefinitionsDefinedCmdArgVal(t *testing.T) {
 
 func TestDefinitionsDefaultCommand(t *testing.T) {
 	tests := []struct {
-		defs   *Definitions
+		defs   *definitions
 		expCmd string
 	}{
 		{nil, ""},
 		{mockDefinitions(), "command1" + defaultAttr},
-		{&Definitions{}, ""},
+		{&definitions{}, ""},
 	}
 	for _, tt := range tests {
 		t.Run(tt.expCmd, func(t *testing.T) {

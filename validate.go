@@ -152,7 +152,7 @@ func appendErr(errors []error, err error) []error {
 	return errors
 }
 
-func (defs *Definitions) Validate(verbose bool) []error {
+func (defs *definitions) Validate(verbose bool) []error {
 
 	if defs == nil {
 		return []error{

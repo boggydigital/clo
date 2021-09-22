@@ -36,7 +36,7 @@ func argEnv(app, cmd, arg string) string {
 }
 
 // readEnvArgs reads arguments values from the environmental variables
-func (req *request) readEnvArgs(def *Definitions) error {
+func (req *request) readEnvArgs(def *definitions) error {
 	if def == nil {
 		return fmt.Errorf("cannot fill args from env using nil definitions")
 	}

@@ -9,7 +9,7 @@ import (
 
 const helpCmd = "help"
 
-func (defs *Definitions) getHelp(topics []string) string {
+func (defs *definitions) getHelp(topics []string) string {
 	if defs == nil || defs.Help == nil {
 		return ""
 	}
@@ -22,7 +22,7 @@ func (defs *Definitions) getHelp(topics []string) string {
 	return ""
 }
 
-func addInternalHelpCmd(defs *Definitions) {
+func addInternalHelpCmd(defs *definitions) {
 	if defs == nil {
 		return
 	}
@@ -54,7 +54,7 @@ func addInternalHelpCmd(defs *Definitions) {
 	}
 }
 
-func printHelp(cmd string, defs *Definitions) error {
+func printHelp(cmd string, defs *definitions) error {
 	if defs == nil {
 		return fmt.Errorf("cannot show help for nil definitions")
 	}
@@ -68,7 +68,7 @@ func printHelp(cmd string, defs *Definitions) error {
 	return nil
 }
 
-func printAppIntro(defs *Definitions) {
+func printAppIntro(defs *definitions) {
 	if defs == nil {
 		return
 	}
@@ -80,7 +80,7 @@ func printAppIntro(defs *Definitions) {
 	fmt.Print(appIntro)
 }
 
-func printAppUsage(defs *Definitions) {
+func printAppUsage(defs *definitions) {
 	if defs == nil {
 		return
 	}
@@ -88,7 +88,7 @@ func printAppUsage(defs *Definitions) {
 		appName())
 }
 
-func printAppCommands(defs *Definitions) {
+func printAppCommands(defs *definitions) {
 	if defs == nil {
 		return
 	}
@@ -111,7 +111,7 @@ func printAppCommands(defs *Definitions) {
 	}
 }
 
-func printAppMoreInfoPrompt(defs *Definitions) {
+func printAppMoreInfoPrompt(defs *definitions) {
 	if defs == nil {
 		return
 	}
@@ -120,7 +120,7 @@ func printAppMoreInfoPrompt(defs *Definitions) {
 		appName())
 }
 
-func printAppHelp(defs *Definitions) {
+func printAppHelp(defs *definitions) {
 	printAppIntro(defs)
 	fmt.Println()
 	printAppUsage(defs)
@@ -130,7 +130,7 @@ func printAppHelp(defs *Definitions) {
 	printAppMoreInfoPrompt(defs)
 }
 
-func printCmdUsage(cmd string, defs *Definitions) error {
+func printCmdUsage(cmd string, defs *definitions) error {
 	if defs == nil {
 		return fmt.Errorf("clo: can't print command usage for nil defintions")
 	}
@@ -150,7 +150,7 @@ func printCmdUsage(cmd string, defs *Definitions) error {
 	return nil
 }
 
-func printArgValues(cmd string, arg string, defs *Definitions) error {
+func printArgValues(cmd string, arg string, defs *definitions) error {
 	if defs == nil {
 		return fmt.Errorf("clo: can't print argument values for nil definitions")
 	}
@@ -180,7 +180,7 @@ func printArgValues(cmd string, arg string, defs *Definitions) error {
 	return nil
 }
 
-func printCmdArgDesc(cmd string, arg string, defs *Definitions) error {
+func printCmdArgDesc(cmd string, arg string, defs *definitions) error {
 	if defs == nil {
 		return fmt.Errorf("clo: can't print command argument description for nil defintions")
 	}
@@ -201,7 +201,7 @@ func printCmdArgDesc(cmd string, arg string, defs *Definitions) error {
 	return nil
 }
 
-func printCmdArgs(cmd string, defs *Definitions) error {
+func printCmdArgs(cmd string, defs *definitions) error {
 	if defs == nil {
 		return fmt.Errorf("clo: can't print command args for nil defintions")
 	}
@@ -229,7 +229,7 @@ func printCmdArgs(cmd string, defs *Definitions) error {
 	return nil
 }
 
-func printCmdHelp(cmd string, defs *Definitions) error {
+func printCmdHelp(cmd string, defs *definitions) error {
 	if err := printCmdUsage(cmd, defs); err != nil {
 		return err
 	}

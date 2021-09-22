@@ -5,7 +5,7 @@ import (
 	"net/url"
 )
 
-func (defs *Definitions) Serve(args []string) error {
+func (defs *definitions) Serve(args []string) error {
 	//1. assert that all commands have handlers
 	//2. parse args into URL
 	//3. route to the handler based on the path pattern

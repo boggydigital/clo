@@ -1,6 +1,6 @@
 package clo
 
-func (defs *Definitions) cmdPadding() int {
+func (defs *definitions) cmdPadding() int {
 	lToken := ""
 	for cmd := range defs.Cmd {
 		tc := trimAttrs(cmd)
@@ -11,7 +11,7 @@ func (defs *Definitions) cmdPadding() int {
 	return len(lToken)
 }
 
-func (defs *Definitions) argPadding(cmd string) (int, error) {
+func (defs *definitions) argPadding(cmd string) (int, error) {
 	lToken := ""
 	dc, err := defs.definedCmd(cmd)
 	if err != nil {
