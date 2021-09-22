@@ -102,10 +102,13 @@ func (defs *Definitions) parseUrl(args []string) (*url.URL, error) {
 
 	q := u.Query()
 	for arg, values := range req.Arguments {
+		val := ""
 		if len(values) == 0 {
-			continue
+			val = "true"
+		} else {
+			val = strings.Join(values, ",")
 		}
-		q.Add(arg, strings.Join(values, ","))
+		q.Add(arg, val)
 	}
 
 	u.RawQuery = q.Encode()

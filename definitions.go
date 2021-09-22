@@ -4,11 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"os"
 	"strings"
 )
-
-const defaultsOverrideFilename = "my-defaults.json"
 
 type Definitions struct {
 	Version           int                 `json:"version"`
@@ -36,15 +33,10 @@ func Load(reader io.Reader, valuesDelegates map[string]func() []string) (*Defini
 
 	addInternalHelpCmd(defs)
 
-	// load user overrides
-	if _, err := os.Stat(defaultsOverrideFilename); err == nil {
-		dof, err := os.Open(defaultsOverrideFilename)
-		if err != nil {
-			return defs, err
-		}
-		if err := json.NewDecoder(dof).Decode(&defs.defaultsOverrides); err != nil {
-			return defs, err
-		}
+	// load user defaults overrides
+	var err error
+	if defs.defaultsOverrides, err = defs.loadDefaultsOverrides(); err != nil {
+		return defs, err
 	}
 
 	return defs, nil
