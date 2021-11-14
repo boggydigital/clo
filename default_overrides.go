@@ -82,3 +82,12 @@ func (defs *definitions) validateOverrides(do map[string][]string) error {
 	}
 	return nil
 }
+
+func (defs *definitions) HasDefaultsFlag(flag string) bool {
+	if defs.defaultsOverrides == nil {
+		return false
+	}
+
+	_, ok := defs.defaultsOverrides[flag]
+	return ok
+}
