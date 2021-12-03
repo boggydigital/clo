@@ -4,14 +4,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
 const defaultsOverrideFilename = "my-defaults.json"
 
-func (defs *definitions) loadDefaultsOverrides() (map[string][]string, error) {
-	if _, err := os.Stat(defaultsOverrideFilename); err == nil {
-		dof, err := os.Open(defaultsOverrideFilename)
+func (defs *definitions) loadDefaultsOverrides(overridesDirectory string) (map[string][]string, error) {
+	overridesPath := filepath.Join(overridesDirectory, defaultsOverrideFilename)
+	if _, err := os.Stat(overridesPath); err == nil {
+		dof, err := os.Open(overridesPath)
 		if err != nil {
 			return nil, err
 		}

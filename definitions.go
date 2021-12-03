@@ -14,7 +14,7 @@ type definitions struct {
 	defaultsOverrides map[string][]string
 }
 
-func Load(reader io.Reader, valuesDelegates map[string]func() []string) (*definitions, error) {
+func Load(reader io.Reader, valuesDelegates map[string]func() []string, overridesDirectory string) (*definitions, error) {
 	var defs *definitions
 	if e := json.NewDecoder(reader).Decode(&defs); e != nil {
 		return nil, e
@@ -35,7 +35,7 @@ func Load(reader io.Reader, valuesDelegates map[string]func() []string) (*defini
 
 	// load user defaults overrides
 	var err error
-	if defs.defaultsOverrides, err = defs.loadDefaultsOverrides(); err != nil {
+	if defs.defaultsOverrides, err = defs.loadDefaultsOverrides(overridesDirectory); err != nil {
 		return defs, err
 	}
 
