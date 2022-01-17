@@ -2,4 +2,4 @@ module github.com/boggydigital/clo
 
 go 1.17
 
-require github.com/boggydigital/nod v0.1.9 // indirect
+require github.com/boggydigital/nod v0.1.10
