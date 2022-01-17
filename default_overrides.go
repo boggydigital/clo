@@ -49,8 +49,8 @@ func (defs *definitions) validateCmdArgValuesOverrides(cmd, arg string, values [
 
 func (defs *definitions) validateOverrides(do map[string][]string) error {
 	for overrideArg, overrideValues := range do {
-		if strings.Contains(overrideArg, ":") {
-			parts := strings.Split(overrideArg, ":")
+		if strings.Contains(overrideArg, cmdArgValDefSep) {
+			parts := strings.Split(overrideArg, cmdArgValDefSep)
 			//not checking for length given the condition before the split
 			cmd, arg := parts[0], parts[1]
 			return defs.validateCmdArgValuesOverrides(cmd, arg, overrideValues)

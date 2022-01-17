@@ -7,14 +7,17 @@ import (
 	"strings"
 )
 
-const helpCmd = "help"
+const (
+	helpCmd         = "help"
+	cmdArgValDefSep = ":"
+)
 
 func (defs *definitions) getHelp(topics []string) string {
 	if defs == nil || defs.Help == nil {
 		return ""
 	}
 	for ; len(topics) > 0; topics = topics[1:] {
-		key := strings.Join(transform(topics, trimAttrs), ":")
+		key := strings.Join(transform(topics, trimAttrs), cmdArgValDefSep)
 		if value, ok := defs.Help[key]; ok {
 			return value
 		}
