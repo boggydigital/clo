@@ -5,11 +5,7 @@ import (
 	"net/url"
 )
 
-func (defs *definitions) Serve(args []string) error {
-	//1. assert that all commands have handlers
-	//2. parse args into URL
-	//3. route to the handler based on the path pattern
-
+func (defs *definitions) AssertCommandsHaveHandlers() error {
 	for cmd := range defs.Cmd {
 		if cmd == helpCmd {
 			continue
@@ -19,6 +15,12 @@ func (defs *definitions) Serve(args []string) error {
 		}
 	}
 
+	return nil
+}
+
+func (defs *definitions) Serve(args []string) error {
+
+	//1. parse args into URL
 	u, err := defs.parseUrl(args)
 	if err != nil {
 		return err
@@ -35,6 +37,7 @@ func (defs *definitions) Serve(args []string) error {
 		return printHelp(q.Get("command"), defs)
 	}
 
+	//2. route to the handler based on the path pattern
 	if handler, ok := defaultHandlers[u.Path]; ok {
 		return handler(u)
 	}
