@@ -14,7 +14,7 @@ type definitions struct {
 	defaultsOverrides map[string][]string
 }
 
-func Load(reader io.Reader, valuesDelegates map[string]func() []string, overridesDirectory string) (*definitions, error) {
+func Load(reader io.Reader, valuesDelegates map[string]func() []string) (*definitions, error) {
 	var defs *definitions
 	if e := json.NewDecoder(reader).Decode(&defs); e != nil {
 		return nil, e
@@ -32,12 +32,6 @@ func Load(reader io.Reader, valuesDelegates map[string]func() []string, override
 	}
 
 	addInternalHelpCmd(defs)
-
-	// load user defaults overrides
-	var err error
-	if defs.defaultsOverrides, err = defs.loadDefaultsOverrides(overridesDirectory); err != nil {
-		return defs, err
-	}
 
 	return defs, nil
 }
@@ -270,16 +264,15 @@ func (defs *definitions) defaultArgValues(req *request) error {
 			}
 		}
 
-		// TODO: add tests for overrides
-		// check if user has provided default overrides
-		if defs.defaultsOverrides != nil {
+		// TODO: add tests for user default overrides
+		// check if user has provided default overrides with SetUserDefaults
+		if len(defs.defaultsOverrides) > 0 {
 			// check the cmd:arg first, as it's most specific
-			dv, ok := defs.defaultsOverrides[fmt.Sprintf("%s:%s", trimAttrs(dc), ta)]
-			if !ok {
+			cmdArg := fmt.Sprintf("%s:%s", trimAttrs(dc), ta)
+			if dv, ok := defs.defaultsOverrides[cmdArg]; !ok {
 				// if cmd:arg doesn't match, check generic arg
 				dv, ok = defs.defaultsOverrides[ta]
-			}
-			if ok {
+			} else {
 				req.Arguments[ta] = dv
 				continue
 			}

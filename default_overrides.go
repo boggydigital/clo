@@ -1,34 +1,20 @@
 package clo
 
 import (
-	"encoding/json"
 	"fmt"
-	"os"
-	"path/filepath"
 	"strings"
 )
 
-const defaultsOverrideFilename = "my-defaults.json"
-
-func (defs *definitions) loadDefaultsOverrides(overridesDirectory string) (map[string][]string, error) {
-	overridesPath := filepath.Join(overridesDirectory, defaultsOverrideFilename)
-	if _, err := os.Stat(overridesPath); err == nil {
-		dof, err := os.Open(overridesPath)
-		if err != nil {
-			return nil, err
-		}
-		defaultOverrides := make(map[string][]string)
-		if err := json.NewDecoder(dof).Decode(&defaultOverrides); err != nil {
-			return defaultOverrides, err
-		}
-		//check for errors in cmd:args or args in overrides to help
-		//user understand something might be not specified correctly
-		if err := defs.validateOverrides(defaultOverrides); err != nil {
-			return defaultOverrides, err
-		}
-		return defaultOverrides, nil
+func (defs *definitions) SetUserDefaults(defaultOverrides map[string][]string) error {
+	//check for errors in cmd:args or args in overrides to help
+	//user understand something might be not specified correctly
+	if err := defs.validateOverrides(defaultOverrides); err != nil {
+		return err
 	}
-	return nil, nil
+
+	defs.defaultsOverrides = defaultOverrides
+
+	return nil
 }
 
 func (defs *definitions) validateCmdArgValuesOverrides(cmd, arg string, values []string) error {
@@ -85,7 +71,7 @@ func (defs *definitions) validateOverrides(do map[string][]string) error {
 	return nil
 }
 
-func (defs *definitions) HasDefaultsFlag(flag string) bool {
+func (defs *definitions) HasUserDefaultsFlag(flag string) bool {
 	if defs.defaultsOverrides == nil {
 		return false
 	}

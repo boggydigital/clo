@@ -1,8 +1,6 @@
 package clo
 
-import (
-	"testing"
-)
+import "testing"
 
 func TestPrintHelp(t *testing.T) {
 	tests := []struct {
