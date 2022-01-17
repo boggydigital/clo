@@ -267,12 +267,12 @@ func (defs *definitions) defaultArgValues(req *request) error {
 		// TODO: add tests for user default overrides
 		// check if user has provided default overrides with SetUserDefaults
 		if len(defs.defaultsOverrides) > 0 {
-			// check the cmd:arg first, as it's most specific
-			cmdArg := fmt.Sprintf("%s:%s", trimAttrs(dc), ta)
-			if dv, ok := defs.defaultsOverrides[cmdArg]; !ok {
+			dv, ok := defs.defaultsOverrides[fmt.Sprintf("%s:%s", trimAttrs(dc), ta)]
+			if !ok {
 				// if cmd:arg doesn't match, check generic arg
 				dv, ok = defs.defaultsOverrides[ta]
-			} else {
+			}
+			if ok {
 				req.Arguments[ta] = dv
 				continue
 			}
