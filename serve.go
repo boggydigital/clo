@@ -2,6 +2,7 @@ package clo
 
 import (
 	"fmt"
+	"github.com/boggydigital/nod"
 	"net/url"
 )
 
@@ -25,6 +26,8 @@ func (defs *definitions) Serve(args []string) error {
 	if err != nil {
 		return err
 	}
+
+	nod.Log("clo: serving URL %s", u)
 
 	if u == nil {
 		u = &url.URL{
