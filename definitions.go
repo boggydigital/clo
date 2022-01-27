@@ -1,29 +1,35 @@
 package clo
 
 import (
-	"encoding/json"
 	"fmt"
+	"github.com/boggydigital/wits"
 	"io"
 	"strings"
 )
 
 type definitions struct {
-	Version           int                 `json:"version"`
 	Cmd               map[string][]string `json:"cmd"`
 	Help              map[string]string   `json:"help"`
 	defaultsOverrides map[string][]string
 }
 
-func Load(reader io.Reader, valuesDelegates map[string]func() []string) (*definitions, error) {
-	var defs *definitions
-	if e := json.NewDecoder(reader).Decode(&defs); e != nil {
-		return nil, e
+func Load(commands, help io.Reader, valuesDelegates map[string]func() []string) (defs *definitions, err error) {
+
+	defs = &definitions{}
+
+	if defs.Cmd, err = wits.ReadKeyValues(commands); err != nil {
+		return defs, err
+	}
+
+	if help != nil {
+		if defs.Help, err = wits.ReadKeyValue(help); err != nil {
+			return defs, err
+		}
 	}
 
 	// post-processing definitions include the following steps:
 	// - replace placeholder values using delegates (if provided)
 	// - add 'help' command if not present
-	// - load user default overrides from my-defaults.json if present
 
 	if valuesDelegates != nil {
 		if err := defs.replacePlaceholders(valuesDelegates); err != nil {
