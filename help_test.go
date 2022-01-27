@@ -1,6 +1,9 @@
 package clo
 
-import "testing"
+import (
+	"github.com/boggydigital/testo"
+	"testing"
+)
 
 func TestPrintHelp(t *testing.T) {
 	tests := []struct {
@@ -15,7 +18,7 @@ func TestPrintHelp(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.token, func(t *testing.T) {
 			err := printHelp(tt.token, defs)
-			assertError(t, err, defs == nil)
+			testo.Error(t, err, defs == nil)
 		})
 	}
 }

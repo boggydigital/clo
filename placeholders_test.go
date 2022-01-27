@@ -1,6 +1,7 @@
 package clo
 
 import (
+	"github.com/boggydigital/testo"
 	"strconv"
 	"testing"
 )
@@ -32,7 +33,7 @@ func TestExtract(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.input, func(t *testing.T) {
 			ph := extract(tt.input)
-			assertInterfaceEquals(t, ph, tt.expected)
+			testo.DeepEqual(t, ph, tt.expected)
 		})
 	}
 }
@@ -53,7 +54,7 @@ func TestString(t *testing.T) {
 	}
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-			assertValEquals(t, tt.input.String(), tt.expected)
+			testo.EqualValues(t, tt.input.String(), tt.expected)
 		})
 	}
 }

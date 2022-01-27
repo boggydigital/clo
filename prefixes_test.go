@@ -1,6 +1,7 @@
 package clo
 
 import (
+	"github.com/boggydigital/testo"
 	"strconv"
 	"testing"
 )
@@ -18,7 +19,7 @@ func TestIsArg(t *testing.T) {
 
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-			assertValEquals(t, isArg(tt.token), tt.expected)
+			testo.EqualValues(t, isArg(tt.token), tt.expected)
 		})
 	}
 }
@@ -36,7 +37,7 @@ func TestTrimArgPrefix(t *testing.T) {
 
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-			assertValEquals(t, trimArgPrefix(tt.token), tt.expected)
+			testo.EqualValues(t, trimArgPrefix(tt.token), tt.expected)
 		})
 	}
 }

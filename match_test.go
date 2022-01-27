@@ -1,6 +1,7 @@
 package clo
 
 import (
+	"github.com/boggydigital/testo"
 	"testing"
 )
 
@@ -18,8 +19,8 @@ func TestMatchArgument(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.token, func(t *testing.T) {
 			arg, err := matchArg(tt.token, tt.cmd, mockDefinedArg)
-			assertError(t, err, false)
-			assertValEquals(t, arg, tt.expArg)
+			testo.Error(t, err, false)
+			testo.EqualValues(t, arg, tt.expArg)
 		})
 	}
 }
@@ -50,8 +51,8 @@ func TestMatch(t *testing.T) {
 		t.Run(tt.token, func(t *testing.T) {
 			defs := mockDefinitions()
 			m, err := match(tt.token, tt.tokenType, tt.cmdCtx, tt.argCtx, defs)
-			assertValEquals(t, m, tt.expected)
-			assertError(t, err, tt.expError)
+			testo.EqualValues(t, m, tt.expected)
+			testo.Error(t, err, tt.expError)
 		})
 	}
 }

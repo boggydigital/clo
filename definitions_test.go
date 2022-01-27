@@ -3,6 +3,7 @@ package clo
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/boggydigital/testo"
 	"strconv"
 	"strings"
 	"testing"
@@ -61,7 +62,7 @@ func mockDefinitionsNoDefaults() *definitions {
 
 func TestDefinitionsLoad(t *testing.T) {
 	bytes, err := json.Marshal(mockDefinitions())
-	assertError(t, err, false)
+	testo.Error(t, err, false)
 
 	tests := []struct {
 		content string
@@ -76,13 +77,13 @@ func TestDefinitionsLoad(t *testing.T) {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
 			r := strings.NewReader(tt.content)
 			defs, err := Load(r, nil)
-			assertNil(t, defs, tt.expNil)
-			assertError(t, err, tt.expErr)
+			testo.Nil(t, defs, tt.expNil)
+			testo.Error(t, err, tt.expErr)
 			// check that Load adds help command
 			if defs != nil {
 				helpCmd, err := defs.definedCmd("help")
-				assertError(t, err, false)
-				assertValNotEquals(t, helpCmd, "")
+				testo.Error(t, err, false)
+				testo.UnequalValues(t, helpCmd, "")
 			}
 		})
 	}
@@ -96,7 +97,7 @@ type valueDelegatesTest struct {
 
 func TestDefinitionsLoadReplace(t *testing.T) {
 	bb, err := json.Marshal(mockDefinitionsReplace())
-	assertError(t, err, false)
+	testo.Error(t, err, false)
 
 	testsNoValuesDelegates := []valueDelegatesTest{
 		{"c1", 1, true},
@@ -121,13 +122,13 @@ func TestDefinitionsLoadReplace(t *testing.T) {
 
 	for _, vdt := range valueDelegatesTests {
 		def, err := Load(bytes.NewReader(bb), vdt.delegates)
-		assertError(t, err, vdt.expError)
+		testo.Error(t, err, vdt.expError)
 
 		for _, tt := range vdt.valueDelegatesTests {
 			t.Run(vdt.name+tt.cmd, func(t *testing.T) {
-				assertValEquals(t, len(def.Cmd[tt.cmd]), tt.expArgs)
-				assertValEquals(t, strings.Contains(def.Cmd[tt.cmd][0], placeholderPrefix), tt.placeholders)
-				assertValEquals(t, strings.Contains(def.Cmd[tt.cmd][0], placeholderSuffix), tt.placeholders)
+				testo.EqualValues(t, len(def.Cmd[tt.cmd]), tt.expArgs)
+				testo.EqualValues(t, strings.Contains(def.Cmd[tt.cmd][0], placeholderPrefix), tt.placeholders)
+				testo.EqualValues(t, strings.Contains(def.Cmd[tt.cmd][0], placeholderSuffix), tt.placeholders)
 			})
 		}
 	}
@@ -153,8 +154,8 @@ func TestDefinitionsDefinedCmd(t *testing.T) {
 		t.Run(tt.cmd, func(t *testing.T) {
 			defs := mockDefinitions()
 			dc, err := defs.definedCmd(tt.cmd)
-			assertError(t, err, tt.expErr)
-			assertValEquals(t, dc, tt.expCmd)
+			testo.Error(t, err, tt.expErr)
+			testo.EqualValues(t, dc, tt.expCmd)
 		})
 	}
 }
@@ -173,8 +174,8 @@ func TestDefinitionsDefinedCmdArg(t *testing.T) {
 		t.Run(tt.cmd+tt.arg, func(t *testing.T) {
 			defs := mockDefinitions()
 			da, err := defs.definedArg(tt.cmd, tt.arg)
-			assertError(t, err, false)
-			assertValEquals(t, da, tt.expArg)
+			testo.Error(t, err, false)
+			testo.EqualValues(t, da, tt.expArg)
 		})
 	}
 }
@@ -193,8 +194,8 @@ func TestDefinitionsDefinedCmdArgVal(t *testing.T) {
 		t.Run(tt.cmd+tt.arg+tt.val, func(t *testing.T) {
 			defs := mockDefinitions()
 			dv, err := defs.definedVal(tt.cmd, tt.arg, tt.val)
-			assertError(t, err, false)
-			assertValEquals(t, dv, tt.expVal)
+			testo.Error(t, err, false)
+			testo.EqualValues(t, dv, tt.expVal)
 		})
 	}
 }
@@ -211,7 +212,7 @@ func TestDefinitionsDefaultCommand(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.expCmd, func(t *testing.T) {
 			dc := tt.defs.defaultCommand()
-			assertValEquals(t, dc, tt.expCmd)
+			testo.EqualValues(t, dc, tt.expCmd)
 		})
 	}
 }
@@ -228,8 +229,8 @@ func TestDefinitionsDefaultArgument(t *testing.T) {
 	for _, tt := range tests {
 		defs := mockDefinitions()
 		da, err := defs.defaultArgument(tt.cmd)
-		assertError(t, err, false)
-		assertValEquals(t, da, tt.expArg)
+		testo.Error(t, err, false)
+		testo.EqualValues(t, da, tt.expArg)
 	}
 }
 
@@ -262,8 +263,8 @@ func TestDefinitionsDefaultArgumentValues(t *testing.T) {
 	defs := mockDefinitions()
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-			assertError(t, defs.defaultArgValues(tt.req), tt.expErr)
-			assertInterfaceEquals(t, tt.req, tt.expReq)
+			testo.Error(t, defs.defaultArgValues(tt.req), tt.expErr)
+			testo.DeepEqual(t, tt.req, tt.expReq)
 		})
 	}
 }
@@ -280,8 +281,8 @@ func TestDefaultArgByNameNotValues(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.cmd+tt.extArg, func(t *testing.T) {
 			defArg, err := defs.defaultArgument(tt.cmd)
-			assertError(t, err, tt.expErr)
-			assertValEquals(t, defArg, tt.extArg)
+			testo.Error(t, err, tt.expErr)
+			testo.EqualValues(t, defArg, tt.extArg)
 		})
 	}
 }

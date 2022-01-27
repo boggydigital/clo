@@ -1,6 +1,7 @@
 package clo
 
 import (
+	"github.com/boggydigital/testo"
 	"strconv"
 	"testing"
 )
@@ -21,10 +22,10 @@ func TestDefinitionsParse(t *testing.T) {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
 			defs := mockDefinitions()
 			req, err := defs.parseRequest(tt.args)
-			assertError(t, err, tt.expErr)
-			assertValEquals(t, req.Command, tt.expCmd)
-			assertValEquals(t, req.lastArgument, tt.expLastArg)
-			assertValEquals(t, len(req.Arguments), tt.expLenArgs)
+			testo.Error(t, err, tt.expErr)
+			testo.EqualValues(t, req.Command, tt.expCmd)
+			testo.EqualValues(t, req.lastArgument, tt.expLastArg)
+			testo.EqualValues(t, len(req.Arguments), tt.expLenArgs)
 		})
 	}
 }
@@ -44,10 +45,10 @@ func TestDefinitionsNoDefaultsParse(t *testing.T) {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
 			defs := mockDefinitionsNoDefaults()
 			req, err := defs.parseRequest(tt.args)
-			assertError(t, err, tt.expErr)
-			assertValEquals(t, req.Command, tt.expCmd)
-			assertValEquals(t, req.lastArgument, tt.expLastArg)
-			assertValEquals(t, len(req.Arguments), tt.expLenArgs)
+			testo.Error(t, err, tt.expErr)
+			testo.EqualValues(t, req.Command, tt.expCmd)
+			testo.EqualValues(t, req.lastArgument, tt.expLastArg)
+			testo.EqualValues(t, len(req.Arguments), tt.expLenArgs)
 		})
 	}
 }

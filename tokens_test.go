@@ -1,6 +1,7 @@
 package clo
 
 import (
+	"github.com/boggydigital/testo"
 	"math"
 	"testing"
 )
@@ -20,7 +21,7 @@ func TestTokenString(t *testing.T) {
 	for _, tt := range tests {
 		testName := tt.tokenStr
 		t.Run(testName, func(t *testing.T) {
-			assertValEquals(t, tokenString(tt.tokenType), tt.tokenStr)
+			testo.EqualValues(t, tokenString(tt.tokenType), tt.tokenStr)
 		})
 	}
 }
@@ -39,13 +40,13 @@ func TestNext(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tokenString(tt.tokenType), func(t *testing.T) {
-			assertValEquals(t, len(next(tt.tokenType)), tt.nextLen)
+			testo.EqualValues(t, len(next(tt.tokenType)), tt.nextLen)
 		})
 	}
 }
 
 func TestInitial(t *testing.T) {
-	assertValEquals(t, len(initial()), 3)
+	testo.EqualValues(t, len(initial()), 3)
 }
 
 //func TestExpandAbbr(t *testing.T) {
@@ -66,7 +67,7 @@ func TestInitial(t *testing.T) {
 //	for _, tt := range tests {
 //		t.Run(tt.token, func(t *testing.T) {
 //			expToken := expandAbbr(tt.token, tt.tokenType, defs)
-//			assertValEquals(t, expToken, tt.expToken)
+//			testo.EqualValues(t, expToken, tt.expToken)
 //		})
 //	}
 //}

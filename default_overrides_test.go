@@ -1,6 +1,7 @@
 package clo
 
 import (
+	"github.com/boggydigital/testo"
 	"strconv"
 	"testing"
 )
@@ -37,12 +38,12 @@ func TestSetValidUserDefaults(t *testing.T) {
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
 			defs := mockDefinitions()
-			assertValEquals(t, len(defs.defaultsOverrides), 0)
+			testo.EqualValues(t, len(defs.defaultsOverrides), 0)
 
 			err := defs.SetUserDefaults(tt.overrides)
-			assertError(t, err, tt.expError)
+			testo.Error(t, err, tt.expError)
 
-			assertValEquals(t, len(defs.defaultsOverrides), tt.expLen)
+			testo.EqualValues(t, len(defs.defaultsOverrides), tt.expLen)
 		})
 	}
 }
@@ -70,9 +71,9 @@ func TestHasUserDefaultsFlag(t *testing.T) {
 			defs := mockDefinitions()
 
 			err := defs.SetUserDefaults(tt.overrides)
-			assertError(t, err, false)
+			testo.Error(t, err, false)
 
-			assertValEquals(t, defs.HasUserDefaultsFlag(tt.flag), tt.expVal)
+			testo.EqualValues(t, defs.HasUserDefaultsFlag(tt.flag), tt.expVal)
 		})
 	}
 }

@@ -1,10 +1,13 @@
 package clo
 
-import "testing"
+import (
+	"github.com/boggydigital/testo"
+	"testing"
+)
 
 func TestCommandsPadding(t *testing.T) {
 	defs := mockDefinitions()
-	assertValEquals(t, defs.cmdPadding(), len("command1"))
+	testo.EqualValues(t, defs.cmdPadding(), len("command1"))
 }
 
 func TestDefinitionsArgumentsPadding(t *testing.T) {
@@ -20,8 +23,8 @@ func TestDefinitionsArgumentsPadding(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.cmd, func(t *testing.T) {
 			argPadding, err := defs.argPadding(tt.cmd)
-			assertError(t, err, false)
-			assertValEquals(t, argPadding, tt.expPadding)
+			testo.Error(t, err, false)
+			testo.EqualValues(t, argPadding, tt.expPadding)
 		})
 	}
 }

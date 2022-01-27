@@ -2,6 +2,7 @@ package clo
 
 import (
 	"fmt"
+	"github.com/boggydigital/testo"
 	"testing"
 )
 
@@ -14,7 +15,7 @@ type AttrTest struct {
 func testAttr(t *testing.T, tests []AttrTest, isAttr func(string) bool) {
 	for _, tt := range tests {
 		t.Run(tt.token, func(t *testing.T) {
-			assertValEquals(t, isAttr(tt.token), tt.expected)
+			testo.EqualValues(t, isAttr(tt.token), tt.expected)
 		})
 	}
 }
@@ -61,8 +62,8 @@ func TestSplitArgValues(t *testing.T) {
 		t.Run(tt.token, func(t *testing.T) {
 			a, v := splitArgValues(tt.token)
 			fmt.Println(a, v)
-			assertValEquals(t, a, tt.arg)
-			assertInterfaceEquals(t, v, tt.values)
+			testo.EqualValues(t, a, tt.arg)
+			testo.DeepEqual(t, v, tt.values)
 		})
 	}
 }
@@ -71,7 +72,7 @@ func TestTrimArgValue(t *testing.T) {
 	for _, tt := range argValuesTests {
 		t.Run(tt.token, func(t *testing.T) {
 			a := trimArgValues(tt.token)
-			assertValEquals(t, a, tt.arg)
+			testo.EqualValues(t, a, tt.arg)
 		})
 	}
 }
@@ -79,7 +80,7 @@ func TestTrimArgValue(t *testing.T) {
 func testTrimAttr(t *testing.T, tests []AttrTest) {
 	for _, tt := range tests {
 		t.Run(tt.token, func(t *testing.T) {
-			assertValEquals(t, trimAttrs(tt.token), tt.trimToken)
+			testo.EqualValues(t, trimAttrs(tt.token), tt.trimToken)
 		})
 	}
 }

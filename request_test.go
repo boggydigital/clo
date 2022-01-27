@@ -1,6 +1,7 @@
 package clo
 
 import (
+	"github.com/boggydigital/testo"
 	"math"
 	"strconv"
 	"testing"
@@ -19,7 +20,7 @@ func TestRequestHasArguments(t *testing.T) {
 	}
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-			assertValEquals(t, tt.req.hasArguments(), tt.expected)
+			testo.EqualValues(t, tt.req.hasArguments(), tt.expected)
 		})
 	}
 }
@@ -40,10 +41,10 @@ func TestRequestSetDefaultContext(t *testing.T) {
 	}
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-			assertError(t, tt.req.setDefaultContext(tt.tokenType, defs), tt.expError)
+			testo.Error(t, tt.req.setDefaultContext(tt.tokenType, defs), tt.expError)
 			if tt.req != nil {
-				assertValEquals(t, tt.req.Command, tt.expCmd)
-				assertValEquals(t, tt.req.lastArgument, tt.expArg)
+				testo.EqualValues(t, tt.req.Command, tt.expCmd)
+				testo.EqualValues(t, tt.req.lastArgument, tt.expArg)
 			}
 		})
 	}
@@ -69,7 +70,7 @@ func TestRequestUpdate(t *testing.T) {
 	for _, tt := range sequentialTests {
 		t.Run(tt.token, func(t *testing.T) {
 			err := req.update(tt.token, tt.tokenType)
-			assertError(t, err, tt.expError)
+			testo.Error(t, err, tt.expError)
 		})
 	}
 }
@@ -95,7 +96,7 @@ func TestRequestCommandHasRequiredArgs(t *testing.T) {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
 			defs := mockDefinitions()
 			err := tt.req.commandHasRequiredArgs(defs)
-			assertError(t, err, tt.expError)
+			testo.Error(t, err, tt.expError)
 		})
 	}
 }
@@ -115,7 +116,7 @@ func TestArgumentsMultipleValues(t *testing.T) {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
 			defs := mockDefinitions()
 			err := tt.req.argumentsMultipleValues(defs)
-			assertError(t, err, tt.expError)
+			testo.Error(t, err, tt.expError)
 		})
 	}
 }
@@ -129,7 +130,7 @@ func TestRequestVerify(t *testing.T) {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
 			defs := mockDefinitions()
 			err := tt.req.validate(defs)
-			assertError(t, err, tt.expError)
+			testo.Error(t, err, tt.expError)
 		})
 	}
 }
@@ -146,7 +147,7 @@ func TestRequestArgVal(t *testing.T) {
 	}
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-			assertValEquals(t, tt.req.ArgVal(tt.value), tt.expected)
+			testo.EqualValues(t, tt.req.ArgVal(tt.value), tt.expected)
 		})
 	}
 }
@@ -164,7 +165,7 @@ func TestRequestArgValues(t *testing.T) {
 	}
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-			assertValEquals(t, len(tt.req.ArgValues(tt.value)), tt.expected)
+			testo.EqualValues(t, len(tt.req.ArgValues(tt.value)), tt.expected)
 		})
 	}
 }
@@ -182,7 +183,7 @@ func TestRequestFlag(t *testing.T) {
 	}
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
-			assertValEquals(t, tt.req.Flag(tt.value), tt.expected)
+			testo.EqualValues(t, tt.req.Flag(tt.value), tt.expected)
 		})
 	}
 }

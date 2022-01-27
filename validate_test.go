@@ -2,6 +2,7 @@ package clo
 
 import (
 	"errors"
+	"github.com/boggydigital/testo"
 	"strconv"
 	"testing"
 )
@@ -21,7 +22,7 @@ func TestFirstDupe(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.dupe, func(t *testing.T) {
-			assertValEquals(t, firstDupe(tt.slice), tt.dupe)
+			testo.EqualValues(t, firstDupe(tt.slice), tt.dupe)
 		})
 	}
 }
@@ -32,7 +33,7 @@ func TestAppendError(t *testing.T) {
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
 			errs = appendErr(errs, tt)
-			assertValEquals(t, len(errs), 1)
+			testo.EqualValues(t, len(errs), 1)
 		})
 	}
 }
@@ -42,5 +43,5 @@ func TestDefinitionsVerify(t *testing.T) {
 	// so running known good definitions for the coverage
 	defs := mockDefinitions()
 	errs := defs.Validate(false)
-	assertValEquals(t, len(errs), 0)
+	testo.EqualValues(t, len(errs), 0)
 }
