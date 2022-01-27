@@ -1,9 +1,8 @@
 package clo
 
 import (
-	"bytes"
-	"encoding/json"
 	"github.com/boggydigital/testo"
+	"github.com/boggydigital/wits"
 	"strconv"
 	"strings"
 	"testing"
@@ -15,7 +14,6 @@ func mockDefinedArg(_, arg string) (string, error) {
 
 func mockDefinitions() *definitions {
 	return &definitions{
-		Version: 1,
 		Cmd: map[string][]string{
 			"command1" + defaultAttr: {"argument1" + defaultAttr + requiredAttr + envAttr, "argument2" + multipleAttr, "abbr-arg"},
 			"command2":               {"argument2" + multipleAttr, "xyz"},
@@ -43,7 +41,6 @@ var valueDelegates = map[string]func() []string{
 
 func mockDefinitionsReplace() *definitions {
 	return &definitions{
-		Version: 1,
 		Cmd: map[string][]string{
 			"c1": {"{arguments}"},
 			"c2": {"arg" + argValuesSep + "{values}"},
@@ -53,7 +50,6 @@ func mockDefinitionsReplace() *definitions {
 
 func mockDefinitionsNoDefaults() *definitions {
 	return &definitions{
-		Version: 1,
 		Cmd: map[string][]string{
 			"command1": {"argument1" + argValuesSep + "value1,value2", "argument2" + argValuesSep + "value3,value4"},
 		},
@@ -61,7 +57,10 @@ func mockDefinitionsNoDefaults() *definitions {
 }
 
 func TestDefinitionsLoad(t *testing.T) {
-	bytes, err := json.Marshal(mockDefinitions())
+	commandsWriter := &strings.Builder{}
+	md := mockDefinitions()
+	err := wits.KeyValues(md.Cmd).Write(commandsWriter)
+
 	testo.Error(t, err, false)
 
 	tests := []struct {
@@ -69,14 +68,13 @@ func TestDefinitionsLoad(t *testing.T) {
 		expNil  bool
 		expErr  bool
 	}{
-		{"", true, true},
-		{string(bytes), false, false},
+		{commandsWriter.String(), false, false},
 	}
 
 	for ii, tt := range tests {
 		t.Run(strconv.Itoa(ii), func(t *testing.T) {
 			r := strings.NewReader(tt.content)
-			defs, err := Load(r, nil)
+			defs, err := Load(r, nil, nil)
 			testo.Nil(t, defs, tt.expNil)
 			testo.Error(t, err, tt.expErr)
 			// check that Load adds help command
@@ -96,7 +94,9 @@ type valueDelegatesTest struct {
 }
 
 func TestDefinitionsLoadReplace(t *testing.T) {
-	bb, err := json.Marshal(mockDefinitionsReplace())
+	commandsWriter := &strings.Builder{}
+	md := mockDefinitionsReplace()
+	err := wits.KeyValues(md.Cmd).Write(commandsWriter)
 	testo.Error(t, err, false)
 
 	testsNoValuesDelegates := []valueDelegatesTest{
@@ -121,7 +121,7 @@ func TestDefinitionsLoadReplace(t *testing.T) {
 	}
 
 	for _, vdt := range valueDelegatesTests {
-		def, err := Load(bytes.NewReader(bb), vdt.delegates)
+		def, err := Load(strings.NewReader(commandsWriter.String()), nil, vdt.delegates)
 		testo.Error(t, err, vdt.expError)
 
 		for _, tt := range vdt.valueDelegatesTests {
