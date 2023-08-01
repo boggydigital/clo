@@ -1,6 +1,6 @@
 module github.com/boggydigital/clo
 
-go 1.17
+go 1.20
 
 require (
 	github.com/boggydigital/nod v0.1.21
