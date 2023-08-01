@@ -56,13 +56,21 @@ func (req *request) readEnvArgs(def *definitions) error {
 
 		tArg := trimAttrs(arg)
 		envKey := argEnv(appName(), req.Command, trimAttrs(arg))
+		var envVals []string
 		envVal := os.Getenv(envKey)
+		if envVal != "" {
+			if isMultiple(arg) && strings.Contains(envVal, ",") {
+				envVals = strings.Split(envVal, ",")
+			} else {
+				envVals = []string{envVal}
+			}
+		}
 
 		// only add value from environmental variable if it's the only value,
 		// don't overwrite value directly provided by user
-		if envVal != "" &&
+		if len(envVals) > 0 &&
 			(req.Arguments[tArg] == nil || len(req.Arguments[tArg]) == 0) {
-			req.Arguments[tArg] = append(req.Arguments[tArg], envVal)
+			req.Arguments[tArg] = append(req.Arguments[tArg], envVals...)
 		}
 	}
 
