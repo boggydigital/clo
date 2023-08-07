@@ -65,7 +65,7 @@ func (req *request) readEnvArgs(def *definitions) error {
 		}
 
 		if envVal == "" {
-			return nil
+			continue
 		}
 
 		if isMultiple(arg) && strings.Contains(envVal, ",") {
