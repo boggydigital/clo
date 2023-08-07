@@ -58,12 +58,20 @@ func (req *request) readEnvArgs(def *definitions) error {
 		envKey := argEnv(appName(), req.Command, trimAttrs(arg))
 		var envVals []string
 		envVal := os.Getenv(envKey)
-		if envVal != "" {
-			if isMultiple(arg) && strings.Contains(envVal, ",") {
-				envVals = strings.Split(envVal, ",")
-			} else {
-				envVals = []string{envVal}
-			}
+		if envVal == "" {
+			// try command-independent value APP_ARG if APP_CMD_ARG didn't work
+			envKey := argEnv(appName(), "", trimAttrs(arg))
+			envVal = os.Getenv(envKey)
+		}
+
+		if envVal == "" {
+			return nil
+		}
+
+		if isMultiple(arg) && strings.Contains(envVal, ",") {
+			envVals = strings.Split(envVal, ",")
+		} else {
+			envVals = []string{envVal}
 		}
 
 		// only add value from environmental variable if it's the only value,
