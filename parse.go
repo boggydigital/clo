@@ -51,7 +51,10 @@ func (defs *definitions) parseRequest(args []string) (*request, error) {
 
 			if definedToken != "" {
 				matched = true
-				err = req.update(trimAttrs(definedToken), tt)
+				if tt != value {
+					definedToken = trimAttrs(definedToken)
+				}
+				err = req.update(definedToken, tt)
 				if err != nil {
 					return req, err
 				}
