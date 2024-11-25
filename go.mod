@@ -1,6 +1,6 @@
 module github.com/boggydigital/clo
 
-go 1.20
+go 1.23.3
 
 require (
 	github.com/boggydigital/nod v0.1.21
@@ -8,4 +8,4 @@ require (
 	github.com/boggydigital/wits v0.2.3
 )
 
-require golang.org/x/exp v0.0.0-20230728194245-b0cb94b80691 // indirect
+require golang.org/x/exp v0.0.0-20241108190413-2d47ceb2692f // indirect
