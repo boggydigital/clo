@@ -190,7 +190,7 @@ func (defs *definitions) definedVal(c, a, v string) (string, error) {
 			if definedValue != "" {
 				return val, fmt.Errorf("clo: ambiguous value %s that could be %s or %s", v, definedValue, val)
 			}
-			definedValue = val
+			definedValue = trimAttrs(val)
 		}
 	}
 
