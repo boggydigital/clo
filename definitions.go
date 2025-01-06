@@ -125,6 +125,11 @@ func (defs *definitions) definedCmd(c string) (string, error) {
 	definedToken := ""
 
 	for cmd := range defs.Cmd {
+		if c == cmd {
+			// don't apply ambiguous resolution for exact matches
+			definedToken = cmd
+			break
+		}
 		if strings.HasPrefix(cmd, c) {
 			if definedToken != "" {
 				return "", fmt.Errorf("clo: ambiguous command %s that could be %s or %s", c, definedToken, cmd)
@@ -152,6 +157,11 @@ func (defs *definitions) definedArg(c, a string) (string, error) {
 	definedArg := ""
 
 	for _, arg := range defs.Cmd[cmd] {
+		if a == arg {
+			// don't apply ambiguous resolution for exact matches
+			definedArg = arg
+			break
+		}
 		if strings.HasPrefix(arg, a) {
 			if definedArg != "" {
 				return arg, fmt.Errorf("clo: ambiguous argument %s that could be %s or %s", a, definedArg, arg)
@@ -186,6 +196,11 @@ func (defs *definitions) definedVal(c, a, v string) (string, error) {
 
 	_, values = splitArgValues(arg)
 	for _, val := range values {
+		if v == val {
+			// don't apply ambiguous resolution for exact matches
+			definedValue = val
+			break
+		}
 		if strings.HasPrefix(val, v) {
 			if definedValue != "" {
 				return val, fmt.Errorf("clo: ambiguous value %s that could be %s or %s", v, definedValue, val)
