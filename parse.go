@@ -87,7 +87,7 @@ func (defs *definitions) parseRequest(args []string) (*request, error) {
 	return req, nil
 }
 
-func (defs *definitions) parseUrl(args []string) (*url.URL, error) {
+func (defs *definitions) Parse(args []string) (*url.URL, error) {
 	req, err := defs.parseRequest(args)
 	if err != nil {
 		return nil, err

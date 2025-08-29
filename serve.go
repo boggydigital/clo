@@ -2,8 +2,9 @@ package clo
 
 import (
 	"fmt"
-	"github.com/boggydigital/nod"
 	"net/url"
+
+	"github.com/boggydigital/nod"
 )
 
 func (defs *definitions) AssertCommandsHaveHandlers() error {
@@ -19,14 +20,7 @@ func (defs *definitions) AssertCommandsHaveHandlers() error {
 	return nil
 }
 
-func (defs *definitions) Serve(args []string) error {
-
-	//1. parse args into URL
-	u, err := defs.parseUrl(args)
-	if err != nil {
-		return err
-	}
-
+func (defs *definitions) Serve(u *url.URL) error {
 	nod.Log("clo: serving URL %s", u)
 
 	if u == nil {
@@ -46,4 +40,15 @@ func (defs *definitions) Serve(args []string) error {
 	}
 
 	return fmt.Errorf("unknown command %s", u.Path)
+}
+
+func (defs *definitions) ParseServe(args []string) error {
+
+	//1. parse args into URL
+	u, err := defs.Parse(args)
+	if err != nil {
+		return err
+	}
+
+	return defs.Serve(u)
 }

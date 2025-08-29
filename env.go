@@ -77,7 +77,7 @@ func (req *request) readEnvArgs(def *definitions) error {
 		// only add value from environmental variable if it's the only value,
 		// don't overwrite value directly provided by user
 		if len(envVals) > 0 &&
-			(req.Arguments[tArg] == nil || len(req.Arguments[tArg]) == 0) {
+			len(req.Arguments[tArg]) == 0 {
 			req.Arguments[tArg] = append(req.Arguments[tArg], envVals...)
 		}
 	}
